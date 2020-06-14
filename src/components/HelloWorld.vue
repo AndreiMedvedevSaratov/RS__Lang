@@ -13,13 +13,13 @@ export default {
 	components: {},
 	props: [],
 	data: () => ({
-		
+
 	}),
 	computed: {},
 	watch: {},
 	created() {},
 	mounted() {},
-	methods: {}
+	methods: {},
 
 };
 </script>

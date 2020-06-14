@@ -7,7 +7,7 @@ module.exports = {
 	},
 	extends: [
 		'plugin:vue/recommended',
-      	'@vue/airbnb',
+		'@vue/airbnb',
 	],
 	globals: {
 		Atomics: 'readonly',
@@ -23,7 +23,7 @@ module.exports = {
 	],
 	rules: {
 		'linebreak-style': 0,
-		'indent': [2, 'tab'],
+		indent: [2, 'tab'],
 		'no-tabs': 0,
 	},
 };
