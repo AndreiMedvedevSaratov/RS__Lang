@@ -1,6 +1,6 @@
 <template lang='pug'>
 	div
-		p Пример компонента
+		p Speaking
 </template>
 
 <script>
@@ -9,7 +9,7 @@
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
-	name: 'HelloWorld',
+	name: 'Speaking',
 	components: {},
 	props: [],
 	data: () => ({
@@ -23,6 +23,6 @@ export default {
 
 };
 </script>
-<style scoped>
+<style lang='scss' scoped>
 
 </style>
