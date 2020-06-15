@@ -1,6 +1,6 @@
 <template lang='pug'>
-  div
-	p Я компонент English
+	div
+		p Пример компонента
 </template>
 
 <script>
@@ -23,7 +23,3 @@ export default {
 
 };
 </script>
-
-<style lang='scss' scoped>
-
-</style>

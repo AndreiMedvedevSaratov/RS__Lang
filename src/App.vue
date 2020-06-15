@@ -1,12 +1,17 @@
 <template lang='pug'>
-  v-app
-    div( class="ma-auto custom" )
-      router-link( to="/about" ) Go to About
-      v-spacer
-      router-link( to="/" ) Go to Home
+	v-app
+		div( class="ma-auto custom text-center" )
+			router-link( to="/" )
+				v-btn( class="mx-2" text large color="primary" ) Home
 
-      transition
-        router-view
+			router-link(to="/about")
+				v-btn( class="mx-2" text large color="primary" ) About
+
+			router-link(to="/login")
+				v-btn( class="mx-2" text large color="primary" ) Login
+
+			transition
+				router-view
 </template>
 
 <script>
@@ -19,5 +24,8 @@ export default {
 	data: () => ({
 		//
 	}),
+	mounted() {
+		console.info(this);
+	},
 };
 </script>

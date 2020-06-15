@@ -1,8 +1,39 @@
+import axios from 'axios';
 /** Instructions for working with actions
  * link https://vuex.vuejs.org/api/#actions
  */
 const actions = {
-
+	async AUTH_REQUEST({
+		state, rootState, commit, dispatch,
+	}) {
+		commit('AUTH_REQUEST');
+		await axios.post(`${state.server}/signin`, {
+			email: rootState.user.profile.email,
+			password: rootState.user.profile.password,
+		},
+		{
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+			},
+		})
+			.then((response) => {
+				localStorage.setItem('token', response.token);
+				commit('AUTH_SUCCESS', response);
+				dispatch('user/USER_REQUEST', null, { root: true });
+			})
+			.catch((err) => {
+				commit('AUTH_ERROR', err);
+				localStorage.removeItem('token');
+			});
+	},
+	AUTH_LOGOUT({ commit }) {
+		return new Promise(((resolve) => {
+			commit('AUTH_LOGOUT');
+			localStorage.removeItem('token');
+			resolve();
+		}));
+	},
 };
 
 /**
@@ -10,7 +41,24 @@ const actions = {
  * link https://vuex.vuejs.org/guide/mutations.html
  */
 const mutations = {
-
+	AUTH_REQUEST: (state) => {
+		state.status = 'loading';
+	},
+	AUTH_SUCCESS: (state, payload) => {
+		state.status = 'success';
+		state.token = payload.token;
+		state.hasLoadedOnce = true;
+	},
+	AUTH_ERROR: (state) => {
+		state.status = 'error';
+		state.hasLoadedOnce = true;
+	},
+	AUTH_LOGOUT: (state) => {
+		state.token = '';
+	},
+	CLOSE_DIALOG: (state, value) => {
+		state.dialogFormAuth = value;
+	},
 };
 
 /**
@@ -18,20 +66,16 @@ const mutations = {
  * link https://vuex.vuejs.org/api/#getters
  */
 const getters = {
-	auth: (state) => state.loggedIn,
-	admin: (state) => state.setting.access_admin,
-	root: (state) => state.setting.access_root,
-	user: (state) => state.user,
+	isAuthenticated: (state) => !!state.token,
+	authStatus: (state) => state.status,
+	dialogFormAuth: (state) => state.dialogFormAuth,
 };
 
 const state = {
-	user: [],
-	setting: {
-		access_admin: false,
-		access_root: false,
-		default: 1,
-	},
-	loggedIn: false,
+	server: 'https://afternoon-falls-25894.herokuapp.com',
+	token: localStorage.getItem('token') || '',
+	status: '',
+	hasLoadedOnce: false,
 };
 
 export default {
