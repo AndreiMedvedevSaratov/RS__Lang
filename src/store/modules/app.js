@@ -1,26 +1,26 @@
 import axios from 'axios';
+// eslint-disable-next-line import/no-cycle
+import router from '../../router';
+
 /** Instructions for working with actions
  * link https://vuex.vuejs.org/api/#actions
  */
 const actions = {
 	async AUTH_REQUEST({
-		state, rootState, commit, dispatch,
+		state, rootState, commit,
 	}) {
 		commit('AUTH_REQUEST');
 		await axios.post(`${state.server}/signin`, {
 			email: rootState.user.profile.email,
 			password: rootState.user.profile.password,
-		},
-		{
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-			},
 		})
 			.then((response) => {
-				localStorage.setItem('token', response.token);
-				commit('AUTH_SUCCESS', response);
-				dispatch('user/USER_REQUEST', null, { root: true });
+				localStorage.setItem('token', response.data.token);
+				commit('AUTH_SUCCESS', response.data);
+				axios.defaults.headers.common.Authorization = response.data.token;
+
+				commit('user/USER_SUCCESS', response.data, { root: true });
+				router.push('/');
 			})
 			.catch((err) => {
 				commit('AUTH_ERROR', err);
@@ -31,6 +31,7 @@ const actions = {
 		return new Promise(((resolve) => {
 			commit('AUTH_LOGOUT');
 			localStorage.removeItem('token');
+			router.push('/login');
 			resolve();
 		}));
 	},
@@ -47,17 +48,12 @@ const mutations = {
 	AUTH_SUCCESS: (state, payload) => {
 		state.status = 'success';
 		state.token = payload.token;
-		state.hasLoadedOnce = true;
 	},
 	AUTH_ERROR: (state) => {
 		state.status = 'error';
-		state.hasLoadedOnce = true;
 	},
 	AUTH_LOGOUT: (state) => {
 		state.token = '';
-	},
-	CLOSE_DIALOG: (state, value) => {
-		state.dialogFormAuth = value;
 	},
 };
 
@@ -68,14 +64,12 @@ const mutations = {
 const getters = {
 	isAuthenticated: (state) => !!state.token,
 	authStatus: (state) => state.status,
-	dialogFormAuth: (state) => state.dialogFormAuth,
 };
 
 const state = {
 	server: 'https://afternoon-falls-25894.herokuapp.com',
 	token: localStorage.getItem('token') || '',
 	status: '',
-	hasLoadedOnce: false,
 };
 
 export default {

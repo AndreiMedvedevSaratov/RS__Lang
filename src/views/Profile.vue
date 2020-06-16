@@ -1,6 +1,6 @@
 <template lang='pug'>
 	div
-		p Пример компонента
+		p Profile компонент
 </template>
 
 <script>

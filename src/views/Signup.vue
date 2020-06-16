@@ -20,6 +20,5 @@ export default {
 	created() {},
 	mounted() {},
 	methods: {},
-
 };
 </script>

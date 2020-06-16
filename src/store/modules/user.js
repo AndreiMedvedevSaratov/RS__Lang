@@ -1,14 +1,17 @@
+import axios from 'axios';
 /** Instructions for working with actions
  * link https://vuex.vuejs.org/api/#actions
  */
 const actions = {
 	async USER_REQUEST({
 		state, rootState, commit, dispatch,
-	}) {
+	}, user) {
 		commit('USER_REQUEST');
-		await this.$http.get(`${rootState.server}/users/${state.profile.userId}`)
+		commit('USER_SUCCESS', user);
+
+		await axios.get(`${rootState.app.server}/users/${state.profile.userId}`)
 			.then((response) => {
-				commit('USER_SUCCESS', response);
+				console.log('Получил', response);
 			})
 			.catch(() => {
 				commit('USER_ERROR');
@@ -20,7 +23,7 @@ const actions = {
 	}) {
 		commit('USER_REQUEST');
 		const user = { email: state.profile.email, password: state.profile.password };
-		await this.$http.post(`${rootState.server}/signup`, user)
+		await axios.post(`${rootState.app.server}/signup`, user)
 			.then((response) => {
 				commit('USER_SUCCESS', response);
 				dispatch('AUTH_REQUEST', user, { root: true });
@@ -76,8 +79,8 @@ const state = {
 	status: '',
 	profile: {
 		userId: '',
-		email: '',
-		password: '',
+		email: 'Nurlan@mail.ru',
+		password: 'Gfhjkm_123',
 	},
 };
 

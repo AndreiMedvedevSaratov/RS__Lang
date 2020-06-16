@@ -1,31 +1,30 @@
 <template lang='pug'>
 	v-app
-		div( class="ma-auto custom text-center" )
-			router-link( to="/" )
-				v-btn( class="mx-2" text large color="primary" ) Home
-
-			router-link(to="/about")
-				v-btn( class="mx-2" text large color="primary" ) About
-
-			router-link(to="/login")
-				v-btn( class="mx-2" text large color="primary" ) Login
-
-			transition
-				router-view
+		transition
+			router-view
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
 	name: 'App',
 
 	components: {},
+	computed: {
+		...mapGetters(['isAuthenticated']),
+	},
 
 	data: () => ({
 		//
 	}),
 	mounted() {
-		console.info(this);
+		console.info(this.$store);
+	},
+	methods: {
+		...mapActions({
+			logout: 'AUTH_LOGOUT',
+		}),
 	},
 };
 </script>
