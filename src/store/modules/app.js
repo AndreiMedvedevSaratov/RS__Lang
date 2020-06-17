@@ -23,7 +23,7 @@ const actions = {
 				router.push('/');
 			})
 			.catch((err) => {
-				commit('AUTH_ERROR', err);
+				commit('AUTH_ERROR', err.response);
 				localStorage.removeItem('token');
 			});
 	},
@@ -34,6 +34,13 @@ const actions = {
 			router.push('/login');
 			resolve();
 		}));
+	},
+	ALERT({ state }, payload) {
+		state.error = {
+			alert: payload.alert,
+			status: payload.status,
+			message: payload.message,
+		};
 	},
 };
 
@@ -49,11 +56,19 @@ const mutations = {
 		state.status = 'success';
 		state.token = payload.token;
 	},
-	AUTH_ERROR: (state) => {
+	AUTH_ERROR: (state, payload) => {
 		state.status = 'error';
+		state.error = {
+			alert: true,
+			status: state.status,
+			message: `${payload.statusText}: ${payload.data}`,
+		};
 	},
 	AUTH_LOGOUT: (state) => {
 		state.token = '';
+	},
+	ERROR_ALERT: (state, value) => {
+		state.error.alert = value;
 	},
 };
 
@@ -64,12 +79,18 @@ const mutations = {
 const getters = {
 	isAuthenticated: (state) => !!state.token,
 	authStatus: (state) => state.status,
+	getError: (state) => state.error,
 };
 
 const state = {
 	server: 'https://afternoon-falls-25894.herokuapp.com',
 	token: localStorage.getItem('token') || '',
 	status: '',
+	error: {
+		alert: false,
+		status: 'error',
+		message: '',
+	},
 };
 
 export default {

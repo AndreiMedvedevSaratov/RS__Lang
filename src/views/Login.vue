@@ -1,19 +1,25 @@
 <template lang='pug'>
-	v-card( justify="center" )
-		v-card-title
-			span( class="headline" ) Login
-		v-card-text
-			v-container
-				v-row
-				v-col( cols="12" )
-					v-text-field( label="Email*" v-model="email" required )
+	v-row
+		v-card(
+			justify="center"
+			class="ma-auto"
+			elevation="5"
+			)
+			v-card-title
+				span( class="headline" ) Login
+				router-link(to="/signup")
+					v-btn( depressed small ) or Register
+			v-card-text
+				v-container
+					v-col( cols="12" )
+						v-text-field( label="Email*" v-model="email" required )
 
-				v-col( cols="12" )
-					v-text-field( label="Password*" v-model="password" type="password" required)
-			small *indicates required field
-		v-card-actions
-			v-spacer
-			v-btn( color="blue darken-1" text @click="auth" ) Send
+					v-col( cols="12" )
+						v-text-field( label="Password*" v-model="password" type="password" required)
+				small *indicates required field
+			v-card-actions
+				v-spacer
+				v-btn( color="blue darken-1" text @click="auth" ) Sign in
 </template>
 
 <script>

@@ -13,7 +13,12 @@ const actions = {
 			.then((response) => {
 				console.log('Получил', response);
 			})
-			.catch(() => {
+			.catch((error) => {
+				dispatch('ALERT', {
+					alert: true,
+					status: 'error',
+					message: `${error.response.statusText}: ${error.response.data}`,
+				}, { root: true });
 				commit('USER_ERROR');
 				dispatch('AUTH_LOGOUT', null, { root: true });
 			});
@@ -23,16 +28,18 @@ const actions = {
 	}) {
 		commit('USER_REQUEST');
 		const user = { email: state.profile.email, password: state.profile.password };
-		await axios.post(`${rootState.app.server}/signup`, user)
+		await axios.post(`${rootState.app.server}/users`, user)
 			.then((response) => {
 				commit('USER_SUCCESS', response);
 				dispatch('AUTH_REQUEST', user, { root: true });
 			})
-			.catch(() => {
+			.catch((error) => {
+				dispatch('ALERT', {
+					alert: true,
+					status: 'error',
+					message: `${error.response.statusText}: ${error.response.data}`,
+				}, { root: true });
 				commit('USER_ERROR');
-			})
-			.then(() => {
-				state.profile.password = '';
 			});
 	},
 };
@@ -49,9 +56,7 @@ const mutations = {
 		state.status = 'success';
 		state.profile.userId = payload.userId ? payload.userId : state.profile.userId;
 		state.profile.email = payload.email ? payload.email : state.profile.email;
-	},
-	USER_ERROR: (state) => {
-		state.status = 'error';
+		// state.profile.password = '';
 	},
 	USER_LOGOUT: (state) => {
 		state.profile = {
@@ -60,7 +65,9 @@ const mutations = {
 			password: '',
 		};
 	},
-
+	USER_ERROR: (state) => {
+		state.status = 'error';
+	},
 	USER_FORM: (state, payload) => {
 		state.profile[payload.key] = payload.value;
 	},
@@ -79,8 +86,8 @@ const state = {
 	status: '',
 	profile: {
 		userId: '',
-		email: 'Nurlan@mail.ru',
-		password: 'Gfhjkm_123',
+		email: '',
+		password: '',
 	},
 };
 
