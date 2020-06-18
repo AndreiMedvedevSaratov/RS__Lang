@@ -7,7 +7,6 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
 import alert from '@/components/alert.vue';
 
 export default {
@@ -17,7 +16,6 @@ export default {
 		alert,
 	},
 	computed: {
-		...mapGetters(['isAuthenticated']),
 	},
 
 	data: () => ({
@@ -26,9 +24,6 @@ export default {
 	mounted() {
 	},
 	methods: {
-		...mapActions({
-			logout: 'AUTH_LOGOUT',
-		}),
 	},
 };
 </script>
