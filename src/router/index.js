@@ -33,6 +33,11 @@ const routes = [
 		name: 'Dictionary',
 		component: () => import(/* webpackChunkName: "dictionary" */ '../components/dictionary.vue'),
 	},
+	{
+		path: '/audio_vizov',
+		name: 'Audiovizov',
+		component: () => import(/* webpackChunkName: "audio_vizov */ '../components/audio_vizov.vue'),
+	},
 ];
 
 const router = new VueRouter({
