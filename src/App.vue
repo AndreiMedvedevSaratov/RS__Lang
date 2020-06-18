@@ -11,6 +11,8 @@
 				v-btn( class="mx-2" text large color="primary" ) Speaking
 			router-link( to="/dictionary" )
 				v-btn( class="mx-2" text large color="primary" ) Dictionary
+			router-link( to="/audio_vizov" )
+				v-btn( class="mx-2" text large color="primary" ) Audiovizov
 
 		transition
 			router-view
