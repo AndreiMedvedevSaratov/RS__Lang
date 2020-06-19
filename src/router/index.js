@@ -42,7 +42,7 @@ const routes = [
 			},
 			{
 				path: '/speakit',
-				component: () => import(/* webpackChunkName: "speakit" */ '../views/SpeakIt/Game.vue'),
+				component: () => import(/* webpackChunkName: "speakit" */ '../components/SpeakIt/Game.vue'),
 				name: 'SpeakIt',
 			},
 			{

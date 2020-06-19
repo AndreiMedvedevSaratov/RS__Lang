@@ -15,12 +15,12 @@ export default {
 	components: {
 		alert,
 	},
-	computed: {
-	},
 
 	data: () => ({
 		//
 	}),
+	computed: {
+	},
 	mounted() {
 	},
 	methods: {

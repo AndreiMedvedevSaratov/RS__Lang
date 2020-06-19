@@ -1,12 +1,13 @@
+/* eslint-disable import/prefer-default-export */
 export const getWordsData = (page = 0, group = 0) => {
-    const url = `https://afternoon-falls-25894.herokuapp.com/words?page=${page}&group=${group}`;
+	const url = `https://afternoon-falls-25894.herokuapp.com/words?page=${page}&group=${group}`;
 
-    const res = fetch(url)
-        .then((res) => res.json())
-    
-    return res;
+	const res = fetch(url)
+		// eslint-disable-next-line no-shadow
+		.then((res) => res.json());
+
+	return res;
 };
-
 
 // const getWordsData = (word) => {
 //   return fetch(

@@ -11,6 +11,7 @@ const actions = {
 
 		await axios.get(`${rootState.app.server}/users/${state.profile.userId}`)
 			.then((response) => {
+				// eslint-disable-next-line no-console
 				console.log('Получил', response);
 			})
 			.catch((error) => {

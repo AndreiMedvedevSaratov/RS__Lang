@@ -4,6 +4,9 @@
 			router-link(:to="!isAuthenticated ? '/login':'/home'")
 				v-btn( class="mx-2" text large color="primary" ) {{!isAuthenticated ? 'Login':'Home'}}
 
+			router-link(to="/speakit")
+				v-btn( class="mx-2" text large color="primary" ) SpeakIT
+
 			router-link(to="/about")
 				v-btn( class="mx-2" text large color="primary" ) About
 

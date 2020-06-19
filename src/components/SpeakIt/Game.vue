@@ -21,7 +21,9 @@ export default {
 	computed: {},
 	watch: {},
 	created() {},
-	mounted() {},
+	mounted() {
+		this.game();
+	},
 	methods: {
 		game() {
 			const root = document.querySelector('.root');
@@ -37,5 +39,5 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-
+// @import './reset.scss';
 </style>
