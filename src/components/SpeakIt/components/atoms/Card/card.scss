@@ -1,0 +1,36 @@
+.card {
+    width: 150px;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #d8c9d8;
+    border: #dadada solid 1px;
+
+    &__icon {
+        background-color: #bbb0bb;
+        text-align: center;
+        flex: 1;
+    }
+
+    &__info {
+        text-align: center;
+        flex: 3;
+
+        &__word {
+            padding: 2px;
+        }
+
+        &__translation {
+            padding: 2px;
+        }
+
+        &__transcription {
+            padding: 2px;
+        }
+    }
+
+    &:hover {
+        background-color: #bab1ba;
+    }
+}

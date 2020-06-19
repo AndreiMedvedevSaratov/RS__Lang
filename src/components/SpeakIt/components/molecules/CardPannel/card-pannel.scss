@@ -1,0 +1,9 @@
+.card-pannel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    background-color: #a4aea2;
+    padding: 5px;
+    box-sizing: border-box;
+    // height: calc(30% - 10px);
+}

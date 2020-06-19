@@ -41,6 +41,11 @@ const routes = [
 				name: 'Profile',
 			},
 			{
+				path: '/speakit',
+				component: () => import(/* webpackChunkName: "speakit" */ '../views/SpeakIt/Game.vue'),
+				name: 'SpeakIt',
+			},
+			{
 				path: '/about',
 				name: 'About',
 				// route level code-splitting
