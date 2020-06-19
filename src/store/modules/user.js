@@ -11,16 +11,12 @@ const actions = {
 
 		await axios.get(`${rootState.app.server}/users/${state.profile.userId}`)
 			.then((response) => {
+				// eslint-disable-next-line no-console
 				console.log('Получил', response);
 			})
 			.catch((error) => {
-				dispatch('ALERT', {
-					alert: true,
-					status: 'error',
-					message: `${error.response.statusText}: ${error.response.data}`,
-				}, { root: true });
 				commit('USER_ERROR');
-				dispatch('AUTH_LOGOUT', null, { root: true });
+				dispatch('ALERT', { status: 'error', data: error.response.data }, { root: true });
 			});
 	},
 	async USER_SIGNUP({
@@ -34,12 +30,8 @@ const actions = {
 				dispatch('AUTH_REQUEST', user, { root: true });
 			})
 			.catch((error) => {
-				dispatch('ALERT', {
-					alert: true,
-					status: 'error',
-					message: `${error.response.statusText}: ${error.response.data}`,
-				}, { root: true });
 				commit('USER_ERROR');
+				dispatch('ALERT', { status: 'error', data: error.response.data }, { root: true });
 			});
 	},
 };

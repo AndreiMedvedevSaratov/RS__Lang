@@ -41,6 +41,21 @@ const routes = [
 				name: 'Profile',
 			},
 			{
+				path: '/english-puzzle',
+				name: 'English-puzzle',
+				component: () => import(/* webpackChunkName: "english-puzzle" */ '../components/english-puzzle.vue'),
+			},
+			{
+				path: '/speaking',
+				name: 'Speaking',
+				component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),
+			},
+			{
+				path: '/dictionary',
+				name: 'Dictionary',
+				component: () => import(/* webpackChunkName: "dictionary" */ '../components/dictionary.vue'),
+			},
+			{
 				path: '/about',
 				name: 'About',
 				// route level code-splitting
@@ -61,21 +76,6 @@ const routes = [
 		name: 'Signup',
 		component: () => import(/* webpackChunkName: "signup" */ '../views/Signup.vue'),
 		beforeEnter: isNotAuthenticated,
-	},
-	{
-		path: '/english-puzzle',
-		name: 'English-puzzle',
-		component: () => import(/* webpackChunkName: "english-puzzle" */ '../components/english-puzzle.vue'),
-	},
-	{
-		path: '/speaking',
-		name: 'Speaking',
-		component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),
-	},
-	{
-		path: '/dictionary',
-		name: 'Dictionary',
-		component: () => import(/* webpackChunkName: "dictionary" */ '../components/dictionary.vue'),
 	},
 ];
 

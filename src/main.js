@@ -1,12 +1,19 @@
 import '@/assets/scss/main.scss';
 import Vue from 'vue';
 import axios from 'axios';
+import VueToast from 'vue-toast-notification';
 import App from './App.vue';
 import store from './store';
 import router from './router';
 import vuetify from './plugins/vuetify';
 
+// Import one of available themes
+// import 'vue-toast-notification/dist/theme-default.css';
+import 'vue-toast-notification/dist/theme-sugar.css';
+
 Vue.config.productionTip = false;
+
+Vue.use(VueToast);
 
 const token = localStorage.getItem('token');
 
