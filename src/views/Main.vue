@@ -25,7 +25,7 @@ import { mapGetters, mapActions } from 'vuex';
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
-	name: 'HelloWorld',
+	name: 'Main',
 	components: {},
 	props: [],
 	data: () => ({

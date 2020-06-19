@@ -29,7 +29,7 @@ import { mapGetters, mapMutations, mapActions } from 'vuex';
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
-	name: 'HelloWorld',
+	name: 'Login',
 	components: {},
 	props: [],
 	data: () => ({
