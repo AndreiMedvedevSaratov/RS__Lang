@@ -1,28 +1,21 @@
-<template lang='pug'>
-	div
-		p Пример компонента
+<template>
+  <div class="component-wrapper">
+    He-hei I start development )))
+  </div>
 </template>
 
 <script>
-/**
- * API Vue
- * https://ru.vuejs.org/v2/api/index.html
- */
 export default {
-	name: 'HelloWorld',
+	name: 'AudioVizov',
 	components: {},
 	props: [],
-	data: () => ({
-
-	}),
+	data: () => ({}),
 	computed: {},
 	watch: {},
 	created() {},
 	mounted() {},
 	methods: {},
-
 };
 </script>
 <style scoped>
-
 </style>
