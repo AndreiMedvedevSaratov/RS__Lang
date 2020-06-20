@@ -13,14 +13,37 @@
     <div class="profile-page">
       <div class="avatar">
         <img src="developers[0].profilePicture">
-        {{ developers[0].name }}
+        {{ developers[0].name }} - {{ developers[0].githubAccount }}
+      </div>
+      <div class="avatar">
+        <img src="developers[1].profilePicture">
+        {{ developers[1].name }}
+      </div>
+      <div class="avatar">
+        <img src="developers[2].profilePicture">
+        {{ developers[2].name }}
+      </div>
+      <div class="avatar">
+        <img src="developers[3].profilePicture">
+        {{ developers[3].name }}
+      </div>
+      <div class="avatar">
+        <img src="developers[4].profilePicture">
+        {{ developers[4].name }}
+      </div>
+      <div class="avatar">
+        <img src="developers[5].profilePicture">
+        {{ developers[5].name }}
+      </div>
+      <div class="avatar">
+        <img src="developers[6].profilePicture">
+        {{ developers[6].name }}
       </div>
     </div>
   </div>
 </template>
 
 <script>
-
 export default {
 	name: 'ProfilePage',
 	data() {
@@ -65,7 +88,7 @@ export default {
 				},
 				{
 					name: 'Pavel Pronchatov',
-					profilePicture: '',
+					profilePicture: '../assets/dream-team-photos/Pavel_Pronchatov.jpg',
 					emailAddress: 'pavel.pronchatov155@gmail.ru',
 					githubAccount: 'https://github.com/pavelponchatov',
 					telephone: '+7-908-554-03-79',
@@ -92,6 +115,7 @@ export default {
 		};
 	},
 };
+
 </script>
 
 <style scoped>
