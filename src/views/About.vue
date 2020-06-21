@@ -92,7 +92,7 @@ export default {
 					emailAddress: 'pavel.pronchatov155@gmail.ru',
 					githubAccount: 'https://github.com/pavelponchatov',
 					telephone: '+7-908-554-03-79',
-					about: '',
+					about: 'He is studying at college and work as Junior Software Ingeneer',
 				},
 				{
 					name: 'Mark Flerko',
@@ -104,7 +104,7 @@ export default {
 				},
 				{
 					name: 'Aliaksei Palanevich',
-					profilePicture: '',
+					profilePicture: '../assets/dream-team-photos/Aliaksei_Palanevich.jpg',
 					emailAddress: 'palanevich.aleksey@gmail.com',
 					githubAccount: 'https://github.com/goldoragon',
 					telephone: '+375299069001',
