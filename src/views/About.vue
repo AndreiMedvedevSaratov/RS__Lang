@@ -96,11 +96,11 @@ export default {
 				},
 				{
 					name: 'Mark Flerko',
-					profilePicture: '',
-					emailAddress: '',
+					profilePicture: '../assets/dream-team-photos/Mark_Flerko.jpg',
+					emailAddress: 'markflerko@gmail.com',
 					githubAccount: 'https://github.com/markflerko',
 					telephone: '+375447314001',
-					about: '',
+					about: 'He developed PO "TKZ-RU" for "BelTEI"',
 				},
 				{
 					name: 'Aliaksei Palanevich',
