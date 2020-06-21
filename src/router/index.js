@@ -77,6 +77,11 @@ const routes = [
 		name: 'Dictionary',
 		component: () => import(/* webpackChunkName: "dictionary" */ '../components/dictionary.vue'),
 	},
+	{
+		path: '/main-game',
+		name: 'Main-game',
+		component: () => import(/* webpackChunkName: 'main-game' */ '../components/MainGame/main-game.vue'),
+	},
 ];
 
 const router = new VueRouter({
