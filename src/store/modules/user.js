@@ -72,6 +72,7 @@ const mutations = {
 const getters = {
 	getProfile: (state) => state.profile,
 	isProfileLoaded: (state) => !!state.profile.name,
+	isLoading: (state) => state.status === 'loading',
 };
 
 const state = {

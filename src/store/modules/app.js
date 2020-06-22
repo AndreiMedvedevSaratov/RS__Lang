@@ -110,6 +110,7 @@ const mutations = {
 const getters = {
 	isAuthenticated: (state) => !!state.token,
 	authStatus: (state) => state.status,
+	isLoading: (state) => state.status === 'loading',
 };
 
 const state = {
