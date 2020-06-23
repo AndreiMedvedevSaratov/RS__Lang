@@ -5,7 +5,7 @@
 				v-btn( class="mx-2" text large color="primary" ) {{!isAuthenticated ? 'Login':'Home'}}
 
 			router-link(to="/speakit")
-				v-btn( class="mx-2" text large color="primary" ) SpeakIT
+				v-btn( class="mx-2" text large color="primary" ) Game Speakit
 
 			router-link(to="/about")
 				v-btn( class="mx-2" text large color="primary" ) About

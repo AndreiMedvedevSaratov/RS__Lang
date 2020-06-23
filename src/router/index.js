@@ -42,8 +42,8 @@ const routes = [
 			},
 			{
 				path: '/speakit',
-				component: () => import(/* webpackChunkName: "speakit" */ '../components/SpeakIt/Game.vue'),
-				name: 'SpeakIt',
+				component: () => import(/* webpackChunkName: "speakit" */ '../components/GameSpeakit.vue'),
+				name: 'Game Speakit',
 			},
 			{
 				path: '/about',
