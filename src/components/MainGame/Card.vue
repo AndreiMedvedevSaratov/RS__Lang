@@ -5,116 +5,172 @@ div
 
 		div(class='card-header')
 			div(class='card-header_repeat-progress')
-				div(
-					v-for='dot of progress.success' class="dot dot-success"
-					)
-				div(
-					v-for='dot of progress.failure'
-					class='dot dot-failure'
-					)
+				div(v-for='dot of progress.success' class="dot dot-success")
+				div(v-for='dot of progress.failure' class='dot dot-failure')
 			div(class='card-header_delete-button')
-				input(
-					class='delete-button'
-					type='button'
-					)
+				v-btn(@click='addWordInDeleteCategory()'
+					x-small
+				)
+					div(class='delete-button')
 
 		main(class='card-body')
 			div(class='learn-content')
+
 				div(class='learn-content_image-word')
-					div(class='learn-content_image')
-						img(
-							:src='image'
-							width="250"
-							height="170"
+					div(class='learn-content_image'
+						v-if='userSettings.showImage'
 						)
+						img(:src='config.image' width="250" height="170")
+
 					div(class='learn-content_word')
-						div(class='word_origin')
+						form(class='word_origin'
+							@submit.prevent='checkWord("OK")'
+							)
 							span(class='origin_container')
-								span(
-									class='hidden'
+								span(class='hidden'
 									v-for="(symbol, i) of wordArr"
 									:key='i'
 								) {{ symbol }}
-							input(
-								class='origin_input'
+							input(class='origin_input'
+								autofocus
 								type='text'
+								v-model='userWord'
 							)
-						p(class='word_translation') {{ cardConfig.wordTranslate }}
-				div(class='learn-content_text-example')
+						p(class='word_translation'
+							v-if='userSettings.showWordTranslate'
+						) {{ config.wordTranslate }}
+				div(class='learn-content_text-example'
+					v-if='userSettings.showTextExample'
+					)
 					div(class='text-example_origin')
-						span {{ example.before }}
-						span(class="learn-word")
-							span(
-								class='hidden'
-								v-for="symbol of wordArr"
-								) {{ symbol }}
-						span {{ example.after }}
-					div(class='text-example_translation')
-						//- p {{ e}}
-				div(class='learn-content_text-meaning')
+							p(class='origin_all-sentence')
+								| {{ example.before }}
+								span(v-if='hideWord' class='origin_cap') [...]
+								span(v-else class='origin_word' ) {{ example.wordInText }}
+								| {{ example.after }}
+					div(class='text-example_translate'
+						v-if='userSettings.showTextExampleTranslate'
+					)
+						p(class='translate_all-sentence'
+							v-if='!hideWord'
+						) {{ config.textExampleTranslate }}
+				div(class='learn-content_text-meaning'
+					v-if='userSettings.showTextMeaning'
+				)
 					div(class='text-meaning_origin')
-					div(class='text-meaning_translation')
-
-//-			div(class='example-translate')
-				p {{ cardConfig.textExampleTranslate }}
-
+						p(class='origin_all-sentence')
+							| {{ meaning.before }}
+							span(v-if='hideWord' class='origin_cap') [...]
+							span(v-else class='origin_word' ) {{ meaning.wordInText }}
+							| {{ meaning.after }}
+					div(class='text-meaning_translate'
+						v-if='userSettings.showTextMeaningTranslate'
+					)
+						p(class='translate_all-sentence'
+						v-if='!hideWord'
+						) {{ config.textMeaningTranslate }}
 		div(class='card-footer')
-			div(class='card-footer_word-translate')
-				p {{ cardConfig.wordTranslate }}
-				//
+			v-progress-linear(:value='progressLinear')
+
 </template>
 
 <script>
 export default {
 	name: 'CardItem',
+	components: {},
 	props: {
-		cardConfig: {
+		config: {
 			type: Object,
 			required: true,
 		},
-		wordInfo: {
+		userSettings: {
 			type: Object,
-			required: true,
+			default() {
+				return {
+					wordsLimit: 50,
+					showWordTranslate: true,
+					showTranscription: true,
+					showImage: true,
+					showTextMeaning: true,
+					showTextMeaningTranslate: true,
+					showAudioMeaning: true,
+					showTextExample: true,
+					showTextExampleTranslate: true,
+					showAudioExample: true,
+				};
+			},
 		},
 	},
 	data() {
 		return {
-			allLearnLevels: 5,
+			wordsCount: 0,
+			userWord: '',
+			hideWord: true,
 		};
 	},
 	computed: {
-		image() {
-			const { image } = this.cardConfig;
-			return image;
-		},
 		progress() {
+			const allLearnLevels = 5;
+			const { learnGroup } = this.config.userWord;
 			return {
-				success: this.wordInfo.group,
-				failure: this.allLearnLevels - this.wordInfo.group,
+				success: learnGroup,
+				failure: allLearnLevels - learnGroup,
 			};
 		},
-
+		originWord() {
+			return this.config.word;
+		},
 		wordArr() {
-			const { word } = this.cardConfig;
-			return word.split('');
+			return this.config.word.split('');
 		},
 		example() {
-			const { word, textExample } = this.cardConfig;
-			const index = textExample.indexOf(word);
-			const before = textExample.slice(0, index);
-			const after = textExample.slice(index + word.length);
-			return {
-				before,
-				after,
-			};
+			const { textExample, word } = this.config;
+			return this.getSentenceParts(textExample, word);
+		},
+		meaning() {
+			const { textMeaning, word } = this.config;
+			return this.getSentenceParts(textMeaning, word);
+		},
+		progressLinear() {
+			const proportion = this.wordsCount / this.userSettings.wordsLimit;
+			return Math.floor(proportion * 100);
 		},
 	},
-	methods: {},
+	watch: {},
+	created() {
+		if (!this.config.userWord) {
+			this.config.userWord = {
+				learnGroup: 0,
+				dictionaryGroup: 'new',
+				allRepeats: 0,
+				successRepeats: 0,
+				previousTrain: new Date(),
+				nextTrain: new Date(),
+			};
+		}
+	},
+	mounted() {},
+	update() {},
+	methods: {
+		addWordInDeleteCategory() {
+			console.log('ok, del');
+		},
+		checkWord() {
+			if (this.originWord === this.userWord) console.log('OK');
+			else console.log('No pass');
+		},
+		getSentenceParts(str, word) {
+			const regexp = new RegExp(`(${word})\\w?`);
+			const wordInText = str.match(regexp)[0];
+			const [before, after] = str.split(wordInText);
+
+			return { before, wordInText, after };
+		},
+	},
 };
 </script>
 
 <style lang="scss" scoped>
-
 $fontSize: 2rem;
 $fontFamily: 'Roboto', 'Arial', sans-serif;
 $cardContainerWidth: 600px;
@@ -177,13 +233,13 @@ $imageHeight: 170px;
 // BODY
 .learn-content {
 	&_image-word {
-	display: flex;
-	justify-content: space-around;
+		display: flex;
+		justify-content: space-around;
 	}
 
 	&_image {
-	max-width: $imageWidth;
-	max-height: $imageHeight;
+		max-width: $imageWidth;
+		max-height: $imageHeight;
 	}
 
 	&_word {
