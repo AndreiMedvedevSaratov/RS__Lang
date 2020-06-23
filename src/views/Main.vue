@@ -3,9 +3,17 @@
 		div( class="mx-auto custom text-center" )
 			router-link(:to="!isAuthenticated ? '/login':'/home'")
 				v-btn( class="mx-2" text large color="primary" ) {{!isAuthenticated ? 'Login':'Home'}}
-
+			router-link(to="/profile")
+				v-btn( class="mx-2" text large color="primary" ) Profile
 			router-link(to="/about")
 				v-btn( class="mx-2" text large color="primary" ) About
+
+			router-link(to="/english-puzzle" class="text-decoration-none" )
+				v-btn( class="mx-2" x-small outlined  color="success" ) English puzzle
+			router-link(to="/speaking" class="text-decoration-none" )
+				v-btn( class="mx-2" x-small outlined color="success" ) Speaking
+			router-link(to="/dictionary" class="text-decoration-none" )
+				v-btn( class="mx-2" x-small outlined color="success" ) Dictionary
 
 			v-btn(
 				class="mx-2"
