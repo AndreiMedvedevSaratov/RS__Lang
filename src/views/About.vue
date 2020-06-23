@@ -16,7 +16,7 @@
         :key="i"
         class="avatar"
       >
-        <img src="item.profilePicture">
+        <img :src="item.profilePicture" class="avatar_img">
         {{ item.name }} - {{ item.githubAccount }} - {{ item.emailAddress }} -
         {{ item.telephone }} - {{ item.about }}
       </div>
@@ -32,7 +32,7 @@ export default {
 			developers: [
 				{
 					name: 'Maksim Kapustin',
-					profilePicture: '../../public/assets/img/Maksim_Kapustin.jpg',
+					profilePicture: './assets/img/Maksim_Kapustin.jpg',
 					emailAddress: 'makskapustin90@gmail.com',
 					githubAccount: 'https://github.com/TimeOfProgramming',
 					telephone: '+7-927-057-34-99',
@@ -40,7 +40,7 @@ export default {
 				},
 				{
 					name: 'Andrei Medvedev',
-					profilePicture: '../../public/assets/img//Andrei_Medvedev.jpg',
+					profilePicture: './assets/img/Andrei_Medvedev.jpg',
 					emailAddress: 'andreiok@gmail.com',
 					githubAccount: 'https://github.com/andreimedvedevsaratov',
 					telephone: '+7-917-215-19-68',
@@ -51,7 +51,7 @@ export default {
 				{
 					name: 'Nurlan Kurbandurdyev',
 					profilePicture:
-            '../../public/assets/img//Nurlan_Kurbandurdyev.jpg',
+            './assets/img/Nurlan_Kurbandurdyev.jpg',
 					emailAddress: 'nurlan.wap3@gmail.com',
 					githubAccount: 'https://github.com/ggnk',
 					telephone: '+7-967-501-81-87',
@@ -60,7 +60,7 @@ export default {
 				},
 				{
 					name: 'Alexey Zhumaev',
-					profilePicture: '../../public/assets/img/Alexey_Zhumaev.jpg',
+					profilePicture: './assets/img/Alexey_Zhumaev.jpg',
 					emailAddress: 'alex.zhumaev@mail.ru',
 					githubAccount: 'https://github.com/alexey221284',
 					telephone: '+7-904-244-04-62',
@@ -69,7 +69,7 @@ export default {
 				},
 				{
 					name: 'Pavel Pronchatov',
-					profilePicture: '../../public/assets/img/Pavel_Pronchatov.jpg',
+					profilePicture: './assets/img/Pavel_Pronchatov.jpg',
 					emailAddress: 'pavel.pronchatov155@gmail.ru',
 					githubAccount: 'https://github.com/pavelponchatov',
 					telephone: '+7-908-554-03-79',
@@ -77,7 +77,7 @@ export default {
 				},
 				{
 					name: 'Mark Flerko',
-					profilePicture: '../../public/assets/img/Mark_Flerko.jpg',
+					profilePicture: './assets/img/Mark_Flerko.jpg',
 					emailAddress: 'markflerko@gmail.com',
 					githubAccount: 'https://github.com/markflerko',
 					telephone: '+375447314001',
@@ -85,7 +85,7 @@ export default {
 				},
 				{
 					name: 'Aliaksei Palanevich',
-					profilePicture: '../../public/assets/img/Aliaksei_Palanevich.jpg',
+					profilePicture: './assets/img/Aliaksei_Palanevich.jpg',
 					emailAddress: 'palanevich.aleksey@gmail.com',
 					githubAccount: 'https://github.com/goldoragon',
 					telephone: '+375299069001',
@@ -103,5 +103,10 @@ export default {
 .about-wrapper {
   max-width: 1440px;
   margin: 0 auto;
+}
+.avatar_img {
+	width: 600px;
+	height: 600px;
+	border-radius: 20%;
 }
 </style>
