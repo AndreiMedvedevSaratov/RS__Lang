@@ -72,11 +72,11 @@ const routes = [
 		name: 'English-puzzle',
 		component: () => import(/* webpackChunkName: "english-puzzle" */ '../components/english-puzzle.vue'),
 	},
-	{
-		path: '/speaking',
-		name: 'Speaking',
-		component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),
-	},
+	// {
+	// 	path: '/speaking',
+	// 	name: 'Speaking',
+	// 	component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),
+	// },
 	{
 		path: '/dictionary',
 		name: 'Dictionary',
