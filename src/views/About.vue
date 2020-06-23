@@ -11,33 +11,14 @@
     </div>
     <hr>
     <div class="profile-page">
-      <div class="avatar">
-        <img src="developers[0].profilePicture">
-        {{ developers[0].name }} - {{ developers[0].githubAccount }}
-      </div>
-      <div class="avatar">
-        <img src="developers[1].profilePicture">
-        {{ developers[1].name }}
-      </div>
-      <div class="avatar">
-        <img src="developers[2].profilePicture">
-        {{ developers[2].name }}
-      </div>
-      <div class="avatar">
-        <img src="developers[3].profilePicture">
-        {{ developers[3].name }}
-      </div>
-      <div class="avatar">
-        <img src="developers[4].profilePicture">
-        {{ developers[4].name }}
-      </div>
-      <div class="avatar">
-        <img src="developers[5].profilePicture">
-        {{ developers[5].name }}
-      </div>
-      <div class="avatar">
-        <img src="developers[6].profilePicture">
-        {{ developers[6].name }}
+      <div
+        v-for="(item, i) in developers"
+        :key="i"
+        class="avatar"
+      >
+        <img src="item.profilePicture">
+        {{ item.name }} - {{ item.githubAccount }} - {{ item.emailAddress }} -
+        {{ item.telephone }} - {{ item.about }}
       </div>
     </div>
   </div>
@@ -51,7 +32,7 @@ export default {
 			developers: [
 				{
 					name: 'Maksim Kapustin',
-					profilePicture: '../assets/dream-team-photos/Maksim_Kapustin.jpg',
+					profilePicture: '../../public/assets/img/Maksim_Kapustin.jpg',
 					emailAddress: 'makskapustin90@gmail.com',
 					githubAccount: 'https://github.com/TimeOfProgramming',
 					telephone: '+7-927-057-34-99',
@@ -59,7 +40,7 @@ export default {
 				},
 				{
 					name: 'Andrei Medvedev',
-					profilePicture: '../assets/dream-team-photos/Andrei_Medvedev.jpg',
+					profilePicture: '../../public/assets/img//Andrei_Medvedev.jpg',
 					emailAddress: 'andreiok@gmail.com',
 					githubAccount: 'https://github.com/andreimedvedevsaratov',
 					telephone: '+7-917-215-19-68',
@@ -70,7 +51,7 @@ export default {
 				{
 					name: 'Nurlan Kurbandurdyev',
 					profilePicture:
-            '../assets/dream-team-photos/Nurlan_Kurbandurdyev.jpg',
+            '../../public/assets/img//Nurlan_Kurbandurdyev.jpg',
 					emailAddress: 'nurlan.wap3@gmail.com',
 					githubAccount: 'https://github.com/ggnk',
 					telephone: '+7-967-501-81-87',
@@ -79,7 +60,7 @@ export default {
 				},
 				{
 					name: 'Alexey Zhumaev',
-					profilePicture: '../assets/dream-team-photos/Alexey_Zhumaev.jpg',
+					profilePicture: '../../public/assets/img/Alexey_Zhumaev.jpg',
 					emailAddress: 'alex.zhumaev@mail.ru',
 					githubAccount: 'https://github.com/alexey221284',
 					telephone: '+7-904-244-04-62',
@@ -88,7 +69,7 @@ export default {
 				},
 				{
 					name: 'Pavel Pronchatov',
-					profilePicture: '../assets/dream-team-photos/Pavel_Pronchatov.jpg',
+					profilePicture: '../../public/assets/img/Pavel_Pronchatov.jpg',
 					emailAddress: 'pavel.pronchatov155@gmail.ru',
 					githubAccount: 'https://github.com/pavelponchatov',
 					telephone: '+7-908-554-03-79',
@@ -96,7 +77,7 @@ export default {
 				},
 				{
 					name: 'Mark Flerko',
-					profilePicture: '../assets/dream-team-photos/Mark_Flerko.jpg',
+					profilePicture: '../../public/assets/img/Mark_Flerko.jpg',
 					emailAddress: 'markflerko@gmail.com',
 					githubAccount: 'https://github.com/markflerko',
 					telephone: '+375447314001',
@@ -104,7 +85,7 @@ export default {
 				},
 				{
 					name: 'Aliaksei Palanevich',
-					profilePicture: '../assets/dream-team-photos/Aliaksei_Palanevich.jpg',
+					profilePicture: '../../public/assets/img/Aliaksei_Palanevich.jpg',
 					emailAddress: 'palanevich.aleksey@gmail.com',
 					githubAccount: 'https://github.com/goldoragon',
 					telephone: '+375299069001',
