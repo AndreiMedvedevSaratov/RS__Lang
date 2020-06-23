@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Main from '../views/Main.vue';
+import Main from '../views/MainNew.vue';
 // eslint-disable-next-line import/no-cycle
 import store from '../store';
 
@@ -27,7 +27,7 @@ const routes = [
 		path: '/',
 		component: Main,
 		name: 'Main',
-		redirect: '/home',
+		// redirect: '/home',
 		beforeEnter: isAuthenticated,
 		children: [
 			{
