@@ -182,23 +182,26 @@ const book1 = [
   }
 ]
 
-const game = () => {
+let num = 0;
+let wordRight = null;
+let moveY = 0;
+const game = (data) => {
+
   const widthPx = str => {
     return +str.match(/[0-9]/g).join('');
   }
   const sortArr = arr => {
     return arr.sort(() => Math.random() - 0.5)
    }
-   let num = 0;
    const beginWord = document.querySelector('.begin-word');
-   let str = book1[num].textExample;
-   console.log(str)
+   let str = data[num].textExample;
+
    let strWithoutTrim = str.trim();
    const arr = str.split(' ');
    const countWords = arr.length;
    for (let i = 0; i < countWords; i++) {
     let div = document.createElement('div');
-    div.className = 'gig gig_end';
+    div.className = `gig gig_end${num}`;
     document.querySelectorAll('.word-container')[num].append(div)
    }
      for (let i = 0; i < countWords; i++) {
@@ -210,31 +213,49 @@ const game = () => {
      for (let i = 0; i < countWords; i++) {
          let div = document.createElement('div');
          div.innerHTML = `${arr[i]}`;
-         div.className = 'word';
+         div.className = `word word${num}`;
+         div.setAttribute('draggable', true)
          document.querySelectorAll(`.gig_begin${num}`)[i].append(div);
      }
-    let word = document.querySelectorAll('.word');
+    let word = document.querySelectorAll(`.word${num}`);
+    wordRight = word;
     let map = new Map();
     for (let i = 0; i < countWords; i++) {
-        let width = document.querySelectorAll('.word')[i].offsetWidth;
+        let width = document.querySelectorAll(`.word${num}`)[i].offsetWidth;
         map.set(`${i}`, `${width}`);
     }
 
     for (let i = 0; i < countWords; i++) {
-        document.querySelectorAll('.word')[i].style.width = `${map.get(`${i}`)}px`
-    }
+        document.querySelectorAll(`.word${num}`)[i].style.width = `${map.get(`${i}`)}px`;
+    };
 
     let moveX = 0;
-    let moveY = 0
+    ;
+    if(num > 0) {
+      moveY -= 45;
+    }
     for (let i = 0; i < countWords; i++) {
-      if (i === 0) {
-        word[i].style.backgroundPosition = `${moveX}px ${moveY}px`;
-      } else if (i === 1) {
-        moveX -= widthPx(word[i-1].style.width)
-        word[i].style.backgroundPosition = `${moveX}px ${moveY}px`;
-      } else {
-        moveX -= widthPx(word[i-1].style.width);
-        word[i].style.backgroundPosition = `${moveX}px ${moveY}px`;
+      if(num === 0) {
+        if (i === 0) {
+          word[i].style.backgroundPosition = `${moveX}px ${moveY}px`;
+        } else if (i === 1) {
+          moveX -= widthPx(word[i-1].style.width)
+          word[i].style.backgroundPosition = `${moveX}px ${moveY}px`;
+        } else {
+          moveX -= widthPx(word[i-1].style.width);
+          word[i].style.backgroundPosition = `${moveX}px ${moveY}px`;
+        }
+      }
+      if (num > 0) {
+        if (i === 0) {
+          word[i].style.backgroundPosition = `${moveX}px ${moveY}px`;
+        } else if (i === 1) {
+          moveX -= widthPx(word[i-1].style.width)
+          word[i].style.backgroundPosition = `${moveX}px ${moveY}px`;
+        } else {
+          moveX -= widthPx(word[i-1].style.width);
+          word[i].style.backgroundPosition = `${moveX}px ${moveY}px`;
+        }
       }
     }
 
@@ -248,41 +269,156 @@ const game = () => {
   }
   beginWord.innerHTML = `${strR}`;
 
+
+
     let newArr = [];
 
     for (let i = 0; i < countWords; i++) {
         newArr.push(0);
     }
-    let g = document.querySelectorAll('.word');
-    let h = document.querySelectorAll('.gig_end');
-    for (let i = 0; i < g.length; i++) {
-        g[i].addEventListener('click', (e) => {
+    const wordAll = document.querySelectorAll(`.word${num}`);
+    const gigEnd = document.querySelectorAll(`.gig_end${num}`);
+    for (let i = 0; i < wordAll.length; i++) {
+      wordAll[i].addEventListener('click', (e) => {
             if(e.target.closest(`.gig_begin${num}`)) {
                 for (let p = 0; p < newArr.length; p++){
                     if (newArr[p] === 0) {
-                    document.querySelectorAll('.gig_end')[p].append(g[i]);
+                    document.querySelectorAll(`.gig_end${num}`)[p].append(wordAll[i]);
                     newArr.splice([p], 1, 1)
                     console.log(newArr)
                     break
                     }
-
                 }
-
-          } else if(e.target.closest('.gig_end')) {
-              document.querySelectorAll(`.gig_begin${num}`)[i].append(g[i]);
+          } else if(e.target.closest(`.gig_end${num}`)) {
+              document.querySelectorAll(`.gig_begin${num}`)[i].append(wordAll[i]);
           }
         })
     }
 
-    for (let i = 0; i < h.length; i++) {
-        h[i].addEventListener('click', (e) => {
+    for (let i = 0; i < gigEnd.length; i++) {
+      gigEnd[i].addEventListener('click', (e) => {
             newArr.splice([i], 1, 0)
             console.log(newArr)
           })
         }
-      }
 
-export {game}
+const dragStart = function () {
+  setTimeout(() => {
+    this.classList.add('hide');
+  }, 0)
+}
+const dragEnd = function() {
+  this.classList.remove('hide')
+}
+
+const dragOver = function (event) {
+  event.preventDefault();
+}
+const dragEnter = function () {
+  this.classList.add('hovered')
+}
+const dragLeave = function () {
+  this.classList.remove('hovered')
+}
+let target = null
+document.addEventListener('mousedown', function(e) {
+  target = e.target;
+})
+const dragDrop = function (e) {
+ const gigEnd = document.querySelectorAll(`.gig_end${num}`);
+ for (let i = 0; i< gigEnd.length; i++) {
+   if (this === gigEnd[i]) {
+     if(gigEnd[i].innerHTML) {
+       let a = gigEnd[i].innerHTML;
+       let b = null;
+       gigEnd[i].innerHTML = '';
+       gigEnd[i].append(target)
+       for (let j = i+1; j < gigEnd.length; j++){
+        if(!gigEnd[j].innerHTML) {
+          gigEnd[j].innerHTML = `${a}`;
+          break
+        } else {
+          b = gigEnd[j].innerHTML;
+          gigEnd[j].innerHTML = `${a}`;
+          a = b;
+        }
+       }
+     } else {
+       gigEnd[i].append(target)
+    newArr.splice([i], 1, 1)
+    console.log(newArr)
+     }
+
+   }
+
+ }
+ for (let i = 0; i< gigEnd.length; i++) {
+  if (!gigEnd[i].innerHTML) {
+    newArr.splice([i], 1, 0)
+  }
+}
+  // this.append(target)
+  this.classList.remove('hovered')
+
+}
+
+gigEnd.forEach((item) => {
+  item.addEventListener('dragover', dragOver)
+  item.addEventListener('dragenter', dragEnter)
+  item.addEventListener('dragleave', dragLeave)
+  item.addEventListener('drop', dragDrop)
+});
+wordAll.forEach((item) => {
+  item.addEventListener('dragstart', dragStart);
+  item.addEventListener('dragend', dragEnd);
+})
+
+
+
+    document.querySelector('.button__check').addEventListener('click', () => {
+          let all = document.querySelectorAll(`.word${num}`);
+          for (let i = 0; i < all.length; i++) {
+            all[i].classList.remove('right');
+            all[i].classList.remove('wrong');
+
+          }
+          for (let i = 0; i < all.length; i++) {
+            if(all[i].closest(`.gig_end${num}`)){
+              if(all[i].innerHTML === arr[i]){
+                all[i].classList.add('right')
+
+              }else {
+                all[i].classList.add('wrong')
+              }
+          }else {
+            all[i].classList.add('wrong')
+          }
+          }
+          })
+
+  }
+
+game(book1)
+
+document.querySelector('.button__not-know').addEventListener('click', () => {
+  let word = document.querySelectorAll(`.word${num}`);
+  for (let i = 0; i < word.length; i++) {
+    document.querySelector('.begin-word').innerHTML = '';
+    document.querySelectorAll(`.gig_end${num}`)[i].innerHTML = '';
+
+  }
+  for (let i = 0; i < word.length; i++) {
+
+    document.querySelectorAll(`.gig_end${num}`)[i].innerHTML = wordRight[i].outerHTML;
+
+  }
+  num += 1;
+  game(book1)
+
+
+
+})
+
 
 
 
@@ -507,6 +643,7 @@ input {
     text-align: center;
     padding: 12px 5px 12px 5px;
     background: url('../img/girl.jpg') no-repeat;
+    cursor: pointer
 }
 
 .fuck {
@@ -519,6 +656,29 @@ input {
 }
 
 .button_style {
-    width: 40px
+    padding: 10px 30px 10px 30px;
+    cursor: pointer;
+    border: 1px solid;
+    border-radius: 5px;
+}
+
+.button__check {
+    margin-left: 10px
+}
+
+.right {
+    box-shadow: 0 0 5px green;
+}
+
+.wrong {
+    box-shadow: 0 0 5px red;
+}
+
+.hide {
+    display: none;
+}
+
+.hovered {
+    background-color: grey;
 }
 </style>
