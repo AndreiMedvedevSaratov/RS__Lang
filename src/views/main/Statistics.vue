@@ -1,7 +1,6 @@
 <template lang='pug'>
 	div
-		p Я компонент English
-
+		p Я компонент Statistics
 </template>
 
 <script>
@@ -10,7 +9,7 @@
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
-	name: 'HelloWorld',
+	name: 'Statistics',
 	components: {},
 	props: [],
 	data: () => ({

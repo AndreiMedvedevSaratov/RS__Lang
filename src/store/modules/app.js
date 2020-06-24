@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import axios from 'axios';
 // eslint-disable-next-line import/no-cycle
-import router from '../../router';
+import router from '@/router';
 
 /** Instructions for working with actions
  * link https://vuex.vuejs.org/api/#actions
@@ -21,7 +21,7 @@ const actions = {
 				axios.defaults.headers.common.Authorization = response.data.token;
 
 				commit('user/USER_SUCCESS', response.data, { root: true });
-				router.push('/');
+				router.push('/').catch(() => {});
 			})
 			.catch((err) => {
 				commit('AUTH_ERROR', err.response);
@@ -33,7 +33,7 @@ const actions = {
 		return new Promise(((resolve) => {
 			commit('AUTH_LOGOUT');
 			localStorage.removeItem('token');
-			router.push('/login');
+			router.push('/login').catch(() => {});
 			resolve();
 		}));
 	},
@@ -101,6 +101,9 @@ const mutations = {
 	AUTH_LOGOUT: (state) => {
 		state.token = '';
 	},
+	EDIT_HTML: (state, payload) => {
+		state.html[payload.one][payload.key] = payload.value;
+	},
 };
 
 /**
@@ -111,12 +114,18 @@ const getters = {
 	isAuthenticated: (state) => !!state.token,
 	authStatus: (state) => state.status,
 	isLoading: (state) => state.status === 'loading',
+	isHtml: (state) => state.html,
 };
 
 const state = {
 	server: 'https://afternoon-falls-25894.herokuapp.com',
 	token: localStorage.getItem('token') || '',
 	status: '',
+	html: {
+		main: {
+			drawer: true,
+		},
+	},
 };
 
 export default {
