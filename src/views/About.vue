@@ -8,17 +8,28 @@
       <p>Answer is simple ))) - "Dream Team" - just because we are Dream Team ))))</p>
       <p>"42" - is just because we are 42 team in the main table</p>
       <p>So let me introduce participants:</p>
+      <br>
     </div>
     <hr>
     <div class="profile-page">
       <div
         v-for="(item, i) in developers"
         :key="i"
-        class="avatar"
+        class="grid-container"
       >
-        <img :src="item.profilePicture" class="avatar_img">
-        {{ item.name }} - {{ item.githubAccount }} - {{ item.emailAddress }} -
-        {{ item.telephone }} - {{ item.about }}
+        <div class="column1">
+          <img
+            :src="item.profilePicture"
+            class="avatar_img"
+          >
+        </div>
+        <div class="column2">
+          <b>Name:</b> <u>{{ item.name }}</u> <br>
+          <b>Github account:</b> {{ item.githubAccount }} <br>
+          <b>E-mail:</b> {{ item.emailAddress }} <br>
+          <b>Telephone:</b> {{ item.telephone }} <br>
+          <b>About:</b> {{ item.about }}
+        </div>
       </div>
     </div>
   </div>
@@ -50,13 +61,12 @@ export default {
 				},
 				{
 					name: 'Nurlan Kurbandurdyev',
-					profilePicture:
-            './assets/img/Nurlan_Kurbandurdyev.jpg',
+					profilePicture: './assets/img/Nurlan_Kurbandurdyev.jpg',
 					emailAddress: 'nurlan.wap3@gmail.com',
 					githubAccount: 'https://github.com/ggnk',
 					telephone: '+7-967-501-81-87',
 					about:
-            'He use web programming both in his work, for solving various tasks, and as a hobby. He want to become a professional in the field of web technologies.',
+						'He use web programming both in his work, for solving various tasks, and as a hobby. He want to become a professional in the field of web technologies.',
 				},
 				{
 					name: 'Alexey Zhumaev',
@@ -73,7 +83,8 @@ export default {
 					emailAddress: 'pavel.pronchatov155@gmail.ru',
 					githubAccount: 'https://github.com/pavelponchatov',
 					telephone: '+7-908-554-03-79',
-					about: 'He is studying at college and work as Junior Software Ingeneer',
+					about:
+						'He is studying at college and work as Junior Software Ingeneer',
 				},
 				{
 					name: 'Mark Flerko',
@@ -96,17 +107,27 @@ export default {
 		};
 	},
 };
-
 </script>
 
 <style scoped>
 .about-wrapper {
-  max-width: 1440px;
-  margin: 0 auto;
+	max-width: 1440px;
+	margin: 0 auto;
+}
+.grid-container {
+  display: grid;
+  grid-template-rows: 310px;
+  grid-template-columns: 310px 1130px;
 }
 .avatar_img {
-	width: 600px;
-	height: 600px;
+	width: 300px;
+	height: 300px;
 	border-radius: 20%;
+}
+.column1 {
+	grid-column: 1/2;
+}
+.column2 {
+	grid-column: 2/2;
 }
 </style>
