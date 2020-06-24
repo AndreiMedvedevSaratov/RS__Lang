@@ -13,6 +13,7 @@
 					class="card"
 					v-for="(item, i) in isWords"
 					:key="i"
+					v-if="i <= 4"
 					@click="setImgAndAudio({image: isUrlFiles+item.image,audio: isUrlFiles+item.audio})"
 				)
 					span( class="card__icon" ) X
@@ -33,7 +34,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex';
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
-	name: 'SpeakIt',
+	name: 'AudioVizov',
 	components: {},
 	props: [],
 	data: () => ({
@@ -41,9 +42,9 @@ export default {
 	}),
 	computed: {
 		...mapGetters({
-			isWords: 'speakit/getWords',
-			isUrlFiles: 'speakit/getUrlFiles',
-			isUrlImage: 'speakit/getUrlImage',
+			isWords: 'audiovizov/getWords',
+			isUrlFiles: 'audiovizov/getUrlFiles',
+			isUrlImage: 'audiovizov/getUrlImage',
 		}),
 	},
 	watch: {},
@@ -59,10 +60,10 @@ export default {
 	},
 	methods: {
 		...mapActions({
-			getWords: 'speakit/GET_WORDS',
+			getWords: 'audiovizov/GET_WORDS',
 		}),
 		...mapMutations({
-			setImgAndAudio: 'speakit/SPEAKIT_SET_IMAGE_AND_AUDIO',
+			setImgAndAudio: 'audiovizov/AUDIOVIZOV_SET_IMAGE_AND_AUDIO',
 		}),
 	},
 
