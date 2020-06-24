@@ -45,15 +45,21 @@ const routes = [
 				component: () => import(/* webpackChunkName: "speakit" */ '../components/GameSpeakit.vue'),
 				name: 'Game Speakit',
 			},
+			{
+				path: '/AudioVizov',
+				component: () => import(/* webpackChunkName: "gameaudiovizov" */ '../components/GameAudioVizov.vue'),
+				name: 'Game AudioVizov',
+			},
+			{
 				path: '/english-puzzle',
 				name: 'English-puzzle',
 				component: () => import(/* webpackChunkName: "english-puzzle" */ '../components/english-puzzle.vue'),
 			},
-			{
-				path: '/speaking',
-				name: 'Speaking',
-				component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),
-			},
+			// {
+			// 	path: '/speaking',
+			// 	name: 'Speaking',
+			// 	component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),
+			// },
 			{
 				path: '/dictionary',
 				name: 'Dictionary',

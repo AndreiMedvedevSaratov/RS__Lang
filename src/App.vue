@@ -1,6 +1,6 @@
 <template lang='pug'>
 	v-app
-		alert
+		//- alert
 		transition
 			router-view
 </template>

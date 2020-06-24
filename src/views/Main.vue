@@ -6,6 +6,8 @@
 
 			router-link(to="/speakit")
 				v-btn( class="mx-2" text large color="primary" ) Game Speakit
+			router-link(to="/AudioVizov")
+				v-btn( class="mx-2" text large color="primary" ) Game AudioVizov
 
 			router-link(to="/profile")
 				v-btn( class="mx-2" text large color="primary" ) Profile
