@@ -1,6 +1,6 @@
 <template lang="pug">
 	div( class="game" )
-		div( class="header") header
+		div( class="header") header - With changes
 
 		div( class="main" )
 			img(
