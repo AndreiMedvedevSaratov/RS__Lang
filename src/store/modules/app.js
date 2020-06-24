@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import axios from 'axios';
 // eslint-disable-next-line import/no-cycle
 import router from '../../router';
@@ -7,7 +8,7 @@ import router from '../../router';
  */
 const actions = {
 	async AUTH_REQUEST({
-		state, rootState, commit,
+		state, rootState, commit, dispatch,
 	}) {
 		commit('AUTH_REQUEST');
 		await axios.post(`${state.server}/signin`, {
@@ -25,6 +26,7 @@ const actions = {
 			.catch((err) => {
 				commit('AUTH_ERROR', err.response);
 				localStorage.removeItem('token');
+				dispatch('ALERT', { status: 'error', data: err.response.data });
 			});
 	},
 	AUTH_LOGOUT({ commit }) {
@@ -35,12 +37,49 @@ const actions = {
 			resolve();
 		}));
 	},
-	ALERT({ state }, payload) {
-		state.error = {
-			alert: payload.alert,
-			status: payload.status,
-			message: payload.message,
-		};
+
+	/** Function notification ALERT
+	 * Events: error, warning, info, default
+	 *
+	 * Call in all modules
+	 * dispatch('ALERT', { status: 'error', data: error.response.data }, { root: true })
+	 */
+	ALERT(state, payload) {
+		const status = payload.status ? payload.status : 'default';
+		let position = 'bottom-right';
+		let text = '';
+
+		switch (status) {
+		case 'error':
+			if (typeof payload.data === 'object') {
+				let count = 1;
+				payload.data.error.errors.forEach((element) => {
+					// eslint-disable-next-line no-plusplus
+					text += `${count++}) ${element.message} </br>`;
+				});
+			}
+			if (typeof payload.data === 'string') text = payload.data;
+			break;
+		case 'warning':
+			text = payload.data;
+			position = 'bottom';
+			break;
+		case 'info':
+			text = payload.data;
+			position = 'top-right';
+			break;
+		default:
+			text = payload.data;
+			position = 'top';
+			break;
+		}
+
+		Vue.$toast.open({
+			message: text,
+			type: status,
+			duration: 10000,
+			position,
+		});
 	},
 };
 
@@ -56,19 +95,11 @@ const mutations = {
 		state.status = 'success';
 		state.token = payload.token;
 	},
-	AUTH_ERROR: (state, payload) => {
+	AUTH_ERROR: (state) => {
 		state.status = 'error';
-		state.error = {
-			alert: true,
-			status: state.status,
-			message: `${payload.statusText}: ${payload.data}`,
-		};
 	},
 	AUTH_LOGOUT: (state) => {
 		state.token = '';
-	},
-	ERROR_ALERT: (state, value) => {
-		state.error.alert = value;
 	},
 };
 
@@ -79,18 +110,13 @@ const mutations = {
 const getters = {
 	isAuthenticated: (state) => !!state.token,
 	authStatus: (state) => state.status,
-	getError: (state) => state.error,
+	isLoading: (state) => state.status === 'loading',
 };
 
 const state = {
 	server: 'https://afternoon-falls-25894.herokuapp.com',
 	token: localStorage.getItem('token') || '',
 	status: '',
-	error: {
-		alert: false,
-		status: 'error',
-		message: '',
-	},
 };
 
 export default {

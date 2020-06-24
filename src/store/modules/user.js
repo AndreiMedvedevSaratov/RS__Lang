@@ -15,13 +15,8 @@ const actions = {
 				console.log('Получил', response);
 			})
 			.catch((error) => {
-				dispatch('ALERT', {
-					alert: true,
-					status: 'error',
-					message: `${error.response.statusText}: ${error.response.data}`,
-				}, { root: true });
 				commit('USER_ERROR');
-				dispatch('AUTH_LOGOUT', null, { root: true });
+				dispatch('ALERT', { status: 'error', data: error.response.data }, { root: true });
 			});
 	},
 	async USER_SIGNUP({
@@ -35,12 +30,8 @@ const actions = {
 				dispatch('AUTH_REQUEST', user, { root: true });
 			})
 			.catch((error) => {
-				dispatch('ALERT', {
-					alert: true,
-					status: 'error',
-					message: `${error.response.statusText}: ${error.response.data}`,
-				}, { root: true });
 				commit('USER_ERROR');
+				dispatch('ALERT', { status: 'error', data: error.response.data }, { root: true });
 			});
 	},
 };
@@ -81,6 +72,7 @@ const mutations = {
 const getters = {
 	getProfile: (state) => state.profile,
 	isProfileLoaded: (state) => !!state.profile.name,
+	isLoading: (state) => state.status === 'loading',
 };
 
 const state = {
