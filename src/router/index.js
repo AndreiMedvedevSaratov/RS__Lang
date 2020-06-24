@@ -77,11 +77,6 @@ const routes = [
 		component: () => import(/* webpackChunkName: "signup" */ '../views/Signup.vue'),
 		beforeEnter: isNotAuthenticated,
 	},
-	{
-		path: '/audio_vizov',
-		name: 'Audiovizov',
-		component: () => import(/* webpackChunkName: "audio_vizov */ '../components/audio_vizov.vue'),
-	},
 ];
 
 const router = new VueRouter({
