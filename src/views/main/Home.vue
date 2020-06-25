@@ -20,11 +20,18 @@
 							class="d-flex flex-no-wrap justify-space-between"
 						)
 							div
-								v-card-title(
-									class="headline text-wrap"
-									style="word-break: break-word;"
-								) Secret Game
-									v-btn( to="/" class="mx-2" absolute right small outlined ) Запустить
+								v-badge(
+									color="blue-grey darken-4"
+									overlap
+									left
+									content="1"
+								)
+									v-card-title(
+										class="headline text-wrap"
+										style="word-break: break-word;"
+									) Main game
+										p( class="text-right text-caption" ) Test your knowledge of English
+								v-btn( to="/" class="mt-4" absolute right small outlined ) Запустить
 
 		v-row(
 			align="center"
@@ -52,7 +59,7 @@
 								color="blue-grey darken-4"
 								overlap
 								left
-								:content="i+1"
+								:content="i+2"
 							)
 								v-card-title(
 									class="headline text-wrap"
@@ -94,7 +101,7 @@
 								color="blue-grey darken-4"
 								overlap
 								left
-								:content="i+1"
+								:content="i+2"
 							)
 								v-card-title(
 									class="headline text-wrap"

@@ -15,7 +15,8 @@
 				fluid
 			)
 				// Тут догружаются компоненты из роута
-				router-view
+				transition( name="scale-transition")
+					router-view
 
 </template>
 
