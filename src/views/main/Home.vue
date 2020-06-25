@@ -9,21 +9,27 @@
 			md="4"
 			sm="6"
 		)
-			h3( class="mb-3"  ) Игры
 			v-card(
 				:color="game.color"
 				class="mb-2"
 				dark
 				v-for="(game, i) in gameList" :key="i"
+				v-if="i < 3"
 			)
 				div(
 					class="d-flex flex-no-wrap justify-space-between"
 				)
 					div
-						v-card-title(
-							class="headline text-wrap"
-							style="word-break: break-word;"
-						) {{ game.title }}
+						v-badge(
+							color="blue-grey darken-4"
+							overlap
+							left
+							:content="i+1"
+						)
+							v-card-title(
+								class="headline text-wrap"
+								style="word-break: break-word;"
+							) {{ game.title }}
 
 						v-card-subtitle {{ game.subtitle }}
 
@@ -36,7 +42,48 @@
 						tile
 					)
 						v-img( :src="game.img")
+		v-col(
+			v-if="gameList.length > 3"
+			cols="12"
+			xl="3"
+			lg="4"
+			md="4"
+			sm="6"
+		)
+			v-spacer
+			v-card(
+				:color="game.color"
+				class="mb-2"
+				dark
+				v-for="(game, i) in gameList" :key="i"
+				v-if="i > 2"
+			)
+				div(
+					class="d-flex flex-no-wrap justify-space-between"
+				)
+					div
+						v-badge(
+							color="blue-grey darken-4"
+							overlap
+							left
+							:content="i+1"
+						)
+							v-card-title(
+								class="headline text-wrap"
+								style="word-break: break-word;"
+							) {{ game.title }}
 
+						v-card-subtitle {{ game.subtitle }}
+
+						v-card-actions
+							v-btn( :to="game.link" class="mx-2" small outlined ) Запустить
+
+					v-avatar(
+						class="ma-3"
+						size="125"
+						tile
+					)
+						v-img( :src="game.img")
 </template>
 
 <script>
@@ -69,6 +116,34 @@ export default {
 				link: '/dictionary',
 				img: 'assets/img/dictionary.png',
 				color: 'red',
+			},
+			{
+				title: 'SpeakIt',
+				subtitle: 'textextexetxte',
+				link: '/',
+				img: 'assets/img/dictionary.png',
+				color: 'grey',
+			},
+			{
+				title: 'Саванна',
+				subtitle: 'textextexetxte',
+				link: '/',
+				img: 'assets/img/dictionary.png',
+				color: 'blue',
+			},
+			{
+				title: 'Аудиовызов',
+				subtitle: 'textextexetxte',
+				link: '/',
+				img: 'assets/img/dictionary.png',
+				color: 'pink darken-1',
+			},
+			{
+				title: 'Спринт',
+				subtitle: 'textextexetxte',
+				link: '/',
+				img: 'assets/img/dictionary.png',
+				color: 'purple darken-3',
 			},
 		],
 	}),
