@@ -15,12 +15,23 @@
 			to="/home"
 			class="mx-2"
 			text large
-			active-class="success") Home
+			active-class="success")
+				v-icon( left ) mdi-home-circle
+				| Home
+		v-btn(
+			to="/dictionary"
+			class="mx-2"
+			text large
+			active-class="deep-purple darken-1 white--text")
+				v-icon( left ) mdi-book
+				| Dictionary
 		v-btn(
 			to="/about"
 			class="mx-2"
 			text large
-			active-class="primary") About
+			active-class="primary")
+				v-icon( left ) mdi-account-multiple
+				| About
 
 		v-spacer
 		v-btn( icon)
