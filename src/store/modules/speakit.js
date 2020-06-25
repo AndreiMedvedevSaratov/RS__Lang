@@ -59,6 +59,25 @@ const mutations = {
 	SPEAKIT_ERROR: (state) => {
 		state.status = 'error';
 	},
+	SPEAKIT_SPEAK: () => {
+		const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+		const recognition = new SpeechRecognition();
+		recognition.continuos = false;
+		// recognition.lang = 'ru-Ru';
+		recognition.interimResults = false;
+		recognition.maxAlternatives = 1;
+		recognition.onerror = (event) => {
+			console.log(`It's error! ${event.error}`);
+		};
+
+		recognition.onresult = (event) => {
+			const last = event.results.length - 1;
+			const sayWord = event.results[last][0].transcript;
+			const p = document.querySelector('.speech');
+			p.textContent = sayWord;
+		};
+		recognition.start();
+	},
 };
 
 /**

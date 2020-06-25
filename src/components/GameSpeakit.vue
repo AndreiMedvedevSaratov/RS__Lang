@@ -8,6 +8,14 @@
 				:src="isUrlImage"
 			)
 
+			input(
+				type="button"
+				value="undefined"
+				@click="speak()"
+			)
+
+			p( class='speech' )
+
 			div( class="card-pannel" )
 				div(
 					class="card"
@@ -63,6 +71,7 @@ export default {
 		}),
 		...mapMutations({
 			setImgAndAudio: 'speakit/SPEAKIT_SET_IMAGE_AND_AUDIO',
+			speak: 'speakit/SPEAKIT_SPEAK',
 		}),
 	},
 
