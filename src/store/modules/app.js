@@ -1,7 +1,5 @@
 import Vue from 'vue';
 import axios from 'axios';
-// eslint-disable-next-line import/no-cycle
-import router from '@/router';
 
 /** Instructions for working with actions
  * link https://vuex.vuejs.org/api/#actions
@@ -21,7 +19,6 @@ const actions = {
 				axios.defaults.headers.common.Authorization = response.data.token;
 
 				commit('user/USER_SUCCESS', response.data, { root: true });
-				router.push('/').catch(() => {});
 			})
 			.catch((err) => {
 				commit('AUTH_ERROR', err.response);
@@ -33,7 +30,6 @@ const actions = {
 		return new Promise(((resolve) => {
 			commit('AUTH_LOGOUT');
 			localStorage.removeItem('token');
-			router.push('/login').catch(() => {});
 			resolve();
 		}));
 	},

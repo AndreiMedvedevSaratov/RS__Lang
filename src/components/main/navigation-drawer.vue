@@ -81,11 +81,17 @@ export default {
 	mounted() {},
 	methods: {
 		...mapActions({
-			logout: 'AUTH_LOGOUT',
+			logoutAction: 'AUTH_LOGOUT',
 		}),
 		...mapMutations({
 			editHtml: 'EDIT_HTML',
 		}),
+
+		logout() {
+			this.logoutAction().then(() => {
+				this.$router.push('/login').catch(() => {});
+			});
+		},
 	},
 
 };
