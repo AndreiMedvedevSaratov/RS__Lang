@@ -1,41 +1,148 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from '../views/Home.vue';
+import Main from '../views/main/Main.vue';
+// eslint-disable-next-line import/no-cycle
+import store from '../store';
 
 Vue.use(VueRouter);
+
+const isAuthenticated = (to, from, next) => {
+	if (store.getters.isAuthenticated) {
+		next();
+		return;
+	}
+	next('/login');
+};
+
+const isNotAuthenticated = (to, from, next) => {
+	if (!store.getters.isAuthenticated) {
+		next();
+		return;
+	}
+	next('/home');
+};
 
 const routes = [
 	{
 		path: '/',
-		name: 'Home',
-		component: Home,
+		component: Main,
+		name: 'Main',
+		redirect: '/home',
+		beforeEnter: isAuthenticated,
+		children: [
+			{
+				path: '/home',
+				component: () => import(/* webpackChunkName: "home" */ '../views/main/Home.vue'),
+				name: 'Home',
+				meta: {
+					breadcrumb: [
+						{ text: 'Home' },
+					],
+				},
+			},
+			{
+				path: '/profile',
+				component: () => import(/* webpackChunkName: "profile" */ '../views/main/Profile.vue'),
+				name: 'Profile',
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Profile' },
+					],
+				},
+			},
+			{
+				path: '/english-puzzle',
+				name: 'English-puzzle',
+				component: () => import(/* webpackChunkName: "english-puzzle" */ '../components/english-puzzle.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'English Puzzle' },
+					],
+				},
+			},
+			{
+				path: '/speaking',
+				name: 'Speaking',
+				component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Speaking' },
+					],
+				},
+			},
+			{
+				path: '/dictionary',
+				name: 'Dictionary',
+				component: () => import(/* webpackChunkName: "dictionary" */ '../components/dictionary.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Dictionary' },
+					],
+				},
+			},
+			{
+				path: '/statistics',
+				name: 'Statistics',
+				component: () => import(/* webpackChunkName: "statistics" */ '../views/main/Statistics.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Statistics' },
+					],
+				},
+			},
+			{
+				path: '/setting',
+				name: 'Setting',
+				component: () => import(/* webpackChunkName: "statistics" */ '../views/main/Setting.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Setting' },
+					],
+				},
+			},
+			{
+				path: '/about',
+				name: 'About',
+				// route level code-splitting
+				// this generates a separate chunk (about.[hash].js) for this route
+				// which is lazy-loaded when the route is visited.
+				component: () => import(/* webpackChunkName: "about" */ '../views/main/About.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'About' },
+					],
+				},
+			},
+		],
 	},
 	{
-		path: '/about',
-		name: 'About',
-		// route level code-splitting
-		// this generates a separate chunk (about.[hash].js) for this route
-		// which is lazy-loaded when the route is visited.
-		component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+		path: '/login',
+		name: 'Login',
+		component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue'),
+		beforeEnter: isNotAuthenticated,
 	},
 	{
-		path: '/english-puzzle',
-		name: 'English-puzzle',
-		component: () => import(/* webpackChunkName: "english-puzzle" */ '../components/EnglishPuzzle.vue'),
+		path: '/signup',
+		name: 'Signup',
+		component: () => import(/* webpackChunkName: "signup" */ '../views/Signup.vue'),
+		beforeEnter: isNotAuthenticated,
 	},
 	{
-		path: '/speaking',
-		name: 'Speaking',
-		component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),
-	},
-	{
-		path: '/dictionary',
-		name: 'Dictionary',
-		component: () => import(/* webpackChunkName: "dictionary" */ '../components/dictionary.vue'),
+		path: '*',
+		name: 'Other',
+		redirect: '/home',
 	},
 ];
 
 const router = new VueRouter({
+	mode: 'history',
 	routes,
 });
 
