@@ -21,7 +21,7 @@ const routes = [
 	{
 		path: '/english-puzzle',
 		name: 'English-puzzle',
-		component: () => import(/* webpackChunkName: "english-puzzle" */ '../components/english-puzzle.vue'),
+		component: () => import(/* webpackChunkName: "english-puzzle" */ '../components/EnglishPuzzle.vue'),
 	},
 	{
 		path: '/speaking',
