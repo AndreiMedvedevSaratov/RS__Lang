@@ -7,6 +7,9 @@ import axios from 'axios';
 /**
  * Замена getWordsData
  */
+// eslint-disable-next-line arrow-parens, no-var, vars-on-top
+var wordsArray;
+
 const actions = {
 	async GET_WORDS({
 		rootState, commit, dispatch,
@@ -24,6 +27,10 @@ const actions = {
 			.then((response) => {
 				// eslint-disable-next-line no-console
 				console.log('Получил', response.data);
+				// eslint-disable-next-line arrow-parens, no-var, vars-on-top
+				wordsArray = response.data.map(item => item.word);
+				// eslint-disable-next-line no-console
+				console.log('wordsArray', wordsArray);
 				commit('SPEAKIT_GET_WORDS_SUCCESS', response.data);
 			})
 			.catch((error) => {
@@ -72,9 +79,15 @@ const mutations = {
 
 		recognition.onresult = (event) => {
 			const last = event.results.length - 1;
-			const sayWord = event.results[last][0].transcript;
+			const sayWord = event.results[last][0].transcript.toLowerCase();
 			const p = document.querySelector('.speech');
 			p.textContent = sayWord;
+			// eslint-disable-next-line no-undef
+			// eslint-disable-next-line no-console
+			console.log(wordsArray, sayWord, wordsArray.includes(sayWord));
+			if (wordsArray.includes(sayWord)) {
+				document.getElementById(sayWord).style.opacity = '0.5';
+			}
 		};
 		recognition.start();
 	},

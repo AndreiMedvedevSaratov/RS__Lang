@@ -22,6 +22,7 @@
 					v-for="(item, i) in isWords"
 					:key="i"
 					@click="setImgAndAudio({image: isUrlFiles+item.image,audio: isUrlFiles+item.audio})"
+					v-bind:id="item.word"
 				)
 					span( class="card__icon" ) X
 					div( class="card__info" )
