@@ -1,25 +1,42 @@
 <template lang='pug'>
 	v-row
-		v-card(
-			justify="center"
-			class="ma-auto"
-			elevation="5"
-			)
-			v-card-title
-				span( class="headline" ) Login
-				router-link(to="/signup")
-					v-btn( depressed small ) or Register
-			v-card-text
-				v-container
-					v-col( cols="12" )
-						v-text-field( label="Email*" v-model="email" required )
+		v-form( v-model="valid" class="ma-auto width-form-login-singup" )
+			v-card(
+				justify="center"
+				elevation="5"
+				)
+				v-overlay( :value="isLoading" :absolute="true" )
+					v-progress-circular( indeterminate size="64" )
+				v-card-title
+					span( class="headline" ) Login
+					router-link(to="/signup")
+						v-btn( depressed small ) or Register
+				v-card-text
+					v-container
+						v-col( cols="12" )
+							v-text-field(
+								label="Email*"
+								v-model="email"
+								:rules="emailRules"
+								@keyup.enter="isAuth"
+								required )
 
-					v-col( cols="12" )
-						v-text-field( label="Password*" v-model="password" type="password" required)
-				small *indicates required field
-			v-card-actions
-				v-spacer
-				v-btn( color="blue darken-1" text @click="auth" ) Sign in
+						v-col( cols="12" )
+							v-text-field(
+								label="Password*"
+								v-model="password"
+								:rules="passRules"
+								@keyup.enter="isAuth"
+								type="password"
+								required )
+					small *indicates required field
+				v-card-actions
+					v-spacer
+					v-btn(
+						color="blue darken-1"
+						text @click="isAuth"
+						:disabled="!valid"
+						) Sign in
 </template>
 
 <script>
@@ -33,10 +50,18 @@ export default {
 	components: {},
 	props: [],
 	data: () => ({
-
+		valid: false,
+		passRules: [
+			(v) => !!v || 'Password is required',
+			(v) => v.length >= 8 || 'The password must contain at least 8 characters',
+		],
+		emailRules: [
+			(v) => !!v || 'E-mail is required',
+			(v) => /.+@.+/.test(v) || 'E-mail must be valid',
+		],
 	}),
 	computed: {
-		...mapGetters(['user/getProfile']),
+		...mapGetters(['user/getProfile', 'isLoading']),
 		email: {
 			get() {
 				return this['user/getProfile'].email;
@@ -68,8 +93,16 @@ export default {
 			setProfile: 'user/USER_FORM',
 		}),
 		...mapActions({
-			auth: 'AUTH_REQUEST',
+			authAction: 'AUTH_REQUEST',
 		}),
+		auth() {
+			this.authAction().then(() => {
+				this.$router.push('/').catch(() => {});
+			});
+		},
+		isAuth() {
+			return this.valid ? this.auth() : '';
+		},
 	},
 
 };
