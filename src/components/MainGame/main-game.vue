@@ -3,10 +3,12 @@
 		card-item(
 			:config="cardConfig"
 			:userSettings="settings"
+			@new-word='showNewWord'
 		)
 </template>
 
 <script>
+import { forGame } from '@/store/modules/forGame';
 import CardItem from './Card.vue';
 
 export default {
@@ -14,6 +16,8 @@ export default {
 	components: {
 		CardItem,
 	},
+	mixins: [forGame],
+	props: {},
 	data() {
 		return {
 			cardConfig: {
@@ -33,7 +37,7 @@ export default {
 				id: 1,
 				userWord: {
 					learnGroup: 2,
-					dictionaryGroup: 'easy',
+					dictionaryGroup: 2,
 					allRepeats: 10,
 					successRepeats: 7,
 					previousTrain: new Date(2020, 5, 20),
@@ -41,7 +45,7 @@ export default {
 				},
 			},
 			settings: {
-				wordsLimit: 50,
+				wordsLimit: 4,
 				showWordTranslate: true,
 				showTranscription: true,
 				showImage: true,
@@ -53,6 +57,16 @@ export default {
 				showAudioExample: true,
 			},
 		};
+	},
+	computed: {},
+	watch: {},
+	created() {},
+	mounted() {},
+	update() {},
+	methods: {
+		showNewWord() {
+			this.cardConfig = this.getNextWord();
+		},
 	},
 };
 </script>

@@ -24,12 +24,17 @@ div
 
 					div(class='learn-content_word')
 						form(class='word_origin'
-							@submit.prevent='checkWord("OK")'
+							@submit.prevent='checkWord()'
 							)
 							span(class='origin_container')
-								span(class='hidden'
+								span(:class=`{
+									hidden: isHideWord,
+									'success-result': isSuccessResult,
+									'fail-result': !isSuccessResult
+									}`
 									v-for="(symbol, i) of wordArr"
 									:key='i'
+									:ref="'symbol' + i"
 								) {{ symbol }}
 							input(class='origin_input'
 								autofocus
@@ -45,14 +50,14 @@ div
 					div(class='text-example_origin')
 							p(class='origin_all-sentence')
 								| {{ example.before }}
-								span(v-if='hideWord' class='origin_cap') [...]
+								span(v-if='isHideWord' class='origin_cap') [...]
 								span(v-else class='origin_word' ) {{ example.wordInText }}
 								| {{ example.after }}
 					div(class='text-example_translate'
 						v-if='userSettings.showTextExampleTranslate'
 					)
 						p(class='translate_all-sentence'
-							v-if='!hideWord'
+							v-if='!isHideWord'
 						) {{ config.textExampleTranslate }}
 				div(class='learn-content_text-meaning'
 					v-if='userSettings.showTextMeaning'
@@ -60,14 +65,14 @@ div
 					div(class='text-meaning_origin')
 						p(class='origin_all-sentence')
 							| {{ meaning.before }}
-							span(v-if='hideWord' class='origin_cap') [...]
+							span(v-if='isHideWord' class='origin_cap') [...]
 							span(v-else class='origin_word' ) {{ meaning.wordInText }}
 							| {{ meaning.after }}
 					div(class='text-meaning_translate'
 						v-if='userSettings.showTextMeaningTranslate'
 					)
 						p(class='translate_all-sentence'
-						v-if='!hideWord'
+						v-if='!isHideWord'
 						) {{ config.textMeaningTranslate }}
 		div(class='card-footer')
 			v-progress-linear(:value='progressLinear')
@@ -75,9 +80,15 @@ div
 </template>
 
 <script>
+import { forGame } from '@/store/modules/forGame';
+/**
+ * computed set and get
+ * watch
+ */
 export default {
 	name: 'CardItem',
 	components: {},
+	mixins: [forGame],
 	props: {
 		config: {
 			type: Object,
@@ -103,18 +114,20 @@ export default {
 	},
 	data() {
 		return {
+			isHideWord: true,
+			isGetWrongAnswer: false,
+			isSuccessResult: false,
 			wordsCount: 0,
 			userWord: '',
-			hideWord: true,
 		};
 	},
 	computed: {
 		progress() {
-			const allLearnLevels = 5;
+			const maxLearnLevel = 5;
 			const { learnGroup } = this.config.userWord;
 			return {
 				success: learnGroup,
-				failure: allLearnLevels - learnGroup,
+				failure: maxLearnLevel - learnGroup,
 			};
 		},
 		originWord() {
@@ -137,27 +150,16 @@ export default {
 		},
 	},
 	watch: {},
-	created() {
-		if (!this.config.userWord) {
-			this.config.userWord = {
-				learnGroup: 0,
-				dictionaryGroup: 'new',
-				allRepeats: 0,
-				successRepeats: 0,
-				previousTrain: new Date(),
-				nextTrain: new Date(),
-			};
-		}
-	},
+	created() {},
 	mounted() {},
+	beforeUpdate() {
+		this.markWord('config');
+	},
 	update() {},
 	methods: {
 		addWordInDeleteCategory() {
+			this.config.userWord.dictionaryGroup = 5;
 			console.log('ok, del');
-		},
-		checkWord() {
-			if (this.originWord === this.userWord) console.log('OK');
-			else console.log('No pass');
 		},
 		getSentenceParts(str, word) {
 			const regexp = new RegExp(`(${word})\\w?`);
@@ -165,6 +167,43 @@ export default {
 			const [before, after] = str.split(wordInText);
 
 			return { before, wordInText, after };
+		},
+		playAudio() {
+			console.log('I play audio');
+		},
+		endGame() {
+			alert('The end');
+		},
+		nextRound() {
+			this.isHideWord = !this.isHideWord;
+			this.wordsCount += 1;
+			setTimeout(() => {
+				if (this.wordsCount === this.userSettings.wordsLimit) {
+					this.endGame();
+				}
+				this.isHideWord = true;
+				this.$emit('new-word');
+			}, 2000);
+		},
+		showSuccessResult() {
+			this.isSuccessResult = true;
+		},
+		showFailureResult() {
+			console.log(this.$refs);
+		},
+		checkWord() {
+			const input = this.userWord;
+			this.userWord = '';
+
+			if (this.originWord === input) {
+				this.successInput(this.isGetWrongAnswer);
+				this.showSuccessResult();
+				this.nextRound();
+			} else {
+				this.failureInput(this.isGetWrongAnswer);
+				this.isGetWrongAnswer = true;
+				this.showFailureResult();
+			}
 		},
 	},
 };
@@ -178,6 +217,7 @@ $cardContainerHeight: 450px;
 $borderColor: hsl(0, 3%, 53%);
 $imageWidth: 250px;
 $imageHeight: 170px;
+$successColor: hsl(122, 37%, 74%);
 
 .card-container {
 	margin: auto;
@@ -235,6 +275,7 @@ $imageHeight: 170px;
 	&_image-word {
 		display: flex;
 		justify-content: space-around;
+		flex-wrap: wrap;
 	}
 
 	&_image {
@@ -273,10 +314,10 @@ $imageHeight: 170px;
 	}
 }
 
-// .learn-word {
-// 	border: 1px solid black;
-// 	border-radius: 3px;
-// }
+.success-result {
+	text-decoration: underline;
+	color: $successColor;
+}
 
 .hidden {
 	visibility: hidden;
