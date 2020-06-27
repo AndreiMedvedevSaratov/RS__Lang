@@ -9,6 +9,8 @@ import axios from 'axios';
  */
 // eslint-disable-next-line arrow-parens, no-var, vars-on-top
 var wordsArray;
+// eslint-disable-next-line arrow-parens, no-var, vars-on-top
+var imageArray;
 
 const actions = {
 	async GET_WORDS({
@@ -29,8 +31,11 @@ const actions = {
 				console.log('Получил', response.data);
 				// eslint-disable-next-line arrow-parens, no-var, vars-on-top
 				wordsArray = response.data.map(item => item.word);
+				// eslint-disable-next-line arrow-parens, no-var, vars-on-top
+				imageArray = response.data.map(item => item.image);
 				// eslint-disable-next-line no-console
-				console.log('wordsArray', wordsArray);
+				console.dir('wordsArray', wordsArray);
+				console.dir('wordsArray', wordsArray);
 				commit('SPEAKIT_GET_WORDS_SUCCESS', response.data);
 			})
 			.catch((error) => {
@@ -66,9 +71,10 @@ const mutations = {
 	SPEAKIT_ERROR: (state) => {
 		state.status = 'error';
 	},
-	SPEAKIT_SPEAK: () => {
+	SPEAKIT_SPEAK: (state) => {
 		const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 		const recognition = new SpeechRecognition();
+		recognition.lang = 'en-US';
 		recognition.continuos = false;
 		// recognition.lang = 'ru-Ru';
 		recognition.interimResults = false;
@@ -79,6 +85,8 @@ const mutations = {
 
 		recognition.onresult = (event) => {
 			const last = event.results.length - 1;
+			// eslint-disable-next-line no-undef
+			console.dir(event.results);
 			const sayWord = event.results[last][0].transcript.toLowerCase();
 			const p = document.querySelector('.speech');
 			p.textContent = sayWord;
@@ -86,6 +94,8 @@ const mutations = {
 			// eslint-disable-next-line no-console
 			console.log(wordsArray, sayWord, wordsArray.includes(sayWord));
 			if (wordsArray.includes(sayWord)) {
+				document.querySelector('.main__image').src = `${state.urlFiles}${imageArray[wordsArray.indexOf(sayWord)]}`;
+				// eslint-disable-next-line prefer-destructuring
 				document.getElementById(sayWord).style.opacity = '0.5';
 			}
 		};
