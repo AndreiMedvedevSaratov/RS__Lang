@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Main from '../views/Main.vue';
+import Main from '../views/main/Main.vue';
 // eslint-disable-next-line import/no-cycle
 import store from '../store';
 
@@ -19,7 +19,7 @@ const isNotAuthenticated = (to, from, next) => {
 		next();
 		return;
 	}
-	next('home');
+	next('/home');
 };
 
 const routes = [
@@ -32,13 +32,24 @@ const routes = [
 		children: [
 			{
 				path: '/home',
-				component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue'),
+				component: () => import(/* webpackChunkName: "home" */ '../views/main/Home.vue'),
 				name: 'Home',
+				meta: {
+					breadcrumb: [
+						{ text: 'Home' },
+					],
+				},
 			},
 			{
 				path: '/profile',
-				component: () => import(/* webpackChunkName: "profile" */ '../views/Profile.vue'),
+				component: () => import(/* webpackChunkName: "profile" */ '../views/main/Profile.vue'),
 				name: 'Profile',
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Profile' },
+					],
+				},
 			},
 			{
 				path: '/speakit',
@@ -54,16 +65,56 @@ const routes = [
 				path: '/english-puzzle',
 				name: 'English-puzzle',
 				component: () => import(/* webpackChunkName: "english-puzzle" */ '../components/english-puzzle.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'English Puzzle' },
+					],
+				},
 			},
-			// {
-			// 	path: '/speaking',
-			// 	name: 'Speaking',
-			// 	component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),
-			// },
+			{
+				path: '/speaking',
+				name: 'Speaking',
+				component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Speaking' },
+					],
+				},
+			},
 			{
 				path: '/dictionary',
 				name: 'Dictionary',
 				component: () => import(/* webpackChunkName: "dictionary" */ '../components/dictionary.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Dictionary' },
+					],
+				},
+			},
+			{
+				path: '/statistics',
+				name: 'Statistics',
+				component: () => import(/* webpackChunkName: "statistics" */ '../views/main/Statistics.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Statistics' },
+					],
+				},
+			},
+			{
+				path: '/setting',
+				name: 'Setting',
+				component: () => import(/* webpackChunkName: "statistics" */ '../views/main/Setting.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Setting' },
+					],
+				},
 			},
 			{
 				path: '/about',
@@ -71,7 +122,13 @@ const routes = [
 				// route level code-splitting
 				// this generates a separate chunk (about.[hash].js) for this route
 				// which is lazy-loaded when the route is visited.
-				component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+				component: () => import(/* webpackChunkName: "about" */ '../views/main/About.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'About' },
+					],
+				},
 			},
 		],
 	},
@@ -88,19 +145,9 @@ const routes = [
 		beforeEnter: isNotAuthenticated,
 	},
 	{
-		path: '/english-puzzle',
-		name: 'English-puzzle',
-		component: () => import(/* webpackChunkName: "english-puzzle" */ '../components/english-puzzle.vue'),
-	},
-	// {
-	// 	path: '/speaking',
-	// 	name: 'Speaking',
-	// 	component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),
-	// },
-	{
-		path: '/dictionary',
-		name: 'Dictionary',
-		component: () => import(/* webpackChunkName: "dictionary" */ '../components/dictionary.vue'),
+		path: '*',
+		name: 'Other',
+		redirect: '/home',
 	},
 ];
 

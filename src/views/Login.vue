@@ -93,8 +93,13 @@ export default {
 			setProfile: 'user/USER_FORM',
 		}),
 		...mapActions({
-			auth: 'AUTH_REQUEST',
+			authAction: 'AUTH_REQUEST',
 		}),
+		auth() {
+			this.authAction().then(() => {
+				this.$router.push('/').catch(() => {});
+			});
+		},
 		isAuth() {
 			return this.valid ? this.auth() : '';
 		},

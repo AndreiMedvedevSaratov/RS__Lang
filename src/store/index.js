@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-// eslint-disable-next-line import/no-cycle
 import app from './modules/app';
 import user from './modules/user';
 import speakit from './modules/speakit';
