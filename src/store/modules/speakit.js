@@ -53,31 +53,7 @@ const actions = {
 				}, { root: true });
 			});
 	},
-
-};
-
-/**
- * Instructions for working with mutations
- * link https://vuex.vuejs.org/guide/mutations.html
- */
-const mutations = {
-	SPEAKIT_REQUEST: (state) => {
-		state.status = 'loading';
-	},
-	SPEAKIT_GET_WORDS_SUCCESS: (state, words) => {
-		state.status = 'success';
-		state.words = words;
-	},
-	SPEAKIT_SET_IMAGE_AND_AUDIO: (state, payload) => {
-		console.log('Выбрали', payload);
-		state.urlImage = payload.image;
-		const audio = new Audio(payload.audio);
-		audio.play();
-	},
-	SPEAKIT_ERROR: (state) => {
-		state.status = 'error';
-	},
-	SPEAKIT_SPEAK: (state) => {
+	SPEAKIT_SPEAK: ({ state, dispatch }) => {
 		const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 		const recognition = new SpeechRecognition();
 		recognition.lang = 'en-US';
@@ -107,10 +83,36 @@ const mutations = {
 				// eslint-disable-next-line no-console
 				console.log(count);
 				// eslint-disable-next-line no-alert
-				if (count.length === 20) { alert('youre win, good job! Your skill is pretty high'); }
+				if (count.length === 1) {
+					alert('youre win, good job! Your skill is pretty high');
+					dispatch('speakit/GET_WORDS', { page: 2 }, { root: true });
+				}
 			}
 		};
 		recognition.start();
+	},
+};
+
+/**
+ * Instructions for working with mutations
+ * link https://vuex.vuejs.org/guide/mutations.html
+ */
+const mutations = {
+	SPEAKIT_REQUEST: (state) => {
+		state.status = 'loading';
+	},
+	SPEAKIT_GET_WORDS_SUCCESS: (state, words) => {
+		state.status = 'success';
+		state.words = words;
+	},
+	SPEAKIT_SET_IMAGE_AND_AUDIO: (state, payload) => {
+		console.log('Выбрали', payload);
+		state.urlImage = payload.image;
+		const audio = new Audio(payload.audio);
+		audio.play();
+	},
+	SPEAKIT_ERROR: (state) => {
+		state.status = 'error';
 	},
 };
 

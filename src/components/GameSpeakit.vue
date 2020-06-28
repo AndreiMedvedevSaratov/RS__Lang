@@ -45,9 +45,7 @@ export default {
 	name: 'SpeakIt',
 	components: {},
 	props: [],
-	data: () => ({
-
-	}),
+	data: () => ({}),
 	computed: {
 		...mapGetters({
 			isWords: 'speakit/getWords',
@@ -59,88 +57,87 @@ export default {
 	created() {},
 	mounted() {
 		/** Examples
-		 * this.getWords(); page - 0, group - 0
-		 * this.getWords({ page: 2 });
-		 * this.getWords({ page: 2, group: 3 });
-		 * this.getWords({ group: 3 });
-		 */
+     * this.getWords(); page - 0, group - 0
+     * this.getWords({ page: 2 });
+     * this.getWords({ page: 2, group: 3 });
+     * this.getWords({ group: 3 });
+     */
 		this.getWords();
 	},
 	methods: {
 		...mapActions({
 			getWords: 'speakit/GET_WORDS',
+			speak: 'speakit/SPEAKIT_SPEAK',
 		}),
 		...mapMutations({
 			setImgAndAudio: 'speakit/SPEAKIT_SET_IMAGE_AND_AUDIO',
-			speak: 'speakit/SPEAKIT_SPEAK',
 		}),
 	},
-
 };
 </script>
 
 <style lang='scss' scoped>
 .game {
-    height: 100vh;
-    padding: 0 15%;
-    background-color: #ccd8cc;
-	box-sizing: border-box;
+  height: 100vh;
+  padding: 0 15%;
+  background-color: #ccd8cc;
+  box-sizing: border-box;
 
-	p {
-		margin: 0;
-	}
+  p {
+    margin: 0;
+  }
 
-	.header {
-		background-color: #909f8d;
-		height: 10%;
-	}
-	.main {
-		height: 80%;
+  .header {
+    background-color: #909f8d;
+    height: 10%;
+  }
+  .main {
+    height: 80%;
 
-		&__image {
-			padding: 2% 0;
-			display: block;
-			margin: 0 auto;
-			height: 40%;
-			align-items: center;
-		}
-		.card-pannel {
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: space-around;
-			background-color: #a4aea2;
-			padding: 5px;
-			box-sizing: border-box;
-			// height: calc(30% - 10px);
-			.card {
-				width: 150px;
-				height: 60px;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				background-color: #d8c9d8;
-				border: #dadada solid 1px;
+    &__image {
+      padding: 2% 0;
+      display: block;
+      margin: 0 auto;
+      height: 40%;
+      align-items: center;
+    }
+    .card-pannel {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      background-color: #a4aea2;
+      padding: 5px;
+      box-sizing: border-box;
+      // height: calc(30% - 10px);
+      .card {
+        width: 150px;
+        height: 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #d8c9d8;
+        border: #dadada solid 1px;
 
-				&__icon {
-					background-color: #bbb0bb;
-					text-align: center;
-					flex: 1;
-				}
+        &__icon {
+          background-color: #bbb0bb;
+          text-align: center;
+          flex: 1;
+        }
 
-				&__info {
-					text-align: center;
-					flex: 3;
-				}
+        &__info {
+          text-align: center;
+          flex: 3;
+        }
 
-				&:hover {
-					background-color: #bab1ba;
-				}
-			}
-		}
-	}
-	.buttonsRow {
-		background-color: #bbc9b8;
-		height: 10%;
-	}
+        &:hover {
+          background-color: #bab1ba;
+        }
+      }
+    }
+  }
+  .buttonsRow {
+    background-color: #bbc9b8;
+    height: 10%;
+  }
 }
 </style>
