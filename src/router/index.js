@@ -63,6 +63,17 @@ const routes = [
 				},
 			},
 			{
+				path: '/english-puzzle2',
+				name: 'English-puzzle',
+				component: () => import(/* webpackChunkName: "english-puzzle2" */ '../components/english-puzzle.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'English Puzzle2' },
+					],
+				},
+			},
+			{
 				path: '/speaking',
 				name: 'Speaking',
 				component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),

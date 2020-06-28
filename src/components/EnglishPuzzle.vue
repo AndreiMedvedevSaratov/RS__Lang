@@ -1,41 +1,74 @@
 <template lang='pug'>
 	.f
-		.result-word
-			.word-container( v-for="(item, i) in 10" :key="i")
-				.gig(
-					v-for="(item, j) in countWords" :key="j"
-					v-if="num == i"
-					:class="'gig_end'+num"
-				)
-		.begin-word
-			.gig(
-				v-for="(item, i) in countWords" :key="i"
-				:class="'gig_begin'+num"
-			)
-				.word(
-					v-for="(text, j) in arr" :key="j"
-					v-if="i==j"
-					:draggable="true"
-					:ref="'word'+num"
-					:class="'word'+num"
-				) {{ text }}
+		.result-word(
+			:ref="'result-word'"
+		)
+			//- .word-container( v-for="(item, i) in 10" :key="i")
+			//- 	.gig(
+			//- 		v-for="(item, j) in countWords" :key="j"
+			//- 		v-if="num == i"
+			//- 		:class="'gig_end'+num"
+			//- 	)
+		.begin-word(
+			ref="begin-word"
+		)
+			//- drop(
+			//- 	:class="`group-words row-1`"
+			//- 	@drop="handleDrop(mixed, ...arguments)"
+			//- )
+			//- 	drag( 	v-for="(item, j) in mixed"
+			//- 			class="drag"
+			//- 			:key="j"
+			//- 			:transfer-data="{ item: item, list: mixed, example: 'lists' }"
+			//- 			v-html="item.outerHTML"
+			//- 		)
+			//-
+			//- 	.word(
+			//- 		v-for="(text, j) in arr" :key="j"
+			//- 		v-if="i==j"
+			//- 		:draggable="true"
+			//- 		:ref="'word'+num"
+			//- 		:class="'word'+num"
+			//- 	) {{ text }}
 		.fuck
 			.fuck2 f
 		.button
-			button( class="button__not-know button_style" @click="dontKnow") I don't know
+			button( class="button__not-know button_style") I don't know
 			button.button__check.button_style Check
+
+		div(
+			v-for="(list, i) in lists"
+			:key="i"
+		)
+			drop(
+				class="drop list"
+				@drop="handleDrop(list, ...arguments)" )
+				drag( 	v-for="(item, j) in list"
+						class="drag"
+						:key="j"
+						:transfer-data="{ item: item, list: list, example: 'lists' }"
+					) {{ item }}
+
 </template>
 
 <script>
+import createCanvas from '@/assets/js/crop-image';
+// eslint-disable-next-line no-unused-vars
+import { Drag, Drop } from 'vue-drag-drop';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
 	name: 'EnglishPuzzle',
-	components: {},
+	components: { Drag, Drop },
 	props: [],
 	data: () => ({
+		lists: [
+			['A', 'B', 'C'],
+			['D', 'E', 'F'],
+		],
+
 		num: 0,
 		wordRight: null,
 		moveY: 0,
@@ -184,6 +217,11 @@ export default {
 				id: 10,
 			},
 		],
+
+		texts: [],
+		canvasArray: [],
+		correctSequence: {},
+		mixed: {},
 	}),
 	computed: {
 
@@ -192,220 +230,57 @@ export default {
 	created() {},
 	mounted() {
 		this.$nextTick(() => {
-			this.$nextTick(() => {
-				this.game(this.book1);
-			});
+			this.game(this.book1);
 		});
 	},
 	methods: {
-		sentenceOnwords(str) {
-			this.arr = str.split(' ');
-			this.countWords = this.arr.length;
+		handleDrop(toList, data) {
+			console.log(data);
+			const fromList = data.list;
+			if (fromList) {
+				toList.push(data.item);
+				fromList.splice(fromList.indexOf(data.item), 1);
+				toList.sort((a, b) => a > b);
+			}
 		},
 		game(data) {
-			const widthPx = (str) => +str.match(/[0-9]/g).join('');
+			// const sortArr = (arr) => arr.sort(() => Math.random() - 0.5);
+
+			// Поулучаем все предложения данного уровня
+			data.map((text) => this.texts.push(text.textExample));
+
+			// Поулучаем массив канвас обектов (предложения)
+			createCanvas({
+				// src: './assets/img/girl.jpg',
+				src: 'https://github.com/jules0802/rslang_data_paintings/blob/master/level1/cut/9th_wave.jpg?raw=true',
+				wordsList: this.texts,
+				draggable: true,
+			}).then((res) => {
+				this.gameLoad(res);
+			});
+		},
+		gameLoad(res) {
 			const sortArr = (arr) => arr.sort(() => Math.random() - 0.5);
-			const beginWord = document.querySelector('.begin-word');
 
-			this.sentenceOnwords(data[this.num].textExample);
+			this.canvasArray = res;
+			console.log('All canvas', this.canvasArray);
+			// const sortArr = (arr) => arr.sort(() => Math.random() - 0.5);
 
-			// for (let i = 0; i < this.countWords; i += 1) {
-			// 	const div = document.createElement('div');
-			// 	div.className = `gig gig_end${this.num}`;
-			// 	document.querySelectorAll('.word-container')[this.num].append(div);
-			// }
-			// for (let i = 0; i < this.countWords; i += 1) {
-			// 	const div = document.createElement('div');
-			// 	div.className = `gig gig_begin${this.num}`;
-			// 	beginWord.append(div);
-			// }
+			// Сохраняем правильный вариант предложения (без сортировки)
+			this.correctSequence = this.canvasArray[this.num].children;
+			console.log('correctSequence', this.correctSequence);
 
-			// for (let i = 0; i < this.countWords; i += 1) {
-			// 	const div = document.createElement('div');
-			// 	div.innerHTML = `${this.arr[i]}`;
-			// 	div.className = `word word${this.num}`;
-			// 	div.setAttribute('draggable', true);
-			// 	document.querySelectorAll(`.gig_begin${this.num}`)[i].append(div);
-			// }
-			this.word = document.querySelectorAll(`.word${this.num}`);
-			console.log('word', this.word);
-			const map = new Map();
-			for (let i = 0; i < this.countWords; i += 1) {
-				const width = this.word[i].offsetWidth;
-				map.set(`${i}`, `${width}`);
-			}
+			// Перемещиваем
+			const y = Array.from(this.correctSequence);
+			this.mixed = sortArr(y);
+			console.log('mixed', this.mixed);
 
-			for (let i = 0; i < this.countWords; i += 1) {
-				document.querySelectorAll(`.word${this.num}`)[i].style.width = `${map.get(`${i}`)}px`;
-			}
+			// this.$refs['begin-word'].append(...this.mixed);
 
-			this.wordRight = this.word;
-
-			if (this.num > 0) {
-				this.moveY -= 45;
-			}
-			for (let i = 0; i < this.countWords; i += 1) {
-				if (this.num === 0) {
-					if (i === 0) {
-						this.word[i].style.backgroundPosition = `${this.moveX}px ${this.moveY}px`;
-					} else if (i === 1) {
-						this.moveX -= widthPx(this.word[i - 1].style.width);
-						this.word[i].style.backgroundPosition = `${this.moveX}px ${this.moveY}px`;
-					} else {
-						this.moveX -= widthPx(this.word[i - 1].style.width);
-						this.word[i].style.backgroundPosition = `${this.moveX}px ${this.moveY}px`;
-					}
-				}
-				if (this.num > 0) {
-					if (i === 0) {
-						this.word[i].style.backgroundPosition = `${this.moveX}px ${this.moveY}px`;
-					} else if (i === 1) {
-						this.moveX -= widthPx(this.word[i - 1].style.width);
-						this.word[i].style.backgroundPosition = `${this.moveX}px ${this.moveY}px`;
-					} else {
-						this.moveX -= widthPx(this.word[i - 1].style.width);
-						this.word[i].style.backgroundPosition = `${this.moveX}px ${this.moveY}px`;
-					}
-				}
-			}
-
-			const y = Array.from(document.querySelectorAll(`.gig_begin${this.num}`));
-			const sortY = sortArr(y);
-			let strR = '';
-
-			for (let i = 0; i < this.countWords; i += 1) {
-				strR += sortY[i].outerHTML;
-			}
-			beginWord.innerHTML = `${strR}`;
-
-			const newArr = [];
-
-			for (let i = 0; i < this.countWords; i += 1) {
-				newArr.push(0);
-			}
-			const wordAll = document.querySelectorAll(`.word${this.num}`);
-			const gigEnd = document.querySelectorAll(`.gig_end${this.num}`);
-			for (let i = 0; i < wordAll.length; i += 1) {
-				wordAll[i].addEventListener('click', (e) => {
-					if (e.target.closest(`.gig_begin${this.num}`)) {
-						for (let p = 0; p < newArr.length; p += 1) {
-							if (newArr[p] === 0) {
-								document.querySelectorAll(`.gig_end${this.num}`)[p].append(wordAll[i]);
-								newArr.splice([p], 1, 1);
-								break;
-							}
-						}
-					} else if (e.target.closest(`.gig_end${this.num}`)) {
-						document.querySelectorAll(`.gig_begin${this.num}`)[i].append(wordAll[i]);
-					}
-				});
-			}
-
-			for (let i = 0; i < gigEnd.length; i += 1) {
-				gigEnd[i].addEventListener('click', () => {
-					newArr.splice([i], 1, 0);
-				});
-			}
-
-			function dragStart() {
-				setTimeout(() => {
-					this.classList.add('hide');
-				}, 0);
-			}
-			function dragEnd() {
-				this.classList.remove('hide');
-			}
-
-			function dragOver(event) {
-				event.preventDefault();
-			}
-			function dragEnter() {
-				this.classList.add('hovered');
-			}
-			function dragLeave() {
-				this.classList.remove('hovered');
-			}
-			let target = null;
-			document.addEventListener('mousedown', (e) => {
-				target = e.target;
-			});
-			function dragDrop() {
-				for (let i = 0; i < gigEnd.length; i += 1) {
-					if (this === gigEnd[i]) {
-						if (gigEnd[i].innerHTML) {
-							let a = gigEnd[i].innerHTML;
-							let b = null;
-							gigEnd[i].innerHTML = '';
-							gigEnd[i].append(target);
-							for (let j = i + 1; j < gigEnd.length; j += 1) {
-								if (!gigEnd[j].innerHTML) {
-									gigEnd[j].innerHTML = `${a}`;
-									break;
-								} else {
-									b = gigEnd[j].innerHTML;
-									gigEnd[j].innerHTML = `${a}`;
-									a = b;
-								}
-							}
-						} else {
-							gigEnd[i].append(target);
-							newArr.splice([i], 1, 1);
-						}
-					}
-				}
-				for (let i = 0; i < gigEnd.length; i += 1) {
-					if (!gigEnd[i].innerHTML) {
-						newArr.splice([i], 1, 0);
-					}
-				}
-				// this.append(target)
-				this.classList.remove('hovered');
-			}
-
-			gigEnd.forEach((item) => {
-				item.addEventListener('dragover', dragOver);
-				item.addEventListener('dragenter', dragEnter);
-				item.addEventListener('dragleave', dragLeave);
-				item.addEventListener('drop', dragDrop);
-			});
-			wordAll.forEach((item) => {
-				item.addEventListener('dragstart', dragStart);
-				item.addEventListener('dragend', dragEnd);
-			});
-
-			document.querySelector('.button__check').addEventListener('click', () => {
-				const all = document.querySelectorAll(`.word${this.num}`);
-				for (let i = 0; i < all.length; i += 1) {
-					all[i].classList.remove('right');
-					all[i].classList.remove('wrong');
-				}
-				for (let i = 0; i < all.length; i += 1) {
-					if (all[i].closest(`.gig_end${this.num}`)) {
-						if (all[i].innerHTML === this.arr[i]) {
-							all[i].classList.add('right');
-						} else {
-							all[i].classList.add('wrong');
-						}
-					} else {
-						all[i].classList.add('wrong');
-					}
-				}
-			});
+			console.info(this.$refs['begin-word']);
 		},
-		dontKnow() {
-			const word = document.querySelectorAll(`.word${this.num}`);
-			for (let i = 0; i < word.length; i += 1) {
-				document.querySelector('.begin-word').innerHTML = '';
-				document.querySelectorAll(`.gig_end${this.num}`)[i].innerHTML = '';
-			}
-			for (let i = 0; i < word.length; i += 1) {
-				document.querySelectorAll(`.gig_end${this.num}`)[i].innerHTML = this.wordRight[i].outerHTML;
-			}
-			this.num += 1;
-			this.game(this.book1);
-		},
+
 	},
-
 };
 </script>
 <style lang='scss'>
@@ -530,12 +405,11 @@ input {
 }
 
 .result-word {
-    width: 900px;
-    height: 450px;
-    background: aqua;
+	min-width: 860px;
+    max-width: fit-content;
+	min-height: 480px;
+	background: #F1DE9C;
     margin: 0 auto;
-    margin-top: 20px;
-
 }
 
 .begin-word {
@@ -574,7 +448,7 @@ input {
     border: 1px solid;
     text-align: center;
     padding: 12px 5px 12px 5px;
-    background: url('../assets/img/girl.jpg') no-repeat;
+    //background: url('./assets/img/girl.jpg') no-repeat;
     cursor: pointer
 }
 
@@ -612,5 +486,18 @@ input {
 
 .hovered {
     background-color: grey;
+}
+
+.canvas-item:not(:first-child) {
+	margin-left: -8px;
+}
+
+.canvas-item {
+	height: 48px;
+	cursor: pointer;
+}
+
+.group-words {
+	display: flex;
 }
 </style>
