@@ -16,7 +16,7 @@
 					class="card"
 					v-for="(item, i) in isWords"
 					:key="i"
-					v-if="i <= 4"
+					v-if="i < 5"
 					@click="setImgAndAudio({image: isUrlFiles+item.image,audio: isUrlFiles+item.audio})"
 				)
 					//- span( class="card__icon" ) X
@@ -43,6 +43,8 @@ export default {
 	data: () => ({
 		isStartGame: false,
 		randomArray: [0, 1, 2, 3, 4],
+		Results: [],
+		myWords: {},
 	}),
 	computed: {
 		...mapGetters({
@@ -61,6 +63,8 @@ export default {
 		 * this.getWords({ group: 3 });
 		 */
 		this.getWords();
+		console.log(this.getWords());
+		this.myWords = this.getWords();
 	},
 	methods: {
 		...mapActions({
@@ -69,6 +73,23 @@ export default {
 		...mapMutations({
 			setImgAndAudio: 'audiovizov/AUDIOVIZOV_SET_IMAGE_AND_AUDIO',
 		}),
+		// ----- Function play sounds for the cards with English names ----- //
+		playSound(soundfileOgg, soundfileMp, soundfileMa) {
+			if ('Audio' in window) {
+				const a = new Audio();
+				if (a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"')
+					.replace(/no/, '')) a.src = soundfileOgg;
+				else if (a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/,
+					'')) a.src = soundfileMp;
+				else if (a.canPlayType && a.canPlayType(
+					'audio/mp4; codecs="mp4a.40.2"',
+				).replace(/no/, '')) a.src = soundfileMa;
+				else a.src = soundfileMp;
+				a.autoplay = true;
+			} else {
+				console.log('Time almost up');
+			}
+		},
 		// ----- Function to shuffle array for the game ----- //
 		shuffle(array) {
 			for (let i = array.length - 1; i > 0; i -= 1) {
@@ -77,15 +98,17 @@ export default {
 				[array[i], array[j]] = [array[j], array[i]];
 			}
 			this.randomArray = array;
-			console.log(this.randomArray);
+			// console.log(this.randomArray);
 		},
 		startGame() {
 			this.isStartGame = true;
-			console.log('start game button pressed');
+			// console.log('start game button pressed');
 			if (this.isStartGame === true) {
 				this.randomArray = [0, 1, 2, 3, 4];
 				this.shuffle(this.randomArray);
 			}
+			// this.playSound(this.myWords[0].audio, this.myWords[0].audio, this.myWords[0].audio);
+			console.log(this.myWords[0]);
 		},
 	},
 
@@ -93,7 +116,6 @@ export default {
 
 /*
 // ----- Variables ----- //
-let Results = [];
 const sound = '';
 
 // ----- Function to put correct or wrong star in progress bar ----- //
