@@ -3,12 +3,7 @@
 		.result-word(
 			:ref="'result-word'"
 		)
-			//- .word-container( v-for="(item, i) in 10" :key="i")
-			//- 	.gig(
-			//- 		v-for="(item, j) in countWords" :key="j"
-			//- 		v-if="num == i"
-			//- 		:class="'gig_end'+num"
-			//- 	)
+
 		.begin-word(
 			ref="begin-word"
 		)
@@ -23,31 +18,11 @@
 			//- 			v-html="item.outerHTML"
 			//- 		)
 			//-
-			//- 	.word(
-			//- 		v-for="(text, j) in arr" :key="j"
-			//- 		v-if="i==j"
-			//- 		:draggable="true"
-			//- 		:ref="'word'+num"
-			//- 		:class="'word'+num"
-			//- 	) {{ text }}
 		.fuck
 			.fuck2 f
 		.button
 			button( class="button__not-know button_style") I don't know
 			button.button__check.button_style Check
-
-		div(
-			v-for="(list, i) in lists"
-			:key="i"
-		)
-			drop(
-				class="drop list"
-				@drop="handleDrop(list, ...arguments)" )
-				drag( 	v-for="(item, j) in list"
-						class="drag"
-						:key="j"
-						:transfer-data="{ item: item, list: list, example: 'lists' }"
-					) {{ item }}
 
 </template>
 
@@ -64,17 +39,7 @@ export default {
 	components: { Drag, Drop },
 	props: [],
 	data: () => ({
-		lists: [
-			['A', 'B', 'C'],
-			['D', 'E', 'F'],
-		],
 
-		num: 0,
-		wordRight: null,
-		moveY: 0,
-		arr: {},
-		word: {},
-		countWords: '',
 		book1: [
 			{
 				word: 'agree',
@@ -217,7 +182,7 @@ export default {
 				id: 10,
 			},
 		],
-
+		num: 0,
 		texts: [],
 		canvasArray: [],
 		correctSequence: {},
@@ -275,7 +240,7 @@ export default {
 			this.mixed = sortArr(y);
 			console.log('mixed', this.mixed);
 
-			// this.$refs['begin-word'].append(...this.mixed);
+			this.$refs['begin-word'].append(...this.mixed);
 
 			console.info(this.$refs['begin-word']);
 		},
