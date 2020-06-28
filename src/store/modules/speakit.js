@@ -11,6 +11,8 @@ import axios from 'axios';
 var wordsArray;
 // eslint-disable-next-line arrow-parens, no-var, vars-on-top
 var imageArray;
+// eslint-disable-next-line arrow-parens, no-var, vars-on-top
+var count = [];
 
 const actions = {
 	async GET_WORDS({
@@ -29,12 +31,16 @@ const actions = {
 			.then((response) => {
 				// eslint-disable-next-line no-console
 				console.log('Получил', response.data);
+				response.data.map((item) => {
+					// eslint-disable-next-line no-param-reassign
+					item.word = item.word.toLowerCase();
+					return item;
+				});
 				// eslint-disable-next-line arrow-parens, no-var, vars-on-top
 				wordsArray = response.data.map(item => item.word);
 				// eslint-disable-next-line arrow-parens, no-var, vars-on-top
 				imageArray = response.data.map(item => item.image);
 				// eslint-disable-next-line no-console
-				console.dir('wordsArray', wordsArray);
 				console.dir('wordsArray', wordsArray);
 				commit('SPEAKIT_GET_WORDS_SUCCESS', response.data);
 			})
@@ -97,6 +103,11 @@ const mutations = {
 				document.querySelector('.main__image').src = `${state.urlFiles}${imageArray[wordsArray.indexOf(sayWord)]}`;
 				// eslint-disable-next-line prefer-destructuring
 				document.getElementById(sayWord).style.opacity = '0.5';
+				if (!count.includes(sayWord)) { count.push(sayWord); }
+				// eslint-disable-next-line no-console
+				console.log(count);
+				// eslint-disable-next-line no-alert
+				if (count.length === 20) { alert('youre win, good job! Your skill is pretty high'); }
 			}
 		};
 		recognition.start();
