@@ -77,6 +77,21 @@ const actions = {
 			position,
 		});
 	},
+
+	async GET_WORDS({
+		state, commit, dispatch,
+	}, payload) {
+		const page = payload ? payload.page : 0;
+		const group = payload ? payload.group : 0;
+
+		await axios.get(`${state.server}/words?page=${page}&group=${group}`)
+			.then((response) => {
+				commit('GET_WORDS', response.data);
+			})
+			.catch((err) => {
+				dispatch('ALERT', { status: 'error', data: err.response.data });
+			});
+	},
 };
 
 /**
@@ -100,6 +115,10 @@ const mutations = {
 	EDIT_HTML: (state, payload) => {
 		state.html[payload.one][payload.key] = payload.value;
 	},
+
+	GET_WORDS: (state, words) => {
+		state.wordList = words;
+	},
 };
 
 /**
@@ -111,6 +130,8 @@ const getters = {
 	authStatus: (state) => state.status,
 	isLoading: (state) => state.status === 'loading',
 	isHtml: (state) => state.html,
+
+	getWordList: (state) => state.wordList,
 };
 
 const state = {
@@ -122,6 +143,23 @@ const state = {
 			drawer: true,
 		},
 	},
+	// Массив слов
+	wordList: [
+		{
+			word: '',
+			image: '',
+			audio: '',
+			audioMeaning: '',
+			audioExample: '',
+			textMeaning: '',
+			textExample: '',
+			transcription: '',
+			wordTranslate: '',
+			textMeaningTranslate: '',
+			textExampleTranslate: '',
+			id: 1,
+		},
+	],
 };
 
 export default {
