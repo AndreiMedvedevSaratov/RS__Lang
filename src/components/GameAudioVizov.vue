@@ -3,8 +3,8 @@
 		div( class="header") header
 
 		div( class="main" )
-			div( class="start-game-button" )
-				p( class="start-game-button-info") Start game!
+			div( class="start-game-button" @click="startGame")
+				p( class="start-game-button-info" ) Start game!
 
 			img(
 				class="main__image"
@@ -41,7 +41,8 @@ export default {
 	components: {},
 	props: [],
 	data: () => ({
-
+		isStartGame: false,
+		randomArray: [0, 1, 2, 3, 4],
 	}),
 	computed: {
 		...mapGetters({
@@ -68,33 +69,32 @@ export default {
 		...mapMutations({
 			setImgAndAudio: 'audiovizov/AUDIOVIZOV_SET_IMAGE_AND_AUDIO',
 		}),
+		// ----- Function to shuffle array for the game ----- //
+		shuffle(array) {
+			for (let i = array.length - 1; i > 0; i -= 1) {
+				const j = Math.floor(Math.random() * (i + 1));
+				// eslint-disable-next-line no-param-reassign
+				[array[i], array[j]] = [array[j], array[i]];
+			}
+			this.randomArray = array;
+			console.log(this.randomArray);
+		},
+		startGame() {
+			this.isStartGame = true;
+			console.log('start game button pressed');
+			if (this.isStartGame === true) {
+				this.randomArray = [0, 1, 2, 3, 4];
+				this.shuffle(this.randomArray);
+			}
+		},
 	},
 
 };
 
 /*
 // ----- Variables ----- //
-let startGame = false;
-let randomArray = [0, 1, 2, 3, 4];
 let Results = [];
 const sound = '';
-
-// ----- Function to shuffle array for the game ----- //
-function Shuffle(array) {
-	for (let i = array.length - 1; i > 0; i -= 1) {
-		const j = Math.floor(Math.random() * (i + 1));
-		// eslint-disable-next-line no-param-reassign
-		[array[i], array[j]] = [array[j], array[i]];
-	}
-}
-
-// ----- Function to initialize the game ----- //
-function gameInit() {
-	if (startGame === true) {
-		randomArray = [0, 1, 2, 3, 4];
-		Shuffle(randomArray);
-	}
-}
 
 // ----- Function to put correct or wrong star in progress bar ----- //
 function gameProgressAddStar(variant) {
