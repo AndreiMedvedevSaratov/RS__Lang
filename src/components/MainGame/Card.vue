@@ -5,8 +5,8 @@ div
 
 		div(class='card-header')
 			div(class='card-header_repeat-progress')
-				div(v-for='dot of progress.success' class="dot dot-success")
-				div(v-for='dot of progress.failure' class='dot dot-failure')
+				div(v-for='dot of repeatProgress.success' class="dot dot-success")
+				div(v-for='dot of repeatProgress.failure' class='dot dot-failure')
 			div(class='card-header_delete-button')
 				v-btn(@click='addWordInDeleteCategory()'
 					x-small
@@ -27,19 +27,13 @@ div
 							@submit.prevent='checkWord()'
 							)
 							span(class='origin_container')
-								span(:class=`{
-									hidden: isHideWord,
-									'success-result': isSuccessResult,
-									'fail-result': !isSuccessResult
-									}`
-									v-for="(symbol, i) of wordArr"
-									:key='i'
-									:ref="'symbol' + i"
+								span(:class='[{hidden: isHideWord}, classForSymbols[i]]'
+									v-for='(symbol, i) of wordArr'
 								) {{ symbol }}
-							input(class='origin_input'
+							input(:class="[{hidden: !isHideWord}, 'origin_input']"
 								autofocus
 								type='text'
-								v-model='userWord'
+								v-model='userInput'
 							)
 						p(class='word_translation'
 							v-if='userSettings.showWordTranslate'
@@ -50,14 +44,14 @@ div
 					div(class='text-example_origin')
 							p(class='origin_all-sentence')
 								| {{ example.before }}
-								span(v-if='isHideWord' class='origin_cap') [...]
+								span(v-if='isHideSentences' class='origin_cap') [...]
 								span(v-else class='origin_word' ) {{ example.wordInText }}
 								| {{ example.after }}
 					div(class='text-example_translate'
 						v-if='userSettings.showTextExampleTranslate'
 					)
 						p(class='translate_all-sentence'
-							v-if='!isHideWord'
+							v-if='!isHideSentences'
 						) {{ config.textExampleTranslate }}
 				div(class='learn-content_text-meaning'
 					v-if='userSettings.showTextMeaning'
@@ -65,14 +59,14 @@ div
 					div(class='text-meaning_origin')
 						p(class='origin_all-sentence')
 							| {{ meaning.before }}
-							span(v-if='isHideWord' class='origin_cap') [...]
+							span(v-if='isHideSentences' class='origin_cap') [...]
 							span(v-else class='origin_word' ) {{ meaning.wordInText }}
 							| {{ meaning.after }}
 					div(class='text-meaning_translate'
 						v-if='userSettings.showTextMeaningTranslate'
 					)
 						p(class='translate_all-sentence'
-						v-if='!isHideWord'
+						v-if='!isHideSentences'
 						) {{ config.textMeaningTranslate }}
 		div(class='card-footer')
 			v-progress-linear(:value='progressLinear')
@@ -80,15 +74,16 @@ div
 </template>
 
 <script>
-import { forGame } from '@/store/modules/forGame';
 /**
- * computed set and get
- * watch
+ * watch (old, )
  */
+import { forGame } from '@/store/modules/forGame';
+import { mainGame } from './mainGame';
+
 export default {
 	name: 'CardItem',
 	components: {},
-	mixins: [forGame],
+	mixins: [forGame, mainGame],
 	props: {
 		config: {
 			type: Object,
@@ -115,23 +110,22 @@ export default {
 	data() {
 		return {
 			isHideWord: true,
+			isHideSentences: true,
 			isGetWrongAnswer: false,
-			isSuccessResult: false,
 			wordsCount: 0,
-			userWord: '',
+			userInput: '',
+			classForSymbols: [],
+			gameStatus: 'play',
 		};
 	},
 	computed: {
-		progress() {
+		repeatProgress() {
 			const maxLearnLevel = 5;
 			const { learnGroup } = this.config.userWord;
 			return {
 				success: learnGroup,
 				failure: maxLearnLevel - learnGroup,
 			};
-		},
-		originWord() {
-			return this.config.word;
 		},
 		wordArr() {
 			return this.config.word.split('');
@@ -149,14 +143,54 @@ export default {
 			return Math.floor(proportion * 100);
 		},
 	},
-	watch: {},
+	watch: {
+		userInput() {
+			this.changeLettersStatus();
+			console.log(this.userInput);
+		},
+		gameStatus(current) {
+			switch (current) {
+			case 'finish':
+				setTimeout(() => {
+					this.resetVariables();
+					this.nextRound();
+				}, 1500);
+				this.gameStatus = 'play';
+				break;
+			case 'repeat':
+				console.log('repeat word');
+				break;
+			default:
+			}
+		},
+	},
 	created() {},
 	mounted() {},
 	beforeUpdate() {
 		this.markWord('config');
 	},
-	update() {},
+	updated() {},
 	methods: {
+		changeLettersStatus() {
+			const { userInput } = this;
+			const originWord = this.config.word;
+			const borderForBigError = 3;
+
+			let classesArr = [];
+			let errorCount = 0;
+			for (let i = 0; i < userInput.length; i += 1) {
+				if (userInput[i] === originWord[i]) {
+					classesArr.push('result-success');
+				} else {
+					classesArr.push('result-failfure');
+					errorCount += 1;
+				}
+			}
+			if (errorCount > borderForBigError) {
+				classesArr = classesArr.map((item) => (item === 'result-failfure' ? `${item}_big` : item));
+			}
+			this.classForSymbols = classesArr;
+		},
 		addWordInDeleteCategory() {
 			this.config.userWord.dictionaryGroup = 5;
 			console.log('ok, del');
@@ -168,42 +202,11 @@ export default {
 
 			return { before, wordInText, after };
 		},
-		playAudio() {
-			console.log('I play audio');
-		},
-		endGame() {
-			alert('The end');
-		},
-		nextRound() {
-			this.isHideWord = !this.isHideWord;
-			this.wordsCount += 1;
-			setTimeout(() => {
-				if (this.wordsCount === this.userSettings.wordsLimit) {
-					this.endGame();
-				}
-				this.isHideWord = true;
-				this.$emit('new-word');
-			}, 2000);
-		},
-		showSuccessResult() {
-			this.isSuccessResult = true;
-		},
-		showFailureResult() {
-			console.log(this.$refs);
-		},
-		checkWord() {
-			const input = this.userWord;
-			this.userWord = '';
-
-			if (this.originWord === input) {
-				this.successInput(this.isGetWrongAnswer);
-				this.showSuccessResult();
-				this.nextRound();
-			} else {
-				this.failureInput(this.isGetWrongAnswer);
-				this.isGetWrongAnswer = true;
-				this.showFailureResult();
-			}
+		resetVariables() {
+			this.isHideWord = true;
+			this.isGetWrongAnswer = false;
+			this.userInput = '';
+			this.classForSymbols = [];
 		},
 	},
 };
@@ -218,6 +221,9 @@ $borderColor: hsl(0, 3%, 53%);
 $imageWidth: 250px;
 $imageHeight: 170px;
 $successColor: hsl(122, 37%, 74%);
+// $failfureColorSmall: hsl(45, 100%, 75%);
+$failfureColor: hsl(45, 100%, 75%);
+$failfureColorBig: hsl(14, 100%, 78%);
 
 .card-container {
 	margin: auto;
@@ -311,6 +317,20 @@ $successColor: hsl(122, 37%, 74%);
 		position: absolute;
 		top: 0;
 		left: 0;
+	}
+}
+
+.result {
+	&-success {
+		text-decoration: underline;
+		color: $successColor;
+	}
+	&-failfure {
+		color: $failfureColor;
+
+		&_big {
+			color: $failfureColorBig;
+		}
 	}
 }
 

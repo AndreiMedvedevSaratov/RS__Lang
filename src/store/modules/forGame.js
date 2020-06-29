@@ -1,10 +1,14 @@
 const forGame = {
 	methods: {
+		/**
+		 *
+		 * @param {object} configName - props name for word-object
+		 */
 		markWord(configName = 'config') {
 			if (!this[configName].userWord) {
 				this[configName].userWord = {
-					learnGroup: 0,
-					dictionaryGroup: 0,
+					learnGroup: 1,
+					dictionaryGroup: 1,
 					allRepeats: 0,
 					successRepeats: 0,
 					previousTrain: new Date(),
@@ -66,8 +70,10 @@ const forGame = {
 			userWord.previousTrain = new Date();
 			userWord.nextTrain = this.getNextTrainTime(userWord.learnGroup);
 		},
+		/**
+		 * use after successful completion of the round
+		 */
 		getNextWord() {
-			console.log('newWord');
 			return {
 				word: 'boat',
 				image: 'https://cdn.bannerbuzz.com/media/catalog/product/b/o/boat-lettering.jpg',
