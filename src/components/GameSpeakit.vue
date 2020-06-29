@@ -12,6 +12,7 @@
 				type="button"
 				value="undefined"
 				@click="speak()"
+				id="btn"
 			)
 
 			p( class='speech' )

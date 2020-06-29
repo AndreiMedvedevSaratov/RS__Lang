@@ -58,12 +58,12 @@ const actions = {
 		const recognition = new SpeechRecognition();
 		recognition.lang = 'en-US';
 		recognition.continuos = false;
-		// recognition.lang = 'ru-Ru';
 		recognition.interimResults = false;
 		recognition.maxAlternatives = 1;
 		recognition.onerror = (event) => {
 			console.log(`It's error! ${event.error}`);
 		};
+		recognition.onend = () => recognition.start();
 
 		recognition.onresult = (event) => {
 			const last = event.results.length - 1;
@@ -75,15 +75,22 @@ const actions = {
 			// eslint-disable-next-line no-undef
 			// eslint-disable-next-line no-console
 			console.log(wordsArray, sayWord, wordsArray.includes(sayWord));
+
 			if (wordsArray.includes(sayWord)) {
 				document.querySelector('.main__image').src = `${state.urlFiles}${imageArray[wordsArray.indexOf(sayWord)]}`;
 				// eslint-disable-next-line prefer-destructuring
 				document.getElementById(sayWord).style.opacity = '0.5';
 				if (!count.includes(sayWord)) { count.push(sayWord); }
+
 				// eslint-disable-next-line no-console
 				console.log(count);
 				// eslint-disable-next-line no-alert
-				if (count.length === 1) {
+				if (count.length === 20) {
+					document.querySelectorAll('.card').forEach((item) => {
+						// eslint-disable-next-line no-param-reassign
+						item.style.opacity = '1';
+						return item;
+					});
 					alert('youre win, good job! Your skill is pretty high');
 					dispatch('speakit/GET_WORDS', { page: 2 }, { root: true });
 				}
