@@ -85,17 +85,22 @@ const actions = {
 				// eslint-disable-next-line no-console
 				console.log(count);
 				// eslint-disable-next-line no-alert
-				if (count.length === 20) {
+				if (count.length === 2) {
 					document.querySelectorAll('.card').forEach((item) => {
 						// eslint-disable-next-line no-param-reassign
 						item.style.opacity = '1';
 						return item;
 					});
 					alert('youre win, good job! Your skill is pretty high');
-					dispatch('speakit/GET_WORDS', { page: 2 }, { root: true });
+					dispatch('speakit/GET_WORDS', { page: 10 }, { root: true });
+					recognition.onend = () => recognition.stop();
+					count.length = 0;
 				}
+				// eslint-disable-next-line no-confusing-arrow
+				//
 			}
 		};
+		// eslint-disable-next-line no-unused-expressions
 		recognition.start();
 	},
 };

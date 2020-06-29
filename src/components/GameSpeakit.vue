@@ -1,6 +1,5 @@
 <template lang="pug">
 	div( class="game" )
-		div( class="header") header
 
 		div( class="main" )
 			img(
@@ -30,8 +29,6 @@
 						p( class="card__info__word" ) {{ item.word }}
 						p( class="card__info__transcription" ) {{ item.transcription }}
 						p( class="card__info__translation" ) {{ item.wordTranslate }}
-
-		div( class="buttonsRow" ) buttonsRow
 
 </template>
 
