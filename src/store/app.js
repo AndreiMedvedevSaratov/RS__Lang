@@ -204,9 +204,20 @@ const getters = {
 	getHtmlParameters: (state) => state.html,
 	getWords: (state) => state.words,
 	getWordStat: (state) => state.wordStat,
+	getStatusLoadWithIcon: (state) => {
+		const { status } = state;
+		const loading = status === 'loading';
+		const icon = status === 'success' ? 'mdi-check-circle' : 'mdi-close-circle';
+		const message = status === 'success' ? "It's okay" : 'An error occurred';
+
+		return {
+			status, loading, message, icon,
+		};
+	},
 };
 
 const state = {
+	status: 'success',
 	server: 'https://afternoon-falls-25894.herokuapp.com',
 	html: {
 		main: {
