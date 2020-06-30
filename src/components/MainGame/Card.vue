@@ -5,8 +5,8 @@ div
 
 		div(class='card-header')
 			div(class='card-header_repeat-progress')
-				div(v-for='dot of repeatProgress.success' class="dot dot-success")
-				div(v-for='dot of repeatProgress.failure' class='dot dot-failure')
+				div(v-for='dot of wordLearnProgress.success' class="dot dot-success")
+				div(v-for='dot of wordLearnProgress.failure' class='dot dot-failure')
 			div(class='card-header_delete-button')
 				v-btn(@click='addWordInDeleteCategory()'
 					x-small
@@ -28,16 +28,21 @@ div
 							)
 							span(class='origin_container')
 								span(:class='[{hidden: isHideWord}, classForSymbols[i]]'
-									v-for='(symbol, i) of wordArr'
+									v-for='(symbol, i) of config.word'
 								) {{ symbol }}
 							input(:class="[{hidden: !isHideWord}, 'origin_input']"
-								autofocus
+								v-focus
 								type='text'
 								v-model='userInput'
 							)
+						span(:class="[{hidden: isHideFadeAnswer}, 'origin_fade-answer']"
+							) {{ config.word }}
 						p(class='word_translation'
 							v-if='userSettings.showWordTranslate'
 						) {{ config.wordTranslate }}
+						p(class='word_transcription'
+							v-if='userSettings.showTranscription && !isHideSentences'
+						) {{ config.transcription }}
 				div(class='learn-content_text-example'
 					v-if='userSettings.showTextExample'
 					)
@@ -78,12 +83,21 @@ div
  * watch (old, )
  */
 import { forGame } from '@/store/modules/forGame';
+import { correctAnswer } from './correctAnswer';
+import { wrongAnswer } from './wrongAnswer';
 import { mainGame } from './mainGame';
 
 export default {
 	name: 'CardItem',
 	components: {},
-	mixins: [forGame, mainGame],
+	directives: {
+		focus: {
+			inserted(el) {
+				el.focus();
+			},
+		},
+	},
+	mixins: [forGame, mainGame, correctAnswer, wrongAnswer],
 	props: {
 		config: {
 			type: Object,
@@ -110,25 +124,23 @@ export default {
 	data() {
 		return {
 			isHideWord: true,
+			isHideFadeAnswer: true,
 			isHideSentences: true,
-			isGetWrongAnswer: false,
+			isGetWrongInput: false,
 			wordsCount: 0,
 			userInput: '',
 			classForSymbols: [],
-			gameStatus: 'play',
+			gameStatus: 'firstAttempt',
 		};
 	},
 	computed: {
-		repeatProgress() {
+		wordLearnProgress() {
 			const maxLearnLevel = 5;
 			const { learnGroup } = this.config.userWord;
 			return {
 				success: learnGroup,
 				failure: maxLearnLevel - learnGroup,
 			};
-		},
-		wordArr() {
-			return this.config.word.split('');
 		},
 		example() {
 			const { textExample, word } = this.config;
@@ -146,19 +158,25 @@ export default {
 	watch: {
 		userInput() {
 			this.changeLettersStatus();
-			console.log(this.userInput);
+			if (this.gameStatus === 'secondAttempt') {
+				console.log(this.isHideFadeAnswer);
+				this.isHideFadeAnswer = true;
+				setTimeout(() => { this.isHideFadeAnswer = false; }, 1500);
+			}
 		},
 		gameStatus(current) {
 			switch (current) {
 			case 'finish':
 				setTimeout(() => {
+					this.isGetWrongInput = false;
 					this.resetVariables();
 					this.nextRound();
 				}, 1500);
-				this.gameStatus = 'play';
+				this.gameStatus = 'firstAttempt';
 				break;
-			case 'repeat':
-				console.log('repeat word');
+			case 'secondAttempt':
+				this.resetVariables();
+				// this.repeatRound();
 				break;
 			default:
 			}
@@ -176,18 +194,23 @@ export default {
 			const originWord = this.config.word;
 			const borderForBigError = 3;
 
-			let classesArr = [];
 			let errorCount = 0;
-			for (let i = 0; i < userInput.length; i += 1) {
+			let classesArr = [];
+
+			const arrLen = userInput.length > originWord.length
+				? userInput.length
+				: originWord.length;
+			for (let i = 0; i < arrLen; i += 1) {
 				if (userInput[i] === originWord[i]) {
 					classesArr.push('result-success');
 				} else {
-					classesArr.push('result-failfure');
+					classesArr.push('result-failure');
 					errorCount += 1;
 				}
 			}
+
 			if (errorCount > borderForBigError) {
-				classesArr = classesArr.map((item) => (item === 'result-failfure' ? `${item}_big` : item));
+				classesArr = classesArr.map((item) => (item === 'result-failure' ? `${item}_big` : item));
 			}
 			this.classForSymbols = classesArr;
 		},
@@ -204,7 +227,7 @@ export default {
 		},
 		resetVariables() {
 			this.isHideWord = true;
-			this.isGetWrongAnswer = false;
+			this.isHideSentences = true;
 			this.userInput = '';
 			this.classForSymbols = [];
 		},
@@ -221,9 +244,9 @@ $borderColor: hsl(0, 3%, 53%);
 $imageWidth: 250px;
 $imageHeight: 170px;
 $successColor: hsl(122, 37%, 74%);
-// $failfureColorSmall: hsl(45, 100%, 75%);
-$failfureColor: hsl(45, 100%, 75%);
-$failfureColorBig: hsl(14, 100%, 78%);
+// $failureColorSmall: hsl(45, 100%, 75%);
+$failureColor: hsl(45, 100%, 75%);
+$failureColorBig: hsl(14, 100%, 78%);
 
 .card-container {
 	margin: auto;
@@ -325,11 +348,11 @@ $failfureColorBig: hsl(14, 100%, 78%);
 		text-decoration: underline;
 		color: $successColor;
 	}
-	&-failfure {
-		color: $failfureColor;
+	&-failure {
+		color: $failureColor;
 
 		&_big {
-			color: $failfureColorBig;
+			color: $failureColorBig;
 		}
 	}
 }
