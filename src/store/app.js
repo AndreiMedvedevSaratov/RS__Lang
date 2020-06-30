@@ -78,7 +78,7 @@ const actions = {
 					message: `${error.response.statusText}: ${error.response.data}`,
 				});
 			});
-		console.log('Получил', wordsData.data);
+		console.log('Get words', wordsData.data);
 		commit('APP_GET_WORDS', wordsData.data);
 	},
 

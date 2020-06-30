@@ -15,19 +15,19 @@ const actions = {
 			.catch((err) => {
 				commit('AUTH_ERROR', err.response);
 				localStorage.removeItem('token');
+				localStorage.removeItem('userId');
 				dispatch('ALERT', { status: 'error', data: err.response.data });
 			});
 
-		localStorage.setItem('token', user.data.token);
 		commit('AUTH_SUCCESS', user.data);
-		axios.defaults.headers.common.Authorization = user.data.token;
-
+		axios.defaults.headers.common = { Authorization: `Bearer ${user.data.token}` };
 		commit('user/USER_SUCCESS', user.data, { root: true });
 	},
 	AUTH_LOGOUT({ commit }) {
 		return new Promise(((resolve) => {
 			commit('AUTH_LOGOUT');
 			localStorage.removeItem('token');
+			localStorage.removeItem('userId');
 			resolve();
 		}));
 	},
@@ -42,9 +42,12 @@ const mutations = {
 	AUTH_REQUEST: (state) => {
 		state.status = 'loading';
 	},
-	AUTH_SUCCESS: (state, payload) => {
+	AUTH_SUCCESS: (state, user) => {
 		state.status = 'success';
-		state.token = payload.token;
+		state.token = user.token;
+		localStorage.setItem('token', user.token);
+		localStorage.setItem('userId', user.userId);
+		console.log(user);
 	},
 	AUTH_ERROR: (state) => {
 		state.status = 'error';

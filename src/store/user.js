@@ -5,19 +5,15 @@ import axios from 'axios';
 const actions = {
 	async USER_REQUEST({
 		state, rootState, commit, dispatch,
-	}, user) {
+	}) {
 		commit('USER_REQUEST');
-		commit('USER_SUCCESS', user);
-
-		await axios.get(`${rootState.app.server}/users/${state.profile.userId}`)
-			.then((response) => {
-				// eslint-disable-next-line no-console
-				console.log('Получил', response.data);
-			})
+		const userData = await axios.get(`${rootState.app.server}/users/${state.profile.userId}`)
 			.catch((error) => {
 				commit('USER_ERROR');
 				dispatch('ALERT', { status: 'error', data: error.response.data }, { root: true });
 			});
+		console.log('Получил данные пользователя', userData);
+		commit('USER_SUCCESS', userData.data);
 	},
 	async USER_SIGNUP({
 		state, rootState, commit, dispatch,
@@ -48,7 +44,6 @@ const mutations = {
 		state.status = 'success';
 		state.profile.userId = payload.userId ? payload.userId : state.profile.userId;
 		state.profile.email = payload.email ? payload.email : state.profile.email;
-		// state.profile.password = '';
 	},
 	USER_LOGOUT: (state) => {
 		state.profile = {
@@ -78,7 +73,7 @@ const getters = {
 const state = {
 	status: '',
 	profile: {
-		userId: '',
+		userId: localStorage.getItem('userId'),
 		email: '',
 		password: '',
 	},
