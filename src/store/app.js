@@ -7,11 +7,11 @@ import axios from 'axios';
  * link https://vuex.vuejs.org/api/#actions
  */
 const actions = {
-	/** Function notification ALERT
+	/** Notification function
 	 * Parameters: error, warning, info, default
 	 *
 	 * Call in all modules
-	 * dispatch('ALERT', { status: 'error', data: error.response.data }, { root: true })
+	 * dispatch('ALERT', { status: String, data: Object/String }, { root: true })
 	 */
 	ALERT(state, payload) {
 		const status = payload.status ? payload.status : 'default';
@@ -27,7 +27,7 @@ const actions = {
 					text += `${count++}) ${element.message} </br>`;
 				});
 			}
-			if (typeof payload.data === 'string') text = payload.data;
+			if (typeof payload.data === 'string' || payload.message) text = payload.data || payload.message;
 			break;
 		case 'warning':
 			text = payload.data;
@@ -51,11 +51,11 @@ const actions = {
 		});
 	},
 
-	/** Function get words
+	/** Function gets words
 	 * Parameters: page, group
 	 *
 	 * Call in all modules
-	 * dispatch('APP_GET_WORDS', { page: 'page', group: 'group' }, { root: true })
+	 * dispatch('APP_GET_WORDS', { page: Number, group: Number }, { root: true })
 	 */
 	async APP_GET_WORDS({
 		rootState, commit, dispatch,
@@ -80,21 +80,28 @@ const actions = {
 			});
 		console.log('Get words', wordsData.data);
 		commit('APP_GET_WORDS', wordsData.data);
+
+		commit('APP_STATUS', 'success');
 	},
 
-	/** Function creates statistics for a word by its ID
-	 * Parameters: wordId, wordStat
+	/** This function creates / updates statistics for a word based on its ID
+	 * Parameters: method <optional>, wordId, wordStat
+	 *
+	 * method - 'post' <default, create>, 'put' <update>
 	 *
 	 * Call in all modules
-	 * dispatch('APP_CREATE_USER_WORD_STAT',
-	  { wordStat: 'wordStat', wordStat: 'wordStat' }, { root: true })
+	 * dispatch('APP_SET_USER_WORD_STAT',
+	  { method: String, wordId: String, wordStat: Object }, { root: true })
 	 */
-	async APP_CREATE_USER_WORD_STAT({
+	async APP_SET_USER_WORD_STAT({
 		rootState, commit, dispatch,
 	}, payload) {
 		commit('APP_STATUS', 'loading');
 
-		const wordData = await axios.post(`${rootState.app.server}/users/${rootState.app.profile.userId}/words/${payload.wordId}`, payload.wordStat)
+		const wordData = await axios[payload.method || 'post'](
+			`${rootState.app.server}/users/${rootState.user.profile.userId}/words/${payload.wordId}`,
+			payload.wordStat,
+		)
 			.catch((error) => {
 				commit('APP_STATUS', 'error');
 				dispatch('ALERT', {
@@ -103,8 +110,66 @@ const actions = {
 					message: `${error.response.statusText}: ${error.response.data}`,
 				});
 			});
-		console.log('Создал', wordData.data);
-		commit('APP_CREATE_USER_WORD_STAT', wordData.data);
+		console.log(`${payload.method === 'put' ? 'Обновил' : 'Создал'} статистику по слову`, wordData.data);
+		commit('APP_SET_USER_WORD_STAT', wordData.data);
+
+		commit('APP_STATUS', 'success');
+	},
+
+	/** The function gets statistics for a word via its ID or for all words saved on the user.
+	 * Parameters: wordId <optional>
+	 *
+	 * Call in all modules
+	 * dispatch('APP_GET_USER_WORD_STAT', wordId: String || null, { root: true })
+	 */
+	async APP_GET_USER_WORD_STAT({
+		rootState, commit, dispatch,
+	}, wordId) {
+		commit('APP_STATUS', 'loading');
+
+		const wordData = await axios.get(
+			`${rootState.app.server}/users/${rootState.user.profile.userId}/words/${wordId || ''}`,
+		)
+			.catch((error) => {
+				commit('APP_STATUS', 'error');
+				dispatch('ALERT', {
+					alert: true,
+					status: 'error',
+					message: `${error.response.statusText}: ${error.response.data}`,
+				});
+			});
+		console.log('Получил статистику по слову(-ам)', wordData.data);
+		commit('APP_SET_USER_WORD_STAT', wordData.data);
+
+		commit('APP_STATUS', 'success');
+	},
+
+	/** The function deletes statistics for a word via its ID
+	 * Parameters: wordId
+	 *
+	 * Call in all modules
+	 * dispatch('APP_DELETE_USER_WORD_STAT', wordId: String, { root: true })
+	 */
+	async APP_DELETE_USER_WORD_STAT({
+		rootState, commit, dispatch,
+	}, wordId) {
+		commit('APP_STATUS', 'loading');
+
+		await axios.delete(
+			`${rootState.app.server}/users/${rootState.user.profile.userId}/words/${wordId}`,
+		)
+			.catch((error) => {
+				commit('APP_STATUS', 'error');
+				dispatch('ALERT', {
+					alert: true,
+					status: 'error',
+					message: `${error.response.statusText}: ${error.response.data}`,
+				});
+			});
+		console.log(`Удалил статистику по слову с ID ${wordId}`);
+		commit('APP_DELETE_USER_WORD_STAT');
+
+		commit('APP_STATUS', 'success');
 	},
 };
 
@@ -119,8 +184,11 @@ const mutations = {
 	APP_GET_WORDS: (state, words) => {
 		state.words = words;
 	},
-	APP_CREATE_USER_WORD_STAT: (state, word) => {
+	APP_SET_USER_WORD_STAT: (state, word) => {
 		state.wordStat = word;
+	},
+	APP_DELETE_USER_WORD_STAT: (state) => {
+		state.wordStat = [];
 	},
 	APP_STATUS: (state, status) => {
 		if (status === 'loading' || status === 'success') {
@@ -133,7 +201,9 @@ const mutations = {
  * link https://vuex.vuejs.org/api/#getters
  */
 const getters = {
-	isHtml: (state) => state.html,
+	getHtmlParameters: (state) => state.html,
+	getWords: (state) => state.words,
+	getWordStat: (state) => state.wordStat,
 };
 
 const state = {
@@ -145,7 +215,7 @@ const state = {
 	},
 
 	words: [],
-	wordStat: {},
+	wordStat: [],
 };
 
 export default {
