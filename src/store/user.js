@@ -5,14 +5,14 @@ import axios from 'axios';
 const actions = {
 	async USER_REQUEST({
 		state, rootState, commit, dispatch,
-	}) {
+	}, userId) {
 		commit('USER_REQUEST');
-		const userData = await axios.get(`${rootState.app.server}/users/${state.profile.userId}`)
+		const userData = await axios.get(`${rootState.app.server}/users/${userId || state.profile.userId}`)
 			.catch((error) => {
 				commit('USER_ERROR');
 				dispatch('ALERT', { status: 'error', data: error.response.data }, { root: true });
 			});
-		console.log('Получил данные пользователя', userData);
+		console.log('Получил данные пользователя', userData.data);
 		commit('USER_SUCCESS', userData.data);
 	},
 	async USER_SIGNUP({

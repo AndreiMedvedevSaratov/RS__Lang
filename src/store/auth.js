@@ -19,9 +19,10 @@ const actions = {
 				dispatch('ALERT', { status: 'error', data: err.response.data });
 			});
 
-		commit('AUTH_SUCCESS', user.data);
 		axios.defaults.headers.common = { Authorization: `Bearer ${user.data.token}` };
-		commit('user/USER_SUCCESS', user.data, { root: true });
+		dispatch('user/USER_REQUEST', user.data.userId, { root: true });
+
+		commit('AUTH_SUCCESS', user.data);
 	},
 	AUTH_LOGOUT({ commit }) {
 		return new Promise(((resolve) => {
@@ -47,7 +48,6 @@ const mutations = {
 		state.token = user.token;
 		localStorage.setItem('token', user.token);
 		localStorage.setItem('userId', user.userId);
-		console.log(user);
 	},
 	AUTH_ERROR: (state) => {
 		state.status = 'error';
