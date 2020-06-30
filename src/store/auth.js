@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import axios from 'axios';
 
 /** Instructions for working with actions
@@ -6,10 +5,10 @@ import axios from 'axios';
  */
 const actions = {
 	async AUTH_REQUEST({
-		state, rootState, commit, dispatch,
+		rootState, commit, dispatch,
 	}) {
 		commit('AUTH_REQUEST');
-		await axios.post(`${state.server}/signin`, {
+		await axios.post(`${rootState.app.server}/signin`, {
 			email: rootState.user.profile.email,
 			password: rootState.user.profile.password,
 		})
@@ -34,49 +33,6 @@ const actions = {
 		}));
 	},
 
-	/** Function notification ALERT
-	 * Events: error, warning, info, default
-	 *
-	 * Call in all modules
-	 * dispatch('ALERT', { status: 'error', data: error.response.data }, { root: true })
-	 */
-	ALERT(state, payload) {
-		const status = payload.status ? payload.status : 'default';
-		let position = 'bottom-right';
-		let text = '';
-
-		switch (status) {
-		case 'error':
-			if (typeof payload.data === 'object') {
-				let count = 1;
-				payload.data.error.errors.forEach((element) => {
-					// eslint-disable-next-line no-plusplus
-					text += `${count++}) ${element.message} </br>`;
-				});
-			}
-			if (typeof payload.data === 'string') text = payload.data;
-			break;
-		case 'warning':
-			text = payload.data;
-			position = 'bottom';
-			break;
-		case 'info':
-			text = payload.data;
-			position = 'top-right';
-			break;
-		default:
-			text = payload.data;
-			position = 'top';
-			break;
-		}
-
-		Vue.$toast.open({
-			message: text,
-			type: status,
-			duration: 10000,
-			position,
-		});
-	},
 };
 
 /**
@@ -97,9 +53,6 @@ const mutations = {
 	AUTH_LOGOUT: (state) => {
 		state.token = '';
 	},
-	EDIT_HTML: (state, payload) => {
-		state.html[payload.one][payload.key] = payload.value;
-	},
 };
 
 /**
@@ -110,18 +63,11 @@ const getters = {
 	isAuthenticated: (state) => !!state.token,
 	authStatus: (state) => state.status,
 	isLoading: (state) => state.status === 'loading',
-	isHtml: (state) => state.html,
 };
 
 const state = {
-	server: 'https://afternoon-falls-25894.herokuapp.com',
 	token: localStorage.getItem('token') || '',
 	status: '',
-	html: {
-		main: {
-			drawer: true,
-		},
-	},
 };
 
 export default {
