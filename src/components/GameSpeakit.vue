@@ -21,7 +21,7 @@
 					class="card"
 					v-for="(item, i) in isWords"
 					:key="i"
-					@click="setImgAndAudio({image: isUrlFiles+item.image,audio: isUrlFiles+item.audio})"
+					@click="gameAction({ image: isUrlFiles+item.image, audio: isUrlFiles+item.audio })"
 					v-bind:id="item.word"
 				)
 					span( class="card__icon" ) X
@@ -49,6 +49,7 @@ export default {
 			isWords: 'speakit/getWords',
 			isUrlFiles: 'speakit/getUrlFiles',
 			isUrlImage: 'speakit/getUrlImage',
+			gameStatus: 'speakit/gameStatus',
 		}),
 	},
 	watch: {},
@@ -70,6 +71,9 @@ export default {
 		...mapMutations({
 			setImgAndAudio: 'speakit/SPEAKIT_SET_IMAGE_AND_AUDIO',
 		}),
+		gameAction(data) {
+			if (!this.gameStatus) this.setImgAndAudio({ image: data.image, audio: data.audio });
+		},
 	},
 };
 </script>

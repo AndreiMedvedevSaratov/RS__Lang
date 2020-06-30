@@ -4,16 +4,6 @@ import axios from 'axios';
  * link https://vuex.vuejs.org/api/#actions
  */
 
-/**
- * Замена getWordsData
- */
-// eslint-disable-next-line arrow-parens, no-var, vars-on-top
-var wordsArray;
-// eslint-disable-next-line arrow-parens, no-var, vars-on-top
-var imageArray;
-// eslint-disable-next-line arrow-parens, no-var, vars-on-top
-var count = [];
-
 const actions = {
 	async GET_WORDS({
 		rootState, commit, dispatch,
@@ -31,17 +21,6 @@ const actions = {
 			.then((response) => {
 				// eslint-disable-next-line no-console
 				console.log('Получил', response.data);
-				response.data.map((item) => {
-					// eslint-disable-next-line no-param-reassign
-					item.word = item.word.toLowerCase();
-					return item;
-				});
-				// eslint-disable-next-line arrow-parens, no-var, vars-on-top
-				wordsArray = response.data.map(item => item.word);
-				// eslint-disable-next-line arrow-parens, no-var, vars-on-top
-				imageArray = response.data.map(item => item.image);
-				// eslint-disable-next-line no-console
-				console.dir('wordsArray', wordsArray);
 				commit('SPEAKIT_GET_WORDS_SUCCESS', response.data);
 			})
 			.catch((error) => {
@@ -53,7 +32,8 @@ const actions = {
 				}, { root: true });
 			});
 	},
-	SPEAKIT_SPEAK: ({ state, dispatch }) => {
+	SPEAKIT_SPEAK: ({ state, getters, dispatch }) => {
+		state.gameStatus = true;
 		const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 		const recognition = new SpeechRecognition();
 		recognition.lang = 'en-US';
@@ -74,18 +54,19 @@ const actions = {
 			p.textContent = sayWord;
 			// eslint-disable-next-line no-undef
 			// eslint-disable-next-line no-console
-			console.log(wordsArray, sayWord, wordsArray.includes(sayWord));
+			console.log(getters.getWordsArray, sayWord, getters.getWordsArray.includes(sayWord));
 
-			if (wordsArray.includes(sayWord)) {
-				document.querySelector('.main__image').src = `${state.urlFiles}${imageArray[wordsArray.indexOf(sayWord)]}`;
+			if (getters.getWordsArray.includes(sayWord)) {
+				document.querySelector('.main__image').src = `${state.urlFiles}${getters.getImageArray[
+					getters.getWordsArray.indexOf(sayWord)]}`;
 				// eslint-disable-next-line prefer-destructuring
 				document.getElementById(sayWord).style.opacity = '0.5';
-				if (!count.includes(sayWord)) { count.push(sayWord); }
+				if (!state.count.includes(sayWord)) { state.count.push(sayWord); }
 
 				// eslint-disable-next-line no-console
-				console.log(count);
+				console.log(state.count);
 				// eslint-disable-next-line no-alert
-				if (count.length === 2) {
+				if (state.count.length === 2) {
 					document.querySelectorAll('.card').forEach((item) => {
 						// eslint-disable-next-line no-param-reassign
 						item.style.opacity = '1';
@@ -94,7 +75,7 @@ const actions = {
 					alert('youre win, good job! Your skill is pretty high');
 					dispatch('speakit/GET_WORDS', { page: 10 }, { root: true });
 					recognition.onend = () => recognition.stop();
-					count.length = 0;
+					state.count.length = 0;
 				}
 				// eslint-disable-next-line no-confusing-arrow
 				//
@@ -136,6 +117,9 @@ const getters = {
 	getUrlImage: (state) => state.urlImage,
 	getWords: (state) => state.words,
 	getUrlFiles: (state) => state.urlFiles,
+	getWordsArray: (state) => state.words.map((item) => item.word.toLowerCase()),
+	getImageArray: (state) => state.words.map((item) => item.image),
+	gameStatus: (state) => state.gameStatus,
 };
 
 const state = {
@@ -143,6 +127,8 @@ const state = {
 	words: [],
 	urlFiles: 'https://raw.githubusercontent.com/Dream-Team-42/rslang-data/master/',
 	urlImage: './assets/default-english.jpg',
+	count: [],
+	gameStatus: false,
 };
 
 export default {
