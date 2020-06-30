@@ -8,22 +8,21 @@ const actions = {
 		rootState, commit, dispatch,
 	}) {
 		commit('AUTH_REQUEST');
-		await axios.post(`${rootState.app.server}/signin`, {
+		const user = await axios.post(`${rootState.app.server}/signin`, {
 			email: rootState.user.profile.email,
 			password: rootState.user.profile.password,
 		})
-			.then((response) => {
-				localStorage.setItem('token', response.data.token);
-				commit('AUTH_SUCCESS', response.data);
-				axios.defaults.headers.common.Authorization = response.data.token;
-
-				commit('user/USER_SUCCESS', response.data, { root: true });
-			})
 			.catch((err) => {
 				commit('AUTH_ERROR', err.response);
 				localStorage.removeItem('token');
 				dispatch('ALERT', { status: 'error', data: err.response.data });
 			});
+
+		localStorage.setItem('token', user.data.token);
+		commit('AUTH_SUCCESS', user.data);
+		axios.defaults.headers.common.Authorization = user.data.token;
+
+		commit('user/USER_SUCCESS', user.data, { root: true });
 	},
 	AUTH_LOGOUT({ commit }) {
 		return new Promise(((resolve) => {

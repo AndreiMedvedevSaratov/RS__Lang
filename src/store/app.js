@@ -1,12 +1,14 @@
+/* eslint-disable no-console */
+/* eslint-disable no-prototype-builtins */
 import Vue from 'vue';
-// import axios from 'axios';
+import axios from 'axios';
 
 /** Instructions for working with actions
  * link https://vuex.vuejs.org/api/#actions
  */
 const actions = {
 	/** Function notification ALERT
-	 * Events: error, warning, info, default
+	 * Parameters: error, warning, info, default
 	 *
 	 * Call in all modules
 	 * dispatch('ALERT', { status: 'error', data: error.response.data }, { root: true })
@@ -49,26 +51,60 @@ const actions = {
 		});
 	},
 
-	async AUTH_REQUEST({
+	/** Function get words
+	 * Parameters: page, group
+	 *
+	 * Call in all modules
+	 * dispatch('APP_GET_WORDS', { page: 'page', group: 'group' }, { root: true })
+	 */
+	async APP_GET_WORDS({
 		rootState, commit, dispatch,
-	}) {
-		commit('AUTH_REQUEST');
-		await axios.post(`${rootState.app.server}/signin`, {
-			email: rootState.user.profile.email,
-			password: rootState.user.profile.password,
-		})
-			.then((response) => {
-				localStorage.setItem('token', response.data.token);
-				commit('AUTH_SUCCESS', response.data);
-				axios.defaults.headers.common.Authorization = response.data.token;
+	}, payload) {
+		const words = {
+			page: 0,
+			group: 0,
+		};
+		if (payload && payload.hasOwnProperty('page')) words.page = payload.page;
+		if (payload && payload.hasOwnProperty('group')) words.group = payload.group;
 
-				commit('user/USER_SUCCESS', response.data, { root: true });
-			})
-			.catch((err) => {
-				commit('AUTH_ERROR', err.response);
-				localStorage.removeItem('token');
-				dispatch('ALERT', { status: 'error', data: err.response.data });
+		commit('APP_STATUS', 'loading');
+
+		const wordsData = await axios.get(`${rootState.app.server}/words?page=${words.page}&group=${words.group}`)
+			.catch((error) => {
+				commit('APP_STATUS', 'error');
+				dispatch('ALERT', {
+					alert: true,
+					status: 'error',
+					message: `${error.response.statusText}: ${error.response.data}`,
+				});
 			});
+		console.log('Получил', wordsData.data);
+		commit('APP_GET_WORDS', wordsData.data);
+	},
+
+	/** Function creates statistics for a word by its ID
+	 * Parameters: wordId, wordStat
+	 *
+	 * Call in all modules
+	 * dispatch('APP_CREATE_USER_WORD_STAT',
+	  { wordStat: 'wordStat', wordStat: 'wordStat' }, { root: true })
+	 */
+	async APP_CREATE_USER_WORD_STAT({
+		rootState, commit, dispatch,
+	}, payload) {
+		commit('APP_STATUS', 'loading');
+
+		const wordData = await axios.post(`${rootState.app.server}/users/${rootState.app.profile.userId}/words/${payload.wordId}`, payload.wordStat)
+			.catch((error) => {
+				commit('APP_STATUS', 'error');
+				dispatch('ALERT', {
+					alert: true,
+					status: 'error',
+					message: `${error.response.statusText}: ${error.response.data}`,
+				});
+			});
+		console.log('Создал', wordData.data);
+		commit('APP_CREATE_USER_WORD_STAT', wordData.data);
 	},
 };
 
@@ -80,8 +116,18 @@ const mutations = {
 	EDIT_HTML: (state, payload) => {
 		state.html[payload.one][payload.key] = payload.value;
 	},
+	APP_GET_WORDS: (state, words) => {
+		state.words = words;
+	},
+	APP_CREATE_USER_WORD_STAT: (state, word) => {
+		state.wordStat = word;
+	},
+	APP_STATUS: (state, status) => {
+		if (status === 'loading' || status === 'success') {
+			state.status = status;
+		} else state.status = 'error';
+	},
 };
-
 /**
  * Instructions for working with getters
  * link https://vuex.vuejs.org/api/#getters
@@ -97,6 +143,9 @@ const state = {
 			drawer: true,
 		},
 	},
+
+	words: [],
+	wordStat: {},
 };
 
 export default {
