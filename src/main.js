@@ -25,3 +25,10 @@ new Vue({
 	vuetify,
 	render: (h) => h(App),
 }).$mount('#app');
+
+// store.subscribeAction((action) => {
+// 	console.info('Сработал Action', action);
+// });
+// store.subscribe((mutation) => {
+// 	console.info('Сработал Mutation ', mutation);
+// });
