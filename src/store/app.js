@@ -11,10 +11,10 @@ const actions = {
 	 * Notification function
 	 *
 	 * @param {object} payload
-	 * @param {string} payload.status - error, warning, info, default
-	 * @param {object || string} payload.data
-	 * @param {string} payload.message
-	 * @example dispatch('ALERT', { status: String, data: Object/String }, { root: true })
+	 * @param {string} [payload.status='default'] - error, warning, info, default
+	 * @param {(object|string)} payload.data
+	 * @param {string} [payload.message]
+	 * @example dispatch('ALERT', { status: error, data: {Object} || text }, { root: true })
 	 */
 	ALERT(state, payload) {
 		const status = payload.status ? payload.status : 'default';
@@ -54,11 +54,15 @@ const actions = {
 		});
 	},
 
-	/** Function gets words
-	 * Parameters: page, group
+	/**
+	 * Function gets words
 	 *
-	 * Call in all modules
-	 * dispatch('APP_GET_WORDS', { page: Number, group: Number }, { root: true })
+	 * @param {object} [payload]
+	 * @param {number} [payload.page=0]
+	 * @param {number} [payload.group=0]
+	 * @param {number} [payload.wordsPerExampleSentenceLTE]
+	 * @param {number} [payload.wordsPerPage]
+	 * @example dispatch('APP_GET_WORDS', { page: 1, group: 1 }, { root: true })
 	 */
 	async APP_GET_WORDS({
 		rootState, commit, dispatch,
@@ -66,6 +70,8 @@ const actions = {
 		const words = {
 			page: 0,
 			group: 0,
+			wordsPerExampleSentenceLTE: '',
+			wordsPerPage: '',
 		};
 		if (payload && payload.hasOwnProperty('page')) words.page = payload.page;
 		if (payload && payload.hasOwnProperty('group')) words.group = payload.group;
@@ -75,7 +81,7 @@ const actions = {
 		commit('APP_STATUS', 'loading');
 
 		const wordsData = await axios.get(
-			`${rootState.app.server}/words?page=${words.page}&group=${words.group}&wordsPerExampleSentenceLTE=${words.wordsPerExampleSentenceLTE || ''}&wordsPerPage=${words.wordsPerPage || ''}`,
+			`${rootState.app.server}/words?page=${words.page}&group=${words.group}&wordsPerExampleSentenceLTE=${words.wordsPerExampleSentenceLTE}&wordsPerPage=${words.wordsPerPage}`,
 		)
 			.catch((error) => {
 				commit('APP_STATUS', 'error');
@@ -93,6 +99,15 @@ const actions = {
 		commit('APP_STATUS', 'success');
 	},
 
+	/**
+	 * Function gets count words in group
+	 *
+	 * @param {object} [payload]
+	 * @param {number} [payload.group=0]
+	 * @param {number} [payload.wordsPerExampleSentenceLTE]
+	 * @param {number} [payload.wordsPerPage]
+	 * @example dispatch('APP_GET_WORDS', { page: 1, group: 1 }, { root: true })
+	 */
 	async APP_GET_COUNT_WORDS_IN_GROUP({
 		rootState, commit, dispatch,
 	}, payload) {
@@ -124,6 +139,12 @@ const actions = {
 		commit('APP_STATUS', 'success');
 	},
 
+	/**
+	 * Function gets word
+	 *
+	 * @param {string} wordId
+	 * @example dispatch('APP_GET_WORDS', wordId, { root: true })
+	 */
 	async APP_GET_WORD({
 		rootState, commit, dispatch,
 	}, wordId) {
@@ -148,14 +169,15 @@ const actions = {
 		commit('APP_STATUS', 'success');
 	},
 
-	/** This function creates / updates statistics for a word based on its ID
-	 * Parameters: method <optional>, wordId, wordStat
+	/**
+	 * This function creates / updates statistics for a word based on its ID
 	 *
-	 * method - 'post' <default, create>, 'put' <update>
-	 *
-	 * Call in all modules
-	 * dispatch('APP_SET_USER_WORD_STAT',
-	  { method: String, wordId: String, wordStat: Object }, { root: true })
+	 * @param {object} payload
+	 * @param {number} payload.wordId
+	 * @param {number} payload.wordStat
+	 * @param {number} [payload.method='post'] - 'post' <default, create>, 'put' <update>
+	 * @example dispatch('APP_SET_USER_WORD_STAT',
+	 *				{ wordId: String, wordStat: {Object} }, { root: true })
 	 */
 	async APP_SET_USER_WORD_STAT({
 		rootState, commit, dispatch,
@@ -182,11 +204,11 @@ const actions = {
 		commit('APP_STATUS', 'success');
 	},
 
-	/** The function gets statistics for a word via its ID or for all words saved on the user.
-	 * Parameters: wordId <optional>
+	/**
+	 * The function gets statistics for a word via its ID or for all words saved on the user.
 	 *
-	 * Call in all modules
-	 * dispatch('APP_GET_USER_WORD_STAT', wordId: String || null, { root: true })
+	 * @param {number} [wordId]
+	 * @example dispatch('APP_GET_USER_WORD_STAT', wordId: String || null, { root: true })
 	 */
 	async APP_GET_USER_WORD_STAT({
 		rootState, commit, dispatch,
@@ -212,11 +234,11 @@ const actions = {
 		commit('APP_STATUS', 'success');
 	},
 
-	/** The function deletes statistics for a word via its ID
-	 * Parameters: wordId
+	/**
+	 * The function deletes statistics for a word via its ID
 	 *
-	 * Call in all modules
-	 * dispatch('APP_DELETE_USER_WORD_STAT', wordId: String, { root: true })
+	 * @param {number} wordId
+	 * @example dispatch('APP_DELETE_USER_WORD_STAT', wordId: String, { root: true })
 	 */
 	async APP_DELETE_USER_WORD_STAT({
 		rootState, commit, dispatch,
@@ -240,6 +262,16 @@ const actions = {
 		commit('APP_STATUS', 'success');
 	},
 
+	/**
+	 * This function gets all user aggregated words
+	 *
+	 * @param {object} payload
+	 * @param {number} [payload.group=0]
+	 * @param {number} [payload.wordsPerPage]
+	 * @param {number} payload.filter
+	 * @example dispatch('APP_GET_USER_WORDS_AGGREGATED',
+	 *				{ filter: JSON.stringify({ userWord: null }), { root: true })
+	 */
 	async APP_GET_USER_WORDS_AGGREGATED({
 		rootState, commit, dispatch,
 	}, payload) {
