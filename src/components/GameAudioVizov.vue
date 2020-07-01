@@ -17,7 +17,7 @@
 					v-for="(item, i) in isWords"
 					:key="i"
 					v-if="i < 5"
-					@click="setImgAndAudio({image: isUrlFiles+item.image,audio: isUrlFiles+item.audio})"
+					@click="strikeButton(item)"
 				)
 
 					div( class="card__info" )
@@ -39,9 +39,11 @@ export default {
 		Results: [],
 		myWords: {},
 		levelOfDifficulty: 0, // from 0 to 5
-		currentPageNumber: 3, // from 0 to 29
+		currentPageNumber: 4, // from 0 to 29
 		currentWordNumberOnPage: 5, // from 0 to 19
 		currentGameRound: 0, // from 0 to 9
+		card: '',
+		pressedWord: '',
 	}),
 	computed: {
 		...mapGetters({
@@ -62,6 +64,20 @@ export default {
 		...mapMutations({
 			setImgAndAudio: 'audiovizov/AUDIOVIZOV_SET_IMAGE_AND_AUDIO',
 		}),
+		strikeButton(word) {
+			console.log(word);
+			if (word.wordTranslate === this.myWords[0].wordTranslate) {
+				console.log('success!');
+			}
+		},
+		playRoundOfTheGame() {
+			this.playSound(this.isUrlFiles + this.myWords[0].audio);
+			this.setImgAndAudio({
+				image: this.isUrlFiles + this.myWords[0].image,
+				audio: this.isUrlFiles + this.myWords[0].audio,
+			});
+		},
+		// ----- Function get words for the play ----- //
 		async getWordsForGame(levelOfDifficulty, currentPageNumber) {
 			try {
 				this.getWords({ page: currentPageNumber, group: levelOfDifficulty });
@@ -71,17 +87,11 @@ export default {
 			}
 		},
 		// ----- Function play sounds for the cards with English names ----- //
-		playSound(soundfileOgg, soundfileMp, soundfileMa) {
+		playSound(soundfileMp) {
 			if ('Audio' in window) {
 				const a = new Audio();
-				if (a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"')
-					.replace(/no/, '')) a.src = soundfileOgg;
-				else if (a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/,
+				if (a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/,
 					'')) a.src = soundfileMp;
-				else if (a.canPlayType && a.canPlayType(
-					'audio/mp4; codecs="mp4a.40.2"',
-				).replace(/no/, '')) a.src = soundfileMa;
-				else a.src = soundfileMp;
 				a.autoplay = true;
 			}
 		},
@@ -96,125 +106,17 @@ export default {
 		},
 		async startGame() {
 			this.isStartGame = true;
+			this.currentGameRound = 0;
 			this.randomArray = [0, 1, 2, 3, 4];
 			this.shuffle(this.randomArray);
-			// console.log(this.myWords[0].audio);
-			// console.log(this.myWords[0]);
-			// console.log(this.getWords()[0]);
-			// this.playSound(this.myWords[0].audio, this.myWords[0].audio, this.myWords[0].audio);
-
 			await this.getWordsForGame(this.levelOfDifficulty, this.currentPageNumber);
-			console.log(this.myWords);
+			// console.log(this.myWords);
+			// this.isUrlImage = './assets/img/speaker.jpg';
+			this.playRoundOfTheGame();
 		},
 	},
-
 };
 
-/*
-// ----- Variables ----- //
-const sound = '';
-
-// ----- Function to put correct or wrong star in progress bar ----- //
-function gameProgressAddStar(variant) {
-	const PROGRESS_BAR = document.getElementById('GAME_PROGRESS');
-	if (variant === 1) {
-		const SUCCESS_STAR = document.createElement('span');
-		SUCCESS_STAR.classList.add('star_correct');
-		PROGRESS_BAR.append(SUCCESS_STAR);
-	}
-	if (variant === 0) {
-		const MISTAKE_STAR = document.createElement('span');
-		MISTAKE_STAR.classList.add('star_mistake');
-		PROGRESS_BAR.append(MISTAKE_STAR);
-	}
-}
-
-// ----- Game mode ----- //
-const BUTTON_START_GAME = document.getElementById('START_GAME');
-
-BUTTON_START_GAME.addEventListener('click', () => {
-	if (BUTTON_START_GAME.value === 'start_game') {
-		BUTTON_START_GAME.value = 'repeat';
-		BUTTON_START_GAME.textContent = 'Repeat';
-		BUTTON_START_GAME.classList.add('repeat');
-		startGame = true;
-		gameInit();
-		// Game_Play_Current_Sound();
-	}
-	if (BUTTON_START_GAME.value === 'repeat') {
-		// playSound(sound, sound, sound);
-	}
-});
-
-// ----- Function to clear changes after game ----- //
-function clearAfterGame() {
-	for (let i = 1; i < 5; i += 1) {
-		// CONTAINER.children[i].children[0].classList.remove('guessed');
-		document.getElementById('GAME_PROGRESS').innerHTML = '';
-		Results = [];
-		randomArray = [0, 1, 2, 3, 4];
-		startGame = false;
-		BUTTON_START_GAME.value = 'start_game';
-		BUTTON_START_GAME.textContent = 'Start Game';
-		BUTTON_START_GAME.classList.remove('repeat');
-	}
-}
-
-const CARD_GAME_CLICK = document.getElementById('CONTAINER_2');
-
-CARD_GAME_CLICK.addEventListener('mousedown', (event) => {
-	if (event.target.classList.contains('front') &&
-	(event.target.parentNode.classList.contains('guessed') === false) && (startGame === true)) {
-		if (sound === event.target.id) {
-			// playSound('audio/correct.mp3', 'audio/correct.mp3', 'audio/correct.mp3');
-			event.target.parentNode.classList.add('guessed');
-
-			Results.push(1);
-			gameProgressAddStar(1);
-			randomArray.pop();
-			// if (Random_Array.length > 0) Game_Play_Current_Sound();
-			// else End_Game();
-		} else {
-			// playSound('audio/error.mp3', 'audio/error.mp3', 'audio/error.mp3');
-			Results.push(0);
-
-			gameProgressAddStar(0);
-		}
-	}
-});
-
-// ----- Function to End the game ----- //
-// eslint-disable-next-line no-unused-vars
-function endGame() {
-	const Body = document.getElementById('BODY');
-	const contentWrapper = document.getElementById('CONTENT');
-	contentWrapper.classList.add('none');
-	let Mistakes = 0;
-
-	for (let i = 0; i < Results.length; i += 1) if (Results[i] === 0) Mistakes += 1;
-
-	if (Mistakes > 0) {
-		Body.classList.add('looser');
-		// playSound('audio/failure.mp3', 'audio/failure.mp3', 'audio/failure.mp3');
-		setTimeout(() => {
-			Body.classList.remove('looser');
-			contentWrapper.classList.remove('none');
-		}, 3000);
-	} else {
-		Body.classList.add('victory');
-		// playSound('audio/success.mp3', 'audio/success.mp3', 'audio/success.mp3');
-		setTimeout(() => {
-			Body.classList.remove('victory');
-			contentWrapper.classList.remove('none');
-		}, 3000);
-	}
-	clearAfterGame();
-
-	setTimeout(() => {
-		document.location.href = 'index.html';
-	}, 3000);
-}
-*/
 </script>
 
 <style lang='scss' scoped>
