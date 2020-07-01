@@ -23,7 +23,7 @@ const actions = {
 		await axios.get(`${rootState.app.server}/words?page=${words.page}&group=${words.group}`)
 			.then((response) => {
 				// eslint-disable-next-line no-console
-				console.log('Получил', response.data);
+				// console.log('Получил', response.data);
 				commit('AUDIOVIZOV_GET_WORDS_SUCCESS', response.data);
 			})
 			.catch((error) => {
@@ -51,7 +51,7 @@ const mutations = {
 		state.words = words;
 	},
 	AUDIOVIZOV_SET_IMAGE_AND_AUDIO: (state, payload) => {
-		console.log('Выбрали', payload);
+		// console.log('Выбрали', payload);
 		state.urlImage = payload.image;
 		const audio = new Audio(payload.audio);
 		audio.play();

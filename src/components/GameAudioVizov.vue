@@ -19,23 +19,16 @@
 					v-if="i < 5"
 					@click="setImgAndAudio({image: isUrlFiles+item.image,audio: isUrlFiles+item.audio})"
 				)
-					//- span( class="card__icon" ) X
+
 					div( class="card__info" )
-						//- p( class="card__info__word" ) {{ item.word }}
-						//- p( class="card__info__transcription" ) {{ item.transcription }}
 						p( class="card__info__translation" ) {{ item.wordTranslate }}
 
 		div( class="buttonsRow" ) buttonsRow
-
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex';
 
-/**
- * API Vue
- * https://ru.vuejs.org/v2/api/index.html
- */
 export default {
 	name: 'AudioVizov',
 	components: {},
@@ -45,6 +38,10 @@ export default {
 		randomArray: [0, 1, 2, 3, 4],
 		Results: [],
 		myWords: {},
+		levelOfDifficulty: 0, // from 0 to 5
+		currentPageNumber: 3, // from 0 to 29
+		currentWordNumberOnPage: 5, // from 0 to 19
+		currentGameRound: 0, // from 0 to 9
 	}),
 	computed: {
 		...mapGetters({
@@ -56,15 +53,7 @@ export default {
 	watch: {},
 	created() {},
 	mounted() {
-		/** Examples
-		 * this.getWords(); page - 0, group - 0
-		 * this.getWords({ page: 2 });
-		 * this.getWords({ page: 2, group: 3 });
-		 * this.getWords({ group: 3 });
-		 */
-		this.getWords();
-		console.log(this.getWords());
-		this.myWords = this.getWords();
+		this.getWords({ page: this.currentPageNumber, group: this.levelOfDifficulty });
 	},
 	methods: {
 		...mapActions({
@@ -73,6 +62,14 @@ export default {
 		...mapMutations({
 			setImgAndAudio: 'audiovizov/AUDIOVIZOV_SET_IMAGE_AND_AUDIO',
 		}),
+		async getWordsForGame(levelOfDifficulty, currentPageNumber) {
+			try {
+				this.getWords({ page: currentPageNumber, group: levelOfDifficulty });
+				this.myWords = this.isWords;
+			} catch (e) {
+				console.log(e);
+			}
+		},
 		// ----- Function play sounds for the cards with English names ----- //
 		playSound(soundfileOgg, soundfileMp, soundfileMa) {
 			if ('Audio' in window) {
@@ -86,8 +83,6 @@ export default {
 				).replace(/no/, '')) a.src = soundfileMa;
 				else a.src = soundfileMp;
 				a.autoplay = true;
-			} else {
-				console.log('Time almost up');
 			}
 		},
 		// ----- Function to shuffle array for the game ----- //
@@ -98,17 +93,18 @@ export default {
 				[array[i], array[j]] = [array[j], array[i]];
 			}
 			this.randomArray = array;
-			// console.log(this.randomArray);
 		},
-		startGame() {
+		async startGame() {
 			this.isStartGame = true;
-			// console.log('start game button pressed');
-			if (this.isStartGame === true) {
-				this.randomArray = [0, 1, 2, 3, 4];
-				this.shuffle(this.randomArray);
-			}
+			this.randomArray = [0, 1, 2, 3, 4];
+			this.shuffle(this.randomArray);
+			// console.log(this.myWords[0].audio);
+			// console.log(this.myWords[0]);
+			// console.log(this.getWords()[0]);
 			// this.playSound(this.myWords[0].audio, this.myWords[0].audio, this.myWords[0].audio);
-			console.log(this.myWords[0]);
+
+			await this.getWordsForGame(this.levelOfDifficulty, this.currentPageNumber);
+			console.log(this.myWords);
 		},
 	},
 
@@ -227,18 +223,15 @@ function endGame() {
     padding: 0 15%;
     background-color: #ccd8cc;
 	box-sizing: border-box;
-
 	p {
 		margin: 0;
 	}
-
 	.header {
 		background-color: #909f8d;
 		height: 10%;
 	}
 	.main {
 		height: 80%;
-
 		&__image {
 			padding: 2% 0;
 			display: block;
