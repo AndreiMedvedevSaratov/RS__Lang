@@ -35,8 +35,8 @@ div
 								type='text'
 								v-model='userInput'
 							)
-						span(:class="[{hidden: isHideFadeAnswer}, 'origin_fade-answer']"
-							) {{ config.word }}
+							span(:class="[{hidden: isHideFadeAnswer}, 'origin_fade-answer']"
+								) {{ config.word }}
 						p(class='word_translation'
 							v-if='userSettings.showWordTranslate'
 						) {{ config.wordTranslate }}
@@ -159,7 +159,6 @@ export default {
 		userInput() {
 			this.changeLettersStatus();
 			if (this.gameStatus === 'secondAttempt') {
-				console.log(this.isHideFadeAnswer);
 				this.isHideFadeAnswer = true;
 				setTimeout(() => { this.isHideFadeAnswer = false; }, 1500);
 			}
@@ -168,15 +167,12 @@ export default {
 			switch (current) {
 			case 'finish':
 				setTimeout(() => {
-					this.isGetWrongInput = false;
-					this.resetVariables();
+					this.resetRoundVariables();
 					this.nextRound();
 				}, 1500);
-				this.gameStatus = 'firstAttempt';
 				break;
 			case 'secondAttempt':
-				this.resetVariables();
-				// this.repeatRound();
+				this.resetAttemptVariables();
 				break;
 			default:
 			}
@@ -225,11 +221,19 @@ export default {
 
 			return { before, wordInText, after };
 		},
-		resetVariables() {
+		resetAttemptVariables() {
 			this.isHideWord = true;
-			this.isHideSentences = true;
 			this.userInput = '';
 			this.classForSymbols = [];
+		},
+		resetRoundVariables() {
+			this.isHideWord = true;
+			this.isHideFadeAnswer = true;
+			this.isHideSentences = true;
+			this.isGetWrongInput = false;
+			this.userInput = '';
+			this.classForSymbols = [];
+			this.gameStatus = 'firstAttempt';
 		},
 	},
 };
@@ -340,6 +344,16 @@ $failureColorBig: hsl(14, 100%, 78%);
 		position: absolute;
 		top: 0;
 		left: 0;
+		z-index: 11;
+	}
+
+	&_fade-answer {
+		width: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 10;
+		opacity: 0.5;
 	}
 }
 

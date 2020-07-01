@@ -3,6 +3,7 @@ const correctAnswer = {
 		successResult() {
 			this.isHideWord = false;
 			this.isHideSentences = false;
+			this.isHideFadeAnswer = true;
 			this.wordsCount += 1;
 			const soundArr = this.getSoundArr(true);
 			this.playAllAudio(soundArr);

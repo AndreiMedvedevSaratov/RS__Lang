@@ -24,16 +24,16 @@ export default {
 				word: 'agree',
 				image:
 					'https://avatars.mds.yandex.net/get-zen_doc/1136050/pub_5b3c7384a8204700a9b3fdf2_5b3c74e556ce7800a921385a/scale_1200',
-				audio: 'http://soundbible.com/mp3/Tires%20Squealing%201-SoundBible.com-847455988.mp3',
+				audio: 'https://audio00.forvo.com/audios/mp3/n/0/n0_8971826_39_6125_1.mp3',
 				audioMeaning: 'http://soundbible.com/mp3/normal_shotgun_-Soundeffects-1522730314.mp3',
-				audioExample: 'http://soundbible.com/mp3/Public%20Transit%20Bus-SoundBible.com-671541921.mp3',
+				audioExample: 'https://audio00.forvo.com/mp3/9599481/39/9599481_39_7095260.mp3',
 				textMeaning: 'To agree is to have the same opinion or belief as another person',
-				textExample: 'The students agree they have too much homework',
+				textExample: 'I am sure every impartial man will agree',
 				transcription: '[əgríː]',
 				wordTranslate: 'согласна',
 				textMeaningTranslate:
 					'Согласиться - значит иметь то же мнение или убеждение, что и другой человек',
-				textExampleTranslate: 'Студенты согласны, что у них слишком много домашней работы',
+				textExampleTranslate: 'Я уверен, что каждый беспристрастный человек согласиться',
 				id: 1,
 				userWord: {
 					learnGroup: 2,
@@ -54,7 +54,7 @@ export default {
 				showAudioMeaning: false,
 				showTextExample: true,
 				showTextExampleTranslate: true,
-				showAudioExample: false,
+				showAudioExample: true,
 			},
 		};
 	},
