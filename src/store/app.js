@@ -7,11 +7,14 @@ import axios from 'axios';
  * link https://vuex.vuejs.org/api/#actions
  */
 const actions = {
-	/** Notification function
-	 * Parameters: error, warning, info, default
+	/**
+	 * Notification function
 	 *
-	 * Call in all modules
-	 * dispatch('ALERT', { status: String, data: Object/String }, { root: true })
+	 * @param {object} payload
+	 * @param {string} payload.status - error, warning, info, default
+	 * @param {object || string} payload.data
+	 * @param {string} payload.message
+	 * @example dispatch('ALERT', { status: String, data: Object/String }, { root: true })
 	 */
 	ALERT(state, payload) {
 		const status = payload.status ? payload.status : 'default';
@@ -66,10 +69,14 @@ const actions = {
 		};
 		if (payload && payload.hasOwnProperty('page')) words.page = payload.page;
 		if (payload && payload.hasOwnProperty('group')) words.group = payload.group;
+		if (payload && payload.hasOwnProperty('wordsPerExampleSentenceLTE')) words.wordsPerExampleSentenceLTE = payload.wordsPerExampleSentenceLTE;
+		if (payload && payload.hasOwnProperty('wordsPerExampleSentenceLTE') && payload.hasOwnProperty('wordsPerPage')) words.wordsPerPage = payload.wordsPerPage;
 
 		commit('APP_STATUS', 'loading');
 
-		const wordsData = await axios.get(`${rootState.app.server}/words?page=${words.page}&group=${words.group}`)
+		const wordsData = await axios.get(
+			`${rootState.app.server}/words?page=${words.page}&group=${words.group}&wordsPerExampleSentenceLTE=${words.wordsPerExampleSentenceLTE || ''}&wordsPerPage=${words.wordsPerPage || ''}`,
+		)
 			.catch((error) => {
 				commit('APP_STATUS', 'error');
 				dispatch('ALERT', {
@@ -78,8 +85,65 @@ const actions = {
 					message: `${error.response.statusText}: ${error.response.data}`,
 				});
 			});
-		console.log('Get words', wordsData.data);
-		commit('APP_GET_WORDS', wordsData.data);
+		if (wordsData) {
+			console.log('Get words', wordsData.data);
+			commit('APP_GET_WORDS', wordsData.data);
+		}
+
+		commit('APP_STATUS', 'success');
+	},
+
+	async APP_GET_COUNT_WORDS_IN_GROUP({
+		rootState, commit, dispatch,
+	}, payload) {
+		const words = {
+			group: 0,
+		};
+		if (payload && payload.hasOwnProperty('group')) words.group = payload.group;
+		if (payload && payload.hasOwnProperty('wordsPerExampleSentenceLTE')) words.wordsPerExampleSentenceLTE = payload.wordsPerExampleSentenceLTE;
+		if (payload && payload.hasOwnProperty('wordsPerExampleSentenceLTE') && payload.hasOwnProperty('wordsPerPage')) words.wordsPerPage = payload.wordsPerPage;
+
+		commit('APP_STATUS', 'loading');
+
+		const wordsData = await axios.get(
+			`${rootState.app.server}/words/count?&group=${words.group}&wordsPerExampleSentenceLTE=${words.wordsPerExampleSentenceLTE || ''}&wordsPerPage=${words.wordsPerPage || ''}`,
+		)
+			.catch((error) => {
+				commit('APP_STATUS', 'error');
+				dispatch('ALERT', {
+					alert: true,
+					status: 'error',
+					message: `${error.response.statusText}: ${error.response.data}`,
+				});
+			});
+		if (wordsData) {
+			console.log('Get count words', wordsData.data);
+			commit('APP_GET_COUNT_WORDS_IN_GROUP', wordsData.data);
+		}
+
+		commit('APP_STATUS', 'success');
+	},
+
+	async APP_GET_WORD({
+		rootState, commit, dispatch,
+	}, wordId) {
+		commit('APP_STATUS', 'loading');
+
+		const wordsData = await axios.get(
+			`${rootState.app.server}/words/${wordId}`,
+		)
+			.catch((error) => {
+				commit('APP_STATUS', 'error');
+				dispatch('ALERT', {
+					alert: true,
+					status: 'error',
+					message: `${error.response.statusText}: ${error.response.data}`,
+				});
+			});
+		if (wordsData) {
+			console.log('Get word', wordsData.data);
+			commit('APP_GET_WORD', wordsData.data);
+		}
 
 		commit('APP_STATUS', 'success');
 	},
@@ -110,8 +174,10 @@ const actions = {
 					message: `${error.response.statusText}: ${error.response.data}`,
 				});
 			});
-		console.log(`${payload.method === 'put' ? 'Обновил' : 'Создал'} статистику по слову`, wordData.data);
-		commit('APP_SET_USER_WORD_STAT', wordData.data);
+		if (wordData) {
+			console.log(`${payload.method === 'put' ? 'Обновил' : 'Создал'} статистику по слову`, wordData.data);
+			commit('APP_SET_USER_WORD_STAT', wordData.data);
+		}
 
 		commit('APP_STATUS', 'success');
 	},
@@ -138,8 +204,10 @@ const actions = {
 					message: `${error.response.statusText}: ${error.response.data}`,
 				});
 			});
-		console.log('Получил статистику по слову(-ам)', wordData.data);
-		commit('APP_SET_USER_WORD_STAT', wordData.data);
+		if (wordData.data.length > 0) {
+			console.log('Получил статистику по слову(-ам)', wordData.data);
+			commit('APP_GET_USER_WORD_STAT', wordData.data);
+		}
 
 		commit('APP_STATUS', 'success');
 	},
@@ -167,7 +235,7 @@ const actions = {
 				});
 			});
 		console.log(`Удалил статистику по слову с ID ${wordId}`);
-		commit('APP_DELETE_USER_WORD_STAT');
+		commit('APP_DELETE_USER_WORD_STAT', wordId);
 
 		commit('APP_STATUS', 'success');
 	},
@@ -183,12 +251,30 @@ const mutations = {
 	},
 	APP_GET_WORDS: (state, words) => {
 		state.words = words;
+		state.countWords = state.words.length;
+	},
+	APP_GET_WORD: (state, word) => {
+		state.words = [];
+		state.words.push(word);
+		state.countWords = state.words.length;
+	},
+	APP_GET_COUNT_WORDS_IN_GROUP: (state, data) => {
+		state.countWords = data.count;
+	},
+	APP_GET_USER_WORD_STAT: (state, words) => {
+		if (words.length > 1) {
+			state.wordStat = words;
+			return;
+		}
+		state.wordStat.push(words);
 	},
 	APP_SET_USER_WORD_STAT: (state, word) => {
-		state.wordStat = word;
+		const ind = state.wordStat.indexOf(word.wordId);
+		if (!ind === -1) return state.wordStat.push(word);
+		return state.wordStat.splice(ind, 1);
 	},
-	APP_DELETE_USER_WORD_STAT: (state) => {
-		state.wordStat = [];
+	APP_DELETE_USER_WORD_STAT: (state, wordId) => {
+		state.wordStat.splice(state.wordStat.indexOf(wordId), 1);
 	},
 	APP_STATUS: (state, status) => {
 		if (status === 'loading' || status === 'success') {
@@ -203,6 +289,7 @@ const mutations = {
 const getters = {
 	getHtmlParameters: (state) => state.html,
 	getWords: (state) => state.words,
+	getCountWords: (state) => state.countWords,
 	getWordStat: (state) => state.wordStat,
 	getStatusLoadWithIcon: (state) => {
 		const { status } = state;
@@ -226,6 +313,7 @@ const state = {
 	},
 
 	words: [],
+	countWords: [],
 	wordStat: [],
 };
 
