@@ -4,9 +4,6 @@ import axios from 'axios';
  * link https://vuex.vuejs.org/api/#actions
  */
 
-/**
- * Замена getWordsData
- */
 const actions = {
 	async GET_WORDS({
 		rootState, commit, dispatch,
@@ -35,7 +32,58 @@ const actions = {
 				}, { root: true });
 			});
 	},
+	SPEAKIT_SPEAK: ({ state, getters, dispatch }) => {
+		state.gameStatus = true;
+		const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+		const recognition = new SpeechRecognition();
+		recognition.lang = 'en-US';
+		recognition.continuos = false;
+		recognition.interimResults = false;
+		recognition.maxAlternatives = 1;
+		recognition.onerror = (event) => {
+			console.log(`It's error! ${event.error}`);
+		};
+		recognition.onend = () => recognition.start();
 
+		recognition.onresult = (event) => {
+			const last = event.results.length - 1;
+			// eslint-disable-next-line no-undef
+			console.dir(event.results);
+			const sayWord = event.results[last][0].transcript.toLowerCase();
+			const p = document.querySelector('.speech');
+			p.textContent = sayWord;
+			// eslint-disable-next-line no-undef
+			// eslint-disable-next-line no-console
+			console.log(getters.getWordsArray, sayWord, getters.getWordsArray.includes(sayWord));
+
+			if (getters.getWordsArray.includes(sayWord)) {
+				document.querySelector('.main__image').src = `${state.urlFiles}${getters.getImageArray[
+					getters.getWordsArray.indexOf(sayWord)]}`;
+				// eslint-disable-next-line prefer-destructuring
+				document.getElementById(sayWord).style.opacity = '0.5';
+				if (!state.count.includes(sayWord)) { state.count.push(sayWord); }
+
+				// eslint-disable-next-line no-console
+				console.log(state.count);
+				// eslint-disable-next-line no-alert
+				if (state.count.length === 2) {
+					document.querySelectorAll('.card').forEach((item) => {
+						// eslint-disable-next-line no-param-reassign
+						item.style.opacity = '1';
+						return item;
+					});
+					alert('youre win, good job! Your skill is pretty high');
+					dispatch('speakit/GET_WORDS', { page: 10 }, { root: true });
+					recognition.onend = () => recognition.stop();
+					state.count.length = 0;
+				}
+				// eslint-disable-next-line no-confusing-arrow
+				//
+			}
+		};
+		// eslint-disable-next-line no-unused-expressions
+		recognition.start();
+	},
 };
 
 /**
@@ -69,6 +117,9 @@ const getters = {
 	getUrlImage: (state) => state.urlImage,
 	getWords: (state) => state.words,
 	getUrlFiles: (state) => state.urlFiles,
+	getWordsArray: (state) => state.words.map((item) => item.word.toLowerCase()),
+	getImageArray: (state) => state.words.map((item) => item.image),
+	gameStatus: (state) => state.gameStatus,
 };
 
 const state = {
@@ -76,6 +127,8 @@ const state = {
 	words: [],
 	urlFiles: 'https://raw.githubusercontent.com/Dream-Team-42/rslang-data/master/',
 	urlImage: './assets/default-english.jpg',
+	count: [],
+	gameStatus: false,
 };
 
 export default {

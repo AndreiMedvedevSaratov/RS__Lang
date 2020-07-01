@@ -72,17 +72,17 @@ const routes = [
 					],
 				},
 			},
-			// {
-			// 	path: '/speaking',
-			// 	name: 'Speaking',
-			// 	component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),
-			// 	meta: {
-			// 		breadcrumb: [
-			// 			{ text: 'Home', to: '/home' },
-			// 			{ text: 'Speaking' },
-			// 		],
-			// 	},
-			// },
+			{
+				path: '/speaking',
+				name: 'speaking',
+				component: () => import(/* webpackChunkName: "speaking" */ '../components/GameSpeakit.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'speaking' },
+					],
+				},
+			},
 			{
 				path: '/dictionary',
 				name: 'Dictionary',
