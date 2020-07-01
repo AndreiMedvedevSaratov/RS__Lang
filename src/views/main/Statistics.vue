@@ -153,6 +153,13 @@ export default {
 				name: '',
 				testFieldString: '',
 				testFieldBoolean: false,
+
+				learnGroup: 1,
+				dictionaryGroup: 1,
+				allRepeats: 0,
+				successRepeats: 0,
+				previousTrain: new Date(),
+				nextTrain: new Date(),
 			},
 		},
 		updateWord: false,
@@ -170,7 +177,9 @@ export default {
 	},
 	created() {},
 	mounted() {
-		this.getWordStats();
+		this.getAggregatedWords({
+			filter: { userWord: { $ne: null } },
+		});
 	},
 	methods: {
 		...mapActions({
@@ -178,6 +187,7 @@ export default {
 			getWordStats: 'APP_GET_USER_WORD_STAT',
 			setWordStat: 'APP_SET_USER_WORD_STAT',
 			delWordStat: 'APP_DELETE_USER_WORD_STAT',
+			getAggregatedWords: 'APP_GET_USER_WORDS_AGGREGATED',
 		}),
 		clickWord(word) {
 			this.dialogData = word;

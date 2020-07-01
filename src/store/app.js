@@ -239,6 +239,40 @@ const actions = {
 
 		commit('APP_STATUS', 'success');
 	},
+
+	async APP_GET_USER_WORDS_AGGREGATED({
+		rootState, commit, dispatch,
+	}, payload) {
+		commit('APP_STATUS', 'loading');
+		const words = {
+			group: 0,
+			wordsPerPage: '',
+			filter: '',
+		};
+
+		if (payload && payload.hasOwnProperty('wordsPerPage')) words.wordsPerPage = payload.wordsPerPage;
+		if (payload && payload.hasOwnProperty('group')) words.group = payload.group;
+		if (payload && payload.hasOwnProperty('filter')) words.filter = JSON.stringify(payload.filter);
+
+		const wordData = await axios.get(
+			`${rootState.app.server}/users/${rootState.user.profile.userId}/aggregatedWords?group=${words.group}&wordsPerPage=${words.wordsPerPage}&filter=${words.filter}`,
+		)
+			.catch((error) => {
+				commit('APP_STATUS', 'error');
+				dispatch('ALERT', {
+					alert: true,
+					status: 'error',
+					message: `${error.response.statusText}: ${error.response.data}`,
+				});
+			});
+		console.log('aggregatedWords', wordData.data);
+		// if (wordData.data.length > 0) {
+		// 	console.log('Получил статистику по слову(-ам)', wordData.data);
+		// 	commit('APP_GET_USER_WORD_STAT', wordData.data);
+		// }
+
+		commit('APP_STATUS', 'success');
+	},
 };
 
 /**
