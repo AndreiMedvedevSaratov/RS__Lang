@@ -24,11 +24,14 @@
 					@click="gameAction({ image: isUrlFiles+item.image, audio: isUrlFiles+item.audio })"
 					v-bind:id="item.word.toLowerCase()"
 				)
-					span( class="card__icon" ) X
+					span( class="card__icon" )
 					div( class="card__info" )
 						p( class="card__info__word" ) {{ item.word }}
 						p( class="card__info__transcription" ) {{ item.transcription }}
 						p( class="card__info__translation" ) {{ item.wordTranslate }}
+					v-card
+						v-title {{ item.word }}
+						v-subtitle {{ item.transcription }}
 
 </template>
 
@@ -80,7 +83,7 @@ export default {
 
 <style lang='scss' scoped>
 .game {
-  height: 100vh;
+  height: 100%;
   padding: 0 15%;
   background-color: #ccd8cc;
   box-sizing: border-box;
@@ -98,9 +101,10 @@ export default {
 
     &__image {
       padding: 2% 0;
+      max-width: 300px;
       display: block;
       margin: 0 auto;
-      height: 40%;
+      //   height: 40%;
       align-items: center;
     }
     .card-pannel {
@@ -124,6 +128,9 @@ export default {
           background-color: #bbb0bb;
           text-align: center;
           flex: 1;
+          width: 30px;
+          height: 30px;
+          background: url('../assets/img/speaker.svg') no-repeat center content-box;
         }
 
         &__info {

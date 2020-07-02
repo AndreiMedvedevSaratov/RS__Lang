@@ -9,7 +9,7 @@
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
-	name: 'English-puzzle',
+	name: 'EnglishPuzzle',
 	components: {},
 	props: [],
 	data: () => ({

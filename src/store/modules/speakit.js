@@ -19,8 +19,6 @@ const actions = {
 
 		await axios.get(`${rootState.app.server}/words?page=${words.page}&group=${words.group}`)
 			.then((response) => {
-				// eslint-disable-next-line no-console
-				console.log('Получил', response.data);
 				commit('SPEAKIT_GET_WORDS_SUCCESS', response.data);
 			})
 			.catch((error) => {
@@ -45,43 +43,34 @@ const actions = {
 		};
 		recognition.onend = () => recognition.start();
 
-		recognition.onresult = (event) => {
+		recognition.addEventListener('result', (event) => {
 			const last = event.results.length - 1;
-			// eslint-disable-next-line no-undef
-			console.dir(event.results);
 			const sayWord = event.results[last][0].transcript.toLowerCase();
 			const p = document.querySelector('.speech');
 			p.textContent = sayWord;
-			// eslint-disable-next-line no-undef
-			// eslint-disable-next-line no-console
-			console.log(getters.getWordsArray, sayWord, getters.getWordsArray.includes(sayWord));
 
 			if (getters.getWordsArray.includes(sayWord)) {
-				document.querySelector('.main__image').src = `${state.urlFiles}${getters.getImageArray[
-					getters.getWordsArray.indexOf(sayWord)]}`;
-				// eslint-disable-next-line prefer-destructuring
+				document.querySelector('.main__image').src = `${state.urlFiles}${getters.getImageArray[getters.getWordsArray.indexOf(sayWord)]}`;
 				document.getElementById(sayWord).style.opacity = '0.5';
 				if (!state.count.includes(sayWord)) { state.count.push(sayWord); }
 
-				// eslint-disable-next-line no-console
-				console.log(state.count);
-				// eslint-disable-next-line no-alert
-				if (state.count.length === 2) {
-					document.querySelectorAll('.card').forEach((item) => {
-						// eslint-disable-next-line no-param-reassign
-						item.style.opacity = '1';
-						return item;
-					});
+				if (state.count.length === 20) {
+					const cards = document.querySelectorAll('.card');
+					for (let i = 0; i < cards.length; i += 1) {
+						cards[i].style.opacity = '';
+					}
+					// document.querySelectorAll('.card').forEach((item) => {
+					// 	// eslint-disable-next-line no-param-reassign
+					// 	item.style.opacity = '1';
+					// 	return item;
+					// });
 					alert('youre win, good job! Your skill is pretty high');
 					dispatch('speakit/GET_WORDS', { page: 10 }, { root: true });
 					recognition.onend = () => recognition.stop();
 					state.count.length = 0;
 				}
-				// eslint-disable-next-line no-confusing-arrow
-				//
 			}
-		};
-		// eslint-disable-next-line no-unused-expressions
+		});
 		recognition.start();
 	},
 };
