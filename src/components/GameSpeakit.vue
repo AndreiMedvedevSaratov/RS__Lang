@@ -29,9 +29,6 @@
 						p( class="card__info__word" ) {{ item.word }}
 						p( class="card__info__transcription" ) {{ item.transcription }}
 						p( class="card__info__translation" ) {{ item.wordTranslate }}
-					v-card
-						v-title {{ item.word }}
-						v-subtitle {{ item.transcription }}
 
 </template>
 

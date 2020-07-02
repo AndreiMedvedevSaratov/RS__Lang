@@ -65,7 +65,8 @@ const actions = {
 					// 	return item;
 					// });
 					alert('youre win, good job! Your skill is pretty high');
-					dispatch('speakit/GET_WORDS', { page: 10 }, { root: true });
+					state.gameLevel += 1;
+					dispatch('speakit/GET_WORDS', { page: state.gameLevel }, { root: true });
 					recognition.onend = () => recognition.stop();
 					state.count.length = 0;
 				}
@@ -109,6 +110,7 @@ const getters = {
 	getWordsArray: (state) => state.words.map((item) => item.word.toLowerCase()),
 	getImageArray: (state) => state.words.map((item) => item.image),
 	gameStatus: (state) => state.gameStatus,
+	gameLevel: (state) => state.gameLevel,
 };
 
 const state = {
@@ -118,6 +120,7 @@ const state = {
 	urlImage: './assets/default-english.jpg',
 	count: [],
 	gameStatus: false,
+	gameLevel: 0,
 };
 
 export default {
