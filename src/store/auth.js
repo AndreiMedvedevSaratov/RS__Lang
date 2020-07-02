@@ -14,14 +14,12 @@ const actions = {
 		})
 			.catch((err) => {
 				commit('AUTH_ERROR', err.response);
-				localStorage.removeItem('token');
-				localStorage.removeItem('userId');
 				dispatch('ALERT', { status: 'error', data: err.response.data });
 			});
+		if (!user.data) return;
 
 		axios.defaults.headers.common = { Authorization: `Bearer ${user.data.token}` };
 		dispatch('user/USER_REQUEST', user.data.userId, { root: true });
-
 		commit('AUTH_SUCCESS', user.data);
 	},
 	AUTH_LOGOUT({ commit }) {
@@ -46,14 +44,20 @@ const mutations = {
 	AUTH_SUCCESS: (state, user) => {
 		state.status = 'success';
 		state.token = user.token;
+		state.refreshToken = user.refreshToken;
 		localStorage.setItem('token', user.token);
+		localStorage.setItem('refreshToken', user.refreshToken);
 		localStorage.setItem('userId', user.userId);
 	},
 	AUTH_ERROR: (state) => {
 		state.status = 'error';
+		localStorage.removeItem('token');
+		localStorage.removeItem('refreshToken');
+		localStorage.removeItem('userId');
 	},
 	AUTH_LOGOUT: (state) => {
 		state.token = '';
+		state.refreshToken = '';
 	},
 };
 
@@ -69,6 +73,7 @@ const getters = {
 
 const state = {
 	token: localStorage.getItem('token') || '',
+	refreshToken: localStorage.getItem('refreshToken') || '',
 	status: '',
 };
 
