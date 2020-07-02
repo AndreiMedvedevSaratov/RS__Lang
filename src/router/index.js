@@ -77,6 +77,16 @@ const routes = [
 		name: 'Dictionary',
 		component: () => import(/* webpackChunkName: "dictionary" */ '../components/dictionary.vue'),
 	},
+	{
+		path: '/savanna-start',
+		name: 'Savanna',
+		component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-start.vue'),
+	},
+	{
+		path: '/savanna-game',
+		name: 'Savanna-game',
+		component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-game.vue'),
+	},
 ];
 
 const router = new VueRouter({
