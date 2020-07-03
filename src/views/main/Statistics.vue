@@ -1,6 +1,6 @@
 <template lang='pug'>
 	div
-		p Profile компонент
+		p Я компонент Statistics
 </template>
 
 <script>
@@ -9,7 +9,7 @@
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
-	name: 'Profile',
+	name: 'Statistics',
 	components: {},
 	props: [],
 	data: () => ({
@@ -23,3 +23,7 @@ export default {
 
 };
 </script>
+
+<style lang='scss' scoped>
+
+</style>

@@ -1,6 +1,7 @@
 <template lang='pug'>
-  div
-	p Я компонент English
+	div
+		p Я компонент English
+
 </template>
 
 <script>
