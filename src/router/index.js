@@ -85,6 +85,17 @@ const routes = [
 				},
 			},
 			{
+				path: '/sprint',
+				name: 'Sprint',
+				component: () => import(/* webpackChunkName: "sprint" */ '../components/sprint/SprintGame.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Sprint' },
+					],
+				},
+			},
+			{
 				path: '/statistics',
 				name: 'Statistics',
 				component: () => import(/* webpackChunkName: "statistics" */ '../views/main/Statistics.vue'),

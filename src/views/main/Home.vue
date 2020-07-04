@@ -169,7 +169,7 @@ export default {
 			{
 				title: 'Спринт',
 				subtitle: 'textextexetxte',
-				link: '/',
+				link: '/sprint',
 				img: 'assets/img/спринт.png',
 				color: 'purple darken-3',
 			},
