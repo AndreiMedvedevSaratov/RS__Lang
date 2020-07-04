@@ -88,7 +88,6 @@ export default {
 	watch: {},
 	created() {},
 	mounted() {
-		console.log(this);
 	},
 	methods: {
 		...mapMutations({

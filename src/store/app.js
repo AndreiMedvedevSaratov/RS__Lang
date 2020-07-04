@@ -120,9 +120,13 @@ const actions = {
 
 		commit('APP_STATUS', 'loading');
 
-		const wordsData = await axios.get(
+		await axios.get(
 			`${rootState.app.server}/words/count?&group=${words.group}&wordsPerExampleSentenceLTE=${words.wordsPerExampleSentenceLTE || ''}&wordsPerPage=${words.wordsPerPage || ''}`,
-		)
+		).then((wordsData) => {
+			console.log('Get count words', wordsData.data);
+			commit('APP_GET_COUNT_WORDS_IN_GROUP', wordsData.data);
+			commit('APP_STATUS', 'success');
+		})
 			.catch((error) => {
 				commit('APP_STATUS', 'error');
 				dispatch('ALERT', {
@@ -131,12 +135,6 @@ const actions = {
 					message: `${error.response.statusText}: ${error.response.data}`,
 				});
 			});
-		if (wordsData) {
-			console.log('Get count words', wordsData.data);
-			commit('APP_GET_COUNT_WORDS_IN_GROUP', wordsData.data);
-		}
-
-		commit('APP_STATUS', 'success');
 	},
 
 	/**
@@ -150,23 +148,20 @@ const actions = {
 	}, wordId) {
 		commit('APP_STATUS', 'loading');
 
-		const wordsData = await axios.get(
+		await axios.get(
 			`${rootState.app.server}/words/${wordId}`,
-		)
-			.catch((error) => {
-				commit('APP_STATUS', 'error');
-				dispatch('ALERT', {
-					alert: true,
-					status: 'error',
-					message: `${error.response.statusText}: ${error.response.data}`,
-				});
-			});
-		if (wordsData) {
+		).then((wordsData) => {
 			console.log('Get word', wordsData.data);
 			commit('APP_GET_WORD', wordsData.data);
-		}
-
-		commit('APP_STATUS', 'success');
+			commit('APP_STATUS', 'success');
+		}).catch((error) => {
+			commit('APP_STATUS', 'error');
+			dispatch('ALERT', {
+				alert: true,
+				status: 'error',
+				message: `${error.response.statusText}: ${error.response.data}`,
+			});
+		});
 	},
 
 	/**
@@ -184,24 +179,21 @@ const actions = {
 	}, payload) {
 		commit('APP_STATUS', 'loading');
 
-		const wordData = await axios[payload.method || 'post'](
+		await axios[payload.method || 'post'](
 			`${rootState.app.server}/users/${rootState.user.profile.userId}/words/${payload.wordId}`,
 			payload.wordStat,
-		)
-			.catch((error) => {
-				commit('APP_STATUS', 'error');
-				dispatch('ALERT', {
-					alert: true,
-					status: 'error',
-					message: `${error.response.statusText}: ${error.response.data}`,
-				});
-			});
-		if (wordData) {
+		).then((wordData) => {
 			console.log(`${payload.method === 'put' ? 'Обновил' : 'Создал'} статистику по слову`, wordData.data);
 			commit('APP_SET_USER_WORD_STAT', wordData.data);
-		}
-
-		commit('APP_STATUS', 'success');
+			commit('APP_STATUS', 'success');
+		}).catch((error) => {
+			commit('APP_STATUS', 'error');
+			dispatch('ALERT', {
+				alert: true,
+				status: 'error',
+				message: `${error.response.statusText}: ${error.response.data}`,
+			});
+		});
 	},
 
 	/**
@@ -215,9 +207,13 @@ const actions = {
 	}, wordId) {
 		commit('APP_STATUS', 'loading');
 
-		const wordData = await axios.get(
+		await axios.get(
 			`${rootState.app.server}/users/${rootState.user.profile.userId}/words/${wordId || ''}`,
-		)
+		).then((wordData) => {
+			console.log('Получил статистику по слову(-ам)', wordData.data);
+			commit('APP_GET_USER_WORD_STAT', wordData.data);
+			commit('APP_STATUS', 'success');
+		})
 			.catch((error) => {
 				commit('APP_STATUS', 'error');
 				dispatch('ALERT', {
@@ -226,12 +222,6 @@ const actions = {
 					message: `${error.response.statusText}: ${error.response.data}`,
 				});
 			});
-		if (wordData.data.length > 0) {
-			console.log('Получил статистику по слову(-ам)', wordData.data);
-			commit('APP_GET_USER_WORD_STAT', wordData.data);
-		}
-
-		commit('APP_STATUS', 'success');
 	},
 
 	/**
@@ -245,18 +235,17 @@ const actions = {
 	}, wordId) {
 		commit('APP_STATUS', 'loading');
 
-		await axios.delete(
+		const res = await axios.delete(
 			`${rootState.app.server}/users/${rootState.user.profile.userId}/words/${wordId}`,
-		)
-			.catch((error) => {
-				commit('APP_STATUS', 'error');
-				dispatch('ALERT', {
-					alert: true,
-					status: 'error',
-					message: `${error.response.statusText}: ${error.response.data}`,
-				});
+		).catch((error) => {
+			commit('APP_STATUS', 'error');
+			dispatch('ALERT', {
+				alert: true,
+				status: 'error',
+				message: `${error.response.statusText}: ${error.response.data}`,
 			});
-		console.log(`Удалил статистику по слову с ID ${wordId}`);
+		});
+		console.log(`Удалил статистику по слову с ID ${wordId}`, res);
 		commit('APP_DELETE_USER_WORD_STAT', wordId);
 
 		commit('APP_STATUS', 'success');
@@ -286,24 +275,49 @@ const actions = {
 		if (payload && payload.hasOwnProperty('group')) words.group = payload.group;
 		if (payload && payload.hasOwnProperty('filter')) words.filter = JSON.stringify(payload.filter);
 
-		const wordData = await axios.get(
+		await axios.get(
 			`${rootState.app.server}/users/${rootState.user.profile.userId}/aggregatedWords?group=${words.group}&wordsPerPage=${words.wordsPerPage}&filter=${words.filter}`,
-		)
-			.catch((error) => {
-				commit('APP_STATUS', 'error');
-				dispatch('ALERT', {
-					alert: true,
-					status: 'error',
-					message: `${error.response.statusText}: ${error.response.data}`,
-				});
-			});
-		console.log('aggregatedWords', wordData.data);
-		// if (wordData.data.length > 0) {
-		// 	console.log('Получил статистику по слову(-ам)', wordData.data);
-		// 	commit('APP_GET_USER_WORD_STAT', wordData.data);
-		// }
+		).then((wordsData) => {
+			commit('APP_GET_WORDS', wordsData.data);
+			console.log('aggregatedWords', wordsData.data);
 
-		commit('APP_STATUS', 'success');
+			commit('APP_STATUS', 'success');
+		}).catch((error) => {
+			commit('APP_STATUS', 'error');
+			dispatch('ALERT', {
+				alert: true,
+				status: 'error',
+				message: `${error.response.statusText}: ${error.response.data}`,
+			});
+		});
+	},
+
+	/**
+	 * This function gets one user aggregated word
+	 *
+	 * @param {string} wordId
+	 * @example dispatch('APP_GET_USER_WORD_AGGREGATED', wordId, { root: true })
+	 */
+	async APP_GET_USER_WORD_AGGREGATED({
+		rootState, commit, dispatch,
+	}, wordId) {
+		commit('APP_STATUS', 'loading');
+
+		await axios.get(
+			`${rootState.app.server}/users/${rootState.user.profile.userId}/aggregatedWords/${wordId}`,
+		).then((word) => {
+			commit('APP_GET_WORD', word.data[0]);
+			console.log('aggregatedWord', word.data[0]);
+
+			commit('APP_STATUS', 'success');
+		}).catch((error) => {
+			commit('APP_STATUS', 'error');
+			dispatch('ALERT', {
+				alert: true,
+				status: 'error',
+				message: `${error.response.statusText}: ${error.response.data}`,
+			});
+		});
 	},
 };
 
@@ -367,6 +381,7 @@ const getters = {
 			status, loading, message, icon,
 		};
 	},
+	getServerUrl: (state) => state.server,
 };
 
 const state = {

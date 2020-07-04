@@ -177,9 +177,7 @@ export default {
 	},
 	created() {},
 	mounted() {
-		// this.getAggregatedWords({
-		// 	filter: { userWord: { $ne: null } },
-		// });
+		// this.getAggregatedWord('5e9f5ee35eb9e72bc21af4a3');
 	},
 	methods: {
 		...mapActions({
@@ -188,6 +186,7 @@ export default {
 			setWordStat: 'APP_SET_USER_WORD_STAT',
 			delWordStat: 'APP_DELETE_USER_WORD_STAT',
 			getAggregatedWords: 'APP_GET_USER_WORDS_AGGREGATED',
+			getAggregatedWord: 'APP_GET_USER_WORD_AGGREGATED',
 		}),
 		clickWord(word) {
 			this.dialogData = word;

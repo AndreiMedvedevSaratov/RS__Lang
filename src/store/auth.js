@@ -8,19 +8,17 @@ const actions = {
 		rootState, commit, dispatch,
 	}) {
 		commit('AUTH_REQUEST');
-		const user = await axios.post(`${rootState.app.server}/signin`, {
+		await axios.post(`${rootState.app.server}/signin`, {
 			email: rootState.user.profile.email,
 			password: rootState.user.profile.password,
-		})
-			.catch((err) => {
-				commit('AUTH_ERROR', err.response);
-				dispatch('ALERT', { status: 'error', data: err.response.data });
-			});
-		if (!user.data) return;
-
-		axios.defaults.headers.common = { Authorization: `Bearer ${user.data.token}` };
-		dispatch('user/USER_REQUEST', user.data.userId, { root: true });
-		commit('AUTH_SUCCESS', user.data);
+		}).then((user) => {
+			commit('AUTH_DATA', user.data);
+			dispatch('user/USER_REQUEST', user.data.userId, { root: true });
+			commit('AUTH_SUCCESS');
+		}).catch((err) => {
+			commit('AUTH_ERROR', err.response);
+			dispatch('ALERT', { status: 'error', data: err.response.data });
+		});
 	},
 	async AUTH_REFRESH_TOKEN({
 		state, rootState, commit, dispatch,
@@ -31,25 +29,19 @@ const actions = {
 			headers: {
 				Authorization: `Bearer ${state.refreshToken}`,
 			},
-		})
-			.then((user) => {
-				console.log(user.data);
-				console.log('new Token === old RefreshToken', user.data.token === state.refreshToken);
-				// commit('AUTH_SUCCESS', user.data);
-			})
-			.catch((err) => {
-				// commit('AUTH_ERROR', err.response);
-				dispatch('ALERT', { status: 'error', data: err.response.data });
-			});
-
-		// if (!user.data) return;
-
-		// axios.defaults.headers.common = { Authorization: `Bearer ${user.data.token}` };
-		// dispatch('user/USER_REQUEST', user.data.userId, { root: true });
+		}).then((user) => {
+			console.log(user.data);
+			commit('AUTH_DATA', user.data);
+			commit('AUTH_SUCCESS');
+		}).catch((err) => {
+			dispatch('ALERT', { status: 'error', data: err.response.data });
+		});
 	},
 	AUTH_LOGOUT({ commit }) {
 		return new Promise(((resolve) => {
 			commit('AUTH_LOGOUT');
+			commit('APP_STATUS', 'success');
+			commit('AUTH_SUCCESS');
 			resolve();
 		}));
 	},
@@ -64,13 +56,16 @@ const mutations = {
 	AUTH_REQUEST: (state) => {
 		state.status = 'loading';
 	},
-	AUTH_SUCCESS: (state, user) => {
+	AUTH_SUCCESS: (state) => {
 		state.status = 'success';
+	},
+	AUTH_DATA: (state, user) => {
 		state.token = user.token;
 		state.refreshToken = user.refreshToken;
 		localStorage.setItem('token', user.token);
 		localStorage.setItem('refreshToken', user.refreshToken);
-		localStorage.setItem('userId', user.userId);
+		if (user.userId) localStorage.setItem('userId', user.userId);
+		axios.defaults.headers.common = { Authorization: `Bearer ${user.token}` };
 	},
 	AUTH_ERROR: (state) => {
 		state.status = 'error';
