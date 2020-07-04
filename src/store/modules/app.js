@@ -145,20 +145,20 @@ const state = {
 	},
 	// Массив слов
 	wordList: [
-		{
-			word: '',
-			image: '',
-			audio: '',
-			audioMeaning: '',
-			audioExample: '',
-			textMeaning: '',
-			textExample: '',
-			transcription: '',
-			wordTranslate: '',
-			textMeaningTranslate: '',
-			textExampleTranslate: '',
-			id: 1,
-		},
+		// {
+		// 	word: '',
+		// 	image: '',
+		// 	audio: '',
+		// 	audioMeaning: '',
+		// 	audioExample: '',
+		// 	textMeaning: '',
+		// 	textExample: '',
+		// 	transcription: '',
+		// 	wordTranslate: '',
+		// 	textMeaningTranslate: '',
+		// 	textExampleTranslate: '',
+		// 	id: 1,
+		// },
 	],
 };
 

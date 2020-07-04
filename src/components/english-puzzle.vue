@@ -25,8 +25,6 @@
 		.begin-word(
 			ref="beginWord"
 		)
-		.fuck
-			.fuck2
 		.button
 			div(
 				v-if="gameStatus"
@@ -34,7 +32,9 @@
 				button.button__not-know.button_style(
 					@click="dontKnow"
 				) I don't know
-				button.button__check.button_style Check
+				button.button__check.button_style(
+					@click="check"
+				) Check
 				button.button__check.button_style(
 				v-if="!gameStatus"
 			) Next level
@@ -58,7 +58,8 @@ export default {
 		wordRight: null,
 		moveY: 0,
 		gameStatus: false,
-		// imgSrc: './assets/img/girl.jpg',
+		imgSrc: ['../assets/img/9val.jpg'],
+		arr: null,
 	}),
 	computed: {
 		...mapGetters({
@@ -83,12 +84,29 @@ export default {
 
 			const widthPx = (str) => +str.match(/[0-9]/g).join('');
 			const sortArr = (arr) => arr.sort(() => Math.random() - 0.5);
+			const clearWords = (str) => {
+				let newStr = '';
+				const strWithOutTrim = str.trim();
+				for (let i = 0; i < strWithOutTrim.length; i += 1) {
+					if (strWithOutTrim[i] === '<') {
+						while (strWithOutTrim[i] !== '>') {
+							i += 1;
+						}
+					} else if (strWithOutTrim[i] === '.') {
+						return newStr;
+					} else {
+						newStr += strWithOutTrim[i];
+					}
+				}
+				return newStr;
+			};
 
 			const { beginWord, wordContainer } = this.$refs;
 
 			const str = this.words[this.num].textExample;
-			const arr = str.split(' ');
-			const countWords = arr.length;
+			const arrWord = clearWords(str).split(' ');
+			this.arr = arrWord;
+			const countWords = this.arr.length;
 
 			for (let i = 0; i < countWords; i += 1) {
 				const div = document.createElement('div');
@@ -102,15 +120,13 @@ export default {
 			}
 			for (let i = 0; i < countWords; i += 1) {
 				const div = document.createElement('div');
-				div.innerHTML = `${arr[i]}`;
+				div.innerHTML = `${this.arr[i]}`;
 				div.className = `word word${this.num}`;
 				div.setAttribute('draggable', true);
 				document.querySelectorAll(`.gig_begin${this.num}`)[i].append(div);
 			}
-
 			// Array div word
 			const wordAll = document.querySelectorAll(`.word${this.num}`);
-
 			this.wordRight = wordAll;
 
 			const map = new Map();
@@ -121,6 +137,10 @@ export default {
 
 			for (let i = 0; i < countWords; i += 1) {
 				wordAll[i].style.width = `${map.get(`${i}`)}px`;
+			}
+
+			for (let i = 0; i < countWords; i += 1) {
+				wordAll[i].style.backgroundImage = 'url(./assets/img/9val.jpg)';
 			}
 
 			let moveX = 0;
@@ -171,6 +191,7 @@ export default {
 			const gigEnd = document.querySelectorAll(`.gig_end${this.num}`);
 			for (let i = 0; i < wordAll.length; i += 1) {
 				wordAll[i].addEventListener('click', (e) => {
+					console.log(i);
 					if (e.target.closest(`.gig_begin${this.num}`)) {
 						for (let p = 0; p < newArr.length; p += 1) {
 							if (newArr[p] === 0) {
@@ -256,24 +277,6 @@ export default {
 				item.addEventListener('dragstart', dragStart);
 				item.addEventListener('dragend', dragEnd);
 			});
-
-			document.querySelector('.button__check').addEventListener('click', () => {
-				for (let i = 0; i < wordAll.length; i += 1) {
-					wordAll[i].classList.remove('right');
-					wordAll[i].classList.remove('wrong');
-				}
-				for (let i = 0; i < wordAll.length; i += 1) {
-					if (wordAll[i].closest(`.gig_end${this.num}`)) {
-						if (wordAll[i].innerHTML === arr[i]) {
-							wordAll[i].classList.add('right');
-						} else {
-							wordAll[i].classList.add('wrong');
-						}
-					} else {
-						wordAll[i].classList.add('wrong');
-					}
-				}
-			});
 		},
 
 		dontKnow() {
@@ -294,8 +297,26 @@ export default {
 				this.alertAction({ status: 'success', data: 'Game over!!' });
 			}
 		},
-	},
 
+		check() {
+			const wordAll = document.querySelectorAll(`.word${this.num}`);
+			for (let i = 0; i < wordAll.length; i += 1) {
+				wordAll[i].classList.remove('right');
+				wordAll[i].classList.remove('wrong');
+			}
+			for (let i = 0; i < wordAll.length; i += 1) {
+				if (wordAll[i].closest(`.gig_end${this.num}`)) {
+					if (wordAll[i].innerHTML === this.arr[i]) {
+						wordAll[i].classList.add('right');
+					} else {
+						wordAll[i].classList.add('wrong');
+					}
+				} else {
+					wordAll[i].classList.add('wrong');
+				}
+			}
+		},
+	},
 };
 
 </script>
@@ -468,7 +489,7 @@ input {
 	border: 1px solid;
 	text-align: center;
 	padding: 12px 5px 12px 5px;
-	background: url('../assets/img/girl.jpg') no-repeat;
+	background-repeat: no-repeat;
 	cursor: pointer;
 }
 
