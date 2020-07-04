@@ -177,9 +177,9 @@ export default {
 	},
 	created() {},
 	mounted() {
-		this.getAggregatedWords({
-			filter: { userWord: { $ne: null } },
-		});
+		// this.getAggregatedWords({
+		// 	filter: { userWord: { $ne: null } },
+		// });
 	},
 	methods: {
 		...mapActions({

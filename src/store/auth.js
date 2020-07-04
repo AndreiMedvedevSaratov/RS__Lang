@@ -22,11 +22,34 @@ const actions = {
 		dispatch('user/USER_REQUEST', user.data.userId, { root: true });
 		commit('AUTH_SUCCESS', user.data);
 	},
+	async AUTH_REFRESH_TOKEN({
+		state, rootState, commit, dispatch,
+	}) {
+		commit('AUTH_REQUEST');
+
+		await axios.get(`${rootState.app.server}/users/${rootState.user.profile.userId}/tokens`, {
+			headers: {
+				Authorization: `Bearer ${state.refreshToken}`,
+			},
+		})
+			.then((user) => {
+				console.log(user.data);
+				console.log('new Token === old RefreshToken', user.data.token === state.refreshToken);
+				// commit('AUTH_SUCCESS', user.data);
+			})
+			.catch((err) => {
+				// commit('AUTH_ERROR', err.response);
+				dispatch('ALERT', { status: 'error', data: err.response.data });
+			});
+
+		// if (!user.data) return;
+
+		// axios.defaults.headers.common = { Authorization: `Bearer ${user.data.token}` };
+		// dispatch('user/USER_REQUEST', user.data.userId, { root: true });
+	},
 	AUTH_LOGOUT({ commit }) {
 		return new Promise(((resolve) => {
 			commit('AUTH_LOGOUT');
-			localStorage.removeItem('token');
-			localStorage.removeItem('userId');
 			resolve();
 		}));
 	},
@@ -58,6 +81,9 @@ const mutations = {
 	AUTH_LOGOUT: (state) => {
 		state.token = '';
 		state.refreshToken = '';
+		localStorage.removeItem('userId');
+		localStorage.removeItem('token');
+		localStorage.removeItem('refreshToken');
 	},
 };
 

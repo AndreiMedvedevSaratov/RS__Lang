@@ -42,8 +42,8 @@ const mutations = {
 	},
 	USER_SUCCESS: (state, payload) => {
 		state.status = 'success';
-		state.profile.userId = payload.userId ? payload.userId : state.profile.userId;
-		state.profile.email = payload.email ? payload.email : state.profile.email;
+		state.profile.userId = payload.userId;
+		state.profile.email = payload.email;
 	},
 	USER_LOGOUT: (state) => {
 		state.profile = {
