@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { forGame } from '@/store/modules/forGame';
+import { forGame } from './forGame';
 import CardItem from './Card.vue';
 
 export default {

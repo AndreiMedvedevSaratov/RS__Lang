@@ -82,7 +82,7 @@ div
 /**
  * watch (old, )
  */
-import { forGame } from '@/store/modules/forGame';
+import { forGame } from './forGame';
 import { correctAnswer } from './correctAnswer';
 import { wrongAnswer } from './wrongAnswer';
 import { mainGame } from './mainGame';

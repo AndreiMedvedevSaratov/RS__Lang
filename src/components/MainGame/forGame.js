@@ -2,7 +2,7 @@ const forGame = {
 	methods: {
 		/**
 		 *
-		 * @param {object} configName - props name for word-object
+		 * @param {string} configName - props name for word-object
 		 */
 		markWord(configName = 'config') {
 			if (!this[configName].userWord) {
