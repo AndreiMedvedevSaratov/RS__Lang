@@ -14,7 +14,7 @@
 			div( class="card-pannel" )
 				div(
 					class="card"
-					v-for="(item, i) in isWords"
+					v-for="(item, i) in myWords"
 					:key="i"
 					v-if="i < 5"
 					@click="strikeButton(item)"
@@ -35,13 +35,42 @@ export default {
 	props: [],
 	data: () => ({
 		isStartGame: false,
-		randomArray: [0, 1, 2, 3, 4],
+		isNextRound: false,
 		Results: [],
 		myWords: {},
-		levelOfDifficulty: 0, // from 0 to 5
-		currentPageNumber: 4, // from 0 to 29
-		currentWordNumberOnPage: 5, // from 0 to 19
 		currentGameRound: 0, // from 0 to 9
+		wordsForTrain: [
+			{
+				levelOfDifficulty: 0, PageNumber: 4, WordNumberOnPage: 2,
+			},
+			{
+				levelOfDifficulty: 0, PageNumber: 8, WordNumberOnPage: 3,
+			},
+			{
+				levelOfDifficulty: 0, PageNumber: 7, WordNumberOnPage: 4,
+			},
+			{
+				levelOfDifficulty: 0, PageNumber: 3, WordNumberOnPage: 2,
+			},
+			{
+				levelOfDifficulty: 0, PageNumber: 5, WordNumberOnPage: 1,
+			},
+			{
+				levelOfDifficulty: 1, PageNumber: 4, WordNumberOnPage: 3,
+			},
+			{
+				levelOfDifficulty: 2, PageNumber: 4, WordNumberOnPage: 2,
+			},
+			{
+				levelOfDifficulty: 3, PageNumber: 4, WordNumberOnPage: 4,
+			},
+			{
+				levelOfDifficulty: 4, PageNumber: 4, WordNumberOnPage: 0,
+			},
+			{
+				levelOfDifficulty: 5, PageNumber: 4, WordNumberOnPage: 1,
+			},
+		],
 		card: '',
 		pressedWord: '',
 	}),
@@ -52,11 +81,13 @@ export default {
 			isUrlImage: 'audiovizov/getUrlImage',
 		}),
 	},
-	watch: {},
-	created() {},
-	mounted() {
-		this.getWords({ page: this.currentPageNumber, group: this.levelOfDifficulty });
+	watch: {
+		isNextRound() {
+			if (this.isNextRound) this.playRoundOfTheGame();
+		},
 	},
+	created() {},
+	mounted() {},
 	methods: {
 		...mapActions({
 			getWords: 'audiovizov/GET_WORDS',
@@ -65,12 +96,17 @@ export default {
 			setImgAndAudio: 'audiovizov/AUDIOVIZOV_SET_IMAGE_AND_AUDIO',
 		}),
 		strikeButton(word) {
-			console.log(word);
 			if (word.wordTranslate === this.myWords[0].wordTranslate) {
-				console.log('success!');
+				this.currentGameRound += 1;
+				this.isNextRound = true;
 			}
 		},
-		playRoundOfTheGame() {
+		async playRoundOfTheGame() {
+			this.isNextRound = false;
+			const a = this.wordsForTrain[this.currentGameRound].levelOfDifficulty;
+			const b = this.wordsForTrain[this.currentGameRound].PageNumber;
+			await this.getWordsForGame(a, b);
+			// this.isUrlImage = './assets/img/speaker.jpg';
 			this.playSound(this.isUrlFiles + this.myWords[0].audio);
 			this.setImgAndAudio({
 				image: this.isUrlFiles + this.myWords[0].image,
@@ -95,23 +131,9 @@ export default {
 				a.autoplay = true;
 			}
 		},
-		// ----- Function to shuffle array for the game ----- //
-		shuffle(array) {
-			for (let i = array.length - 1; i > 0; i -= 1) {
-				const j = Math.floor(Math.random() * (i + 1));
-				// eslint-disable-next-line no-param-reassign
-				[array[i], array[j]] = [array[j], array[i]];
-			}
-			this.randomArray = array;
-		},
-		async startGame() {
+		startGame() {
 			this.isStartGame = true;
 			this.currentGameRound = 0;
-			this.randomArray = [0, 1, 2, 3, 4];
-			this.shuffle(this.randomArray);
-			await this.getWordsForGame(this.levelOfDifficulty, this.currentPageNumber);
-			// console.log(this.myWords);
-			// this.isUrlImage = './assets/img/speaker.jpg';
 			this.playRoundOfTheGame();
 		},
 	},
