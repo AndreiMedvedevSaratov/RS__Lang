@@ -14,14 +14,15 @@
 			div( class="card-pannel" )
 				div(
 					class="card"
-					v-for="(item, i) in myWords"
+					v-for="(item, i) in myWordsForGame"
 					:key="i"
 					v-if="i < 5"
 					@click="strikeButton(item)"
 				)
 
 					div( class="card__info" )
-						p( class="card__info__translation" ) {{ item.wordTranslate }}
+						p( class="card__info__translation"
+							v-bind:class="{notActive: isNotActive[i]}" ) {{ item.wordTranslate }}
 
 		div( class="buttonsRow" ) buttonsRow
 </template>
@@ -36,39 +37,40 @@ export default {
 	data: () => ({
 		isStartGame: false,
 		isNextRound: false,
-		Results: [],
+		isNotActive: [false, false, false, false, false],
 		myWords: {},
+		myWordsForGame: [],
 		currentGameRound: 0, // from 0 to 9
 		wordsForTrain: [
 			{
-				levelOfDifficulty: 0, PageNumber: 4, WordNumberOnPage: 2,
+				levelOfDifficulty: 0, pageNumber: 4, wordNumberOnPage: 2, result: 0,
 			},
 			{
-				levelOfDifficulty: 0, PageNumber: 8, WordNumberOnPage: 3,
+				levelOfDifficulty: 0, pageNumber: 8, wordNumberOnPage: 3, result: 0,
 			},
 			{
-				levelOfDifficulty: 0, PageNumber: 7, WordNumberOnPage: 4,
+				levelOfDifficulty: 0, pageNumber: 7, wordNumberOnPage: 4, result: 0,
 			},
 			{
-				levelOfDifficulty: 0, PageNumber: 3, WordNumberOnPage: 2,
+				levelOfDifficulty: 0, pageNumber: 3, wordNumberOnPage: 2, result: 0,
 			},
 			{
-				levelOfDifficulty: 0, PageNumber: 5, WordNumberOnPage: 1,
+				levelOfDifficulty: 0, pageNumber: 5, wordNumberOnPage: 1, result: 0,
 			},
 			{
-				levelOfDifficulty: 1, PageNumber: 4, WordNumberOnPage: 3,
+				levelOfDifficulty: 1, pageNumber: 4, wordNumberOnPage: 3, result: 0,
 			},
 			{
-				levelOfDifficulty: 2, PageNumber: 4, WordNumberOnPage: 2,
+				levelOfDifficulty: 2, pageNumber: 4, wordNumberOnPage: 2, result: 0,
 			},
 			{
-				levelOfDifficulty: 3, PageNumber: 4, WordNumberOnPage: 4,
+				levelOfDifficulty: 3, pageNumber: 4, wordNumberOnPage: 4, result: 0,
 			},
 			{
-				levelOfDifficulty: 4, PageNumber: 4, WordNumberOnPage: 0,
+				levelOfDifficulty: 4, pageNumber: 4, wordNumberOnPage: 0, result: 0,
 			},
 			{
-				levelOfDifficulty: 5, PageNumber: 4, WordNumberOnPage: 1,
+				levelOfDifficulty: 5, pageNumber: 4, wordNumberOnPage: 1, result: 0,
 			},
 		],
 		card: '',
@@ -83,7 +85,9 @@ export default {
 	},
 	watch: {
 		isNextRound() {
-			if (this.isNextRound) this.playRoundOfTheGame();
+			if (this.currentGameRound < 10) {
+				if (this.isNextRound) this.playRoundOfTheGame();
+			} else this.endOfTheGame();
 		},
 	},
 	created() {},
@@ -96,24 +100,39 @@ export default {
 			setImgAndAudio: 'audiovizov/AUDIOVIZOV_SET_IMAGE_AND_AUDIO',
 		}),
 		strikeButton(word) {
-			if (word.wordTranslate === this.myWords[0].wordTranslate) {
+			if (word.wordTranslate === this.myWordsForGame[0].wordTranslate) {
 				this.currentGameRound += 1;
 				this.isNextRound = true;
+			} else {
+				this.wordsForTrain[this.currentGameRound].result += 1;
+				// this.isNotActive[word] = true;
 			}
+		},
+		endOfTheGame() {
+			console.log(this.wordsForTrain);
 		},
 		async playRoundOfTheGame() {
 			this.isNextRound = false;
 			const a = this.wordsForTrain[this.currentGameRound].levelOfDifficulty;
-			const b = this.wordsForTrain[this.currentGameRound].PageNumber;
+			const b = this.wordsForTrain[this.currentGameRound].pageNumber;
+			const c = this.wordsForTrain[this.currentGameRound].wordNumberOnPage;
 			await this.getWordsForGame(a, b);
+			if (c < 14) {
+				for (let i = 0; i < 5; i += 1) {
+					this.myWordsForGame[i] = this.myWords[c + i];
+				}
+			} else {
+				for (let i = 0; i < 5; i += 1) {
+					this.myWordsForGame[i] = this.myWords[c - i];
+				}
+			}
 			// this.isUrlImage = './assets/img/speaker.jpg';
-			this.playSound(this.isUrlFiles + this.myWords[0].audio);
+			// this.playSound(this.isUrlFiles + this.myWords[0].audio);
 			this.setImgAndAudio({
-				image: this.isUrlFiles + this.myWords[0].image,
-				audio: this.isUrlFiles + this.myWords[0].audio,
+				image: this.isUrlFiles + this.myWordsForGame[0].image,
+				audio: this.isUrlFiles + this.myWordsForGame[0].audio,
 			});
 		},
-		// ----- Function get words for the play ----- //
 		async getWordsForGame(levelOfDifficulty, currentPageNumber) {
 			try {
 				this.getWords({ page: currentPageNumber, group: levelOfDifficulty });
@@ -122,7 +141,6 @@ export default {
 				console.log(e);
 			}
 		},
-		// ----- Function play sounds for the cards with English names ----- //
 		playSound(soundfileMp) {
 			if ('Audio' in window) {
 				const a = new Audio();
@@ -212,6 +230,9 @@ export default {
 
 				&:hover {
 					background-color: #bab1ba;
+				}
+				p.notActive {
+					color: red;
 				}
 			}
 		}
