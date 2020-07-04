@@ -178,10 +178,11 @@ export default {
 	created() {},
 	mounted() {
 		// this.getAggregatedWord('5e9f5ee35eb9e72bc21af4a3');
+		this.getWord({ wordId: '5e9f5ee35eb9e72bc21af4a3' });
 	},
 	methods: {
 		...mapActions({
-			getWords: 'APP_GET_WORDS',
+			getWord: 'APP_GET_WORD',
 			getWordStats: 'APP_GET_USER_WORD_STAT',
 			setWordStat: 'APP_SET_USER_WORD_STAT',
 			delWordStat: 'APP_DELETE_USER_WORD_STAT',

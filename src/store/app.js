@@ -140,16 +140,18 @@ const actions = {
 	/**
 	 * Function gets word
 	 *
-	 * @param {string} wordId
-	 * @example dispatch('APP_GET_WORDS', wordId, { root: true })
+	 * @param {object} payload
+	 * @param {string} payload.wordId
+	 * @param {string} [payload.noAssets=true]
+	 * @example dispatch('APP_GET_WORDS', {payload.wordId}, { root: true })
 	 */
 	async APP_GET_WORD({
 		rootState, commit, dispatch,
-	}, wordId) {
+	}, payload) {
 		commit('APP_STATUS', 'loading');
 
 		await axios.get(
-			`${rootState.app.server}/words/${wordId}`,
+			`${rootState.app.server}/words/${payload.wordId}?noAssets=${payload.noAssets || 'true'}`,
 		).then((wordsData) => {
 			console.log('Get word', wordsData.data);
 			commit('APP_GET_WORD', wordsData.data);
