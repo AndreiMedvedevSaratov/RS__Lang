@@ -87,7 +87,8 @@ export default {
 	},
 	watch: {},
 	created() {},
-	mounted() {},
+	mounted() {
+	},
 	methods: {
 		...mapMutations({
 			setProfile: 'user/USER_FORM',
