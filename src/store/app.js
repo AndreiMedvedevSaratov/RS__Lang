@@ -280,8 +280,8 @@ const actions = {
 		await axios.get(
 			`${rootState.app.server}/users/${rootState.user.profile.userId}/aggregatedWords?group=${words.group}&wordsPerPage=${words.wordsPerPage}&filter=${words.filter}`,
 		).then((wordsData) => {
-			commit('APP_GET_WORDS', wordsData.data);
-			console.log('aggregatedWords', wordsData.data);
+			commit('APP_GET_WORDS', wordsData.data[0].paginatedResults);
+			console.log('aggregatedWords', wordsData.data[0].paginatedResults);
 
 			commit('APP_STATUS', 'success');
 		}).catch((error) => {
@@ -329,7 +329,9 @@ const actions = {
  */
 const mutations = {
 	EDIT_HTML: (state, payload) => {
-		state.html[payload.one][payload.key] = payload.value;
+		payload.forEach((item) => {
+			state.html[item.one][item.key] = item.value;
+		});
 	},
 	APP_GET_WORDS: (state, words) => {
 		state.words = words;
@@ -384,14 +386,21 @@ const getters = {
 		};
 	},
 	getServerUrl: (state) => state.server,
+	getUrlFiles: (state) => state.urlFiles,
 };
 
 const state = {
 	status: 'success',
 	server: 'https://afternoon-falls-25894.herokuapp.com',
+	urlFiles: 'https://raw.githubusercontent.com/Dream-Team-42/rslang-data/master/',
 	html: {
 		main: {
 			drawer: true,
+			breadcrumbs: true,
+		},
+		app: {
+			background: 'grey lighten-5',
+			colorWhite: false,
 		},
 	},
 

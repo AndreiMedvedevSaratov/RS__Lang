@@ -168,10 +168,10 @@ export default {
 			},
 			{
 				title: 'Спринт',
-				subtitle: 'textextexetxte',
+				subtitle: 'Catch the time to guess the words, the countdown has begun..',
 				link: '/sprint',
 				img: 'assets/img/спринт.png',
-				color: 'purple darken-3',
+				color: 'red darken-4',
 			},
 		],
 	}),
