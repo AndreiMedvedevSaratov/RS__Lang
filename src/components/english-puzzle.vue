@@ -368,6 +368,7 @@ export default {
 				this.gameStatus = false;
 				this.alertAction({ status: 'success', data: 'Game over!!' });
 			}
+			console.log(this.num);
 			document.querySelector('.button__continue').classList.remove('visibble-btn');
 			document.querySelector('.button__check').classList.remove('visibble-btn');
 		},
