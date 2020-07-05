@@ -9,9 +9,11 @@
 			img(
 				class="main__image"
 				:src="isUrlImage"
+				@click="pronounceSound"
 			)
 
-			div( class="card-pannel" )
+			div( class="card-pannel"
+					ref="words" )
 				div(
 					class="card"
 					v-for="(item, i) in myWordsForGame"
@@ -22,7 +24,7 @@
 
 					div( class="card__info" )
 						p( class="card__info__translation"
-							v-bind:class="{notActive: isNotActive[i]}" ) {{ item.wordTranslate }}
+							:ref="item.word" ) {{ item.wordTranslate }}
 
 		div( class="buttonsRow" ) buttonsRow
 </template>
@@ -37,9 +39,11 @@ export default {
 	data: () => ({
 		isStartGame: false,
 		isNextRound: false,
-		isNotActive: [false, false, false, false, false],
 		myWords: {},
 		myWordsForGame: [],
+		wordForGuessTranslate: '',
+		wordForGuessAudio: '',
+		wordForGuessImage: '',
 		currentGameRound: 0, // from 0 to 9
 		wordsForTrain: [
 			{
@@ -91,7 +95,11 @@ export default {
 		},
 	},
 	created() {},
-	mounted() {},
+	mounted() {
+		const a = this.wordsForTrain[this.currentGameRound].levelOfDifficulty;
+		const b = this.wordsForTrain[this.currentGameRound].pageNumber;
+		this.getWordsForGame(a, b);
+	},
 	methods: {
 		...mapActions({
 			getWords: 'audiovizov/GET_WORDS',
@@ -99,24 +107,43 @@ export default {
 		...mapMutations({
 			setImgAndAudio: 'audiovizov/AUDIOVIZOV_SET_IMAGE_AND_AUDIO',
 		}),
+		pronounceSound() {
+			this.playSound(this.isUrlFiles + this.wordForGuessAudio);
+		},
+		shuffle(array) {
+			for (let i = array.length - 1; i > 0; i -= 1) {
+				const j = Math.floor(Math.random() * (i + 1));
+				// eslint-disable-next-line no-param-reassign
+				[array[i], array[j]] = [array[j], array[i]];
+			}
+		},
 		strikeButton(word) {
-			if (word.wordTranslate === this.myWordsForGame[0].wordTranslate) {
+			if (word.wordTranslate === this.wordForGuessTranslate) {
 				this.currentGameRound += 1;
 				this.isNextRound = true;
+				for (let i = 1; i < 6; i += 1) {
+					document.querySelector(`#inspire > div > main > div > div > div > div.main > div.card-pannel > div:nth-child(${i}) > div > p`).classList.remove('notActive');
+				}
 			} else {
 				this.wordsForTrain[this.currentGameRound].result += 1;
-				// this.isNotActive[word] = true;
+				this.$refs[word.word][0].classList.add('notActive');
 			}
 		},
 		endOfTheGame() {
-			console.log(this.wordsForTrain);
+			for (let i = 0; i < 10; i += 1) {
+				console.log(this.wordsForTrain[i].result);
+			}
 		},
 		async playRoundOfTheGame() {
 			this.isNextRound = false;
 			const a = this.wordsForTrain[this.currentGameRound].levelOfDifficulty;
 			const b = this.wordsForTrain[this.currentGameRound].pageNumber;
 			const c = this.wordsForTrain[this.currentGameRound].wordNumberOnPage;
-			await this.getWordsForGame(a, b);
+			try {
+				await this.getWordsForGame(a, b);
+			} catch (e) {
+				console.log(e);
+			}
 			if (c < 14) {
 				for (let i = 0; i < 5; i += 1) {
 					this.myWordsForGame[i] = this.myWords[c + i];
@@ -126,20 +153,23 @@ export default {
 					this.myWordsForGame[i] = this.myWords[c - i];
 				}
 			}
-			// this.isUrlImage = './assets/img/speaker.jpg';
-			// this.playSound(this.isUrlFiles + this.myWords[0].audio);
+			this.wordForGuessTranslate = this.myWordsForGame[0].wordTranslate;
+			this.wordForGuessAudio = this.myWordsForGame[0].audio;
+			this.wordForGuessImage = this.myWordsForGame[0].image;
+			this.shuffle(this.myWordsForGame);
+			this.playSound(this.isUrlFiles + this.wordForGuessAudio);
 			this.setImgAndAudio({
-				image: this.isUrlFiles + this.myWordsForGame[0].image,
-				audio: this.isUrlFiles + this.myWordsForGame[0].audio,
+				image: this.isUrlFiles + this.wordForGuessImage,
+				// image: './assets/img/speaker.jpg',
 			});
 		},
 		async getWordsForGame(levelOfDifficulty, currentPageNumber) {
 			try {
 				this.getWords({ page: currentPageNumber, group: levelOfDifficulty });
-				this.myWords = this.isWords;
 			} catch (e) {
 				console.log(e);
 			}
+			this.myWords = this.isWords;
 		},
 		playSound(soundfileMp) {
 			if ('Audio' in window) {
@@ -149,10 +179,22 @@ export default {
 				a.autoplay = true;
 			}
 		},
-		startGame() {
+		async startGame() {
 			this.isStartGame = true;
 			this.currentGameRound = 0;
-			this.playRoundOfTheGame();
+			this.myWords = {};
+			this.myWordsForGame = [];
+			this.wordForGuessTranslate = '';
+			this.wordForGuessAudio = '';
+			this.wordForGuessImage = '';
+			for (let i = 0; i < 10; i += 1) {
+				this.wordsForTrain[i].result = 0;
+			}
+			try {
+				await this.playRoundOfTheGame();
+			} catch (e) {
+				console.log(e);
+			}
 		},
 	},
 };
