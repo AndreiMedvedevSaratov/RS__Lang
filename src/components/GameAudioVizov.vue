@@ -130,9 +130,11 @@ export default {
 			}
 		},
 		endOfTheGame() {
+			let result = '';
 			for (let i = 0; i < 10; i += 1) {
-				console.log(this.wordsForTrain[i].result);
+				result += this.wordsForTrain[i].result;
 			}
+			alert(`End of the game! ${result}`);
 		},
 		async playRoundOfTheGame() {
 			this.isNextRound = false;
