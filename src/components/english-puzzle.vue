@@ -35,6 +35,9 @@
 				button.button__check.button_style(
 					@click="check"
 				) Check
+				button.button__continue.button_style(
+					@click="continueWord"
+				) Continue
 				button.button__check.button_style(
 				v-if="!gameStatus"
 			) Next level
@@ -60,6 +63,7 @@ export default {
 		gameStatus: false,
 		imgSrc: ['../assets/img/9val.jpg'],
 		arr: null,
+		booleanForCheck: false,
 	}),
 	computed: {
 		...mapGetters({
@@ -189,20 +193,27 @@ export default {
 			}
 
 			const gigEnd = document.querySelectorAll(`.gig_end${this.num}`);
-			for (let i = 0; i < wordAll.length; i += 1) {
-				wordAll[i].addEventListener('click', (e) => {
-					console.log(i);
+			const newWordAll = document.querySelectorAll(`.word${this.num}`);
+			for (let i = 0; i < newWordAll.length; i += 1) {
+				newWordAll[i].addEventListener('click', (e) => {
+					if (this.booleanForCheck) {
+						return 1;
+					}
 					if (e.target.closest(`.gig_begin${this.num}`)) {
 						for (let p = 0; p < newArr.length; p += 1) {
 							if (newArr[p] === 0) {
-								document.querySelectorAll(`.gig_end${this.num}`)[p].append(wordAll[i]);
+								document.querySelectorAll(`.gig_end${this.num}`)[p].append(newWordAll[i]);
 								newArr.splice([p], 1, 1);
+								if (!newArr.includes(0)) {
+									document.querySelector('.button__check').classList.add('visibble-btn');
+								}
 								break;
 							}
 						}
 					} else if (e.target.closest(`.gig_end${this.num}`)) {
-						document.querySelectorAll(`.gig_begin${this.num}`)[i].append(wordAll[i]);
+						document.querySelectorAll(`.gig_begin${this.num}`)[i].append(newWordAll[i]);
 					}
+					return 1;
 				});
 			}
 
@@ -262,6 +273,9 @@ export default {
 					if (!gigEnd[i].innerHTML) {
 						newArr.splice([i], 1, 0);
 					}
+					if (!newArr.includes(0)) {
+						document.querySelector('.button__check').classList.add('visibble-btn');
+					}
 				}
 				// this.append(target)
 				this.classList.remove('hovered');
@@ -280,26 +294,35 @@ export default {
 		},
 
 		dontKnow() {
-			const word = document.querySelectorAll(`.word${this.num}`);
-			for (let i = 0; i < word.length; i += 1) {
+			const wordBefore = document.querySelectorAll(`.word${this.num}`);
+			document.querySelector('.button__check').classList.remove('visibble-btn');
+			for (let i = 0; i < wordBefore.length; i += 1) {
 				this.$refs.beginWord.innerHTML = '';
 				document.querySelectorAll(`.gig_end${this.num}`)[i].innerHTML = '';
 			}
-			for (let i = 0; i < word.length; i += 1) {
+			for (let i = 0; i < wordBefore.length; i += 1) {
 				document.querySelectorAll(`.gig_end${this.num}`)[i].innerHTML = this.wordRight[i].outerHTML;
 			}
-
-			if (this.num < 9) {
-				this.num += 1;
-				this.game();
-			} else {
-				this.gameStatus = false;
-				this.alertAction({ status: 'success', data: 'Game over!!' });
+			const wordAfter = document.querySelectorAll(`.word${this.num}`);
+			for (let i = 0; i < wordBefore.length; i += 1) {
+				wordAfter[i].setAttribute('draggable', 'false');
 			}
+			document.querySelector('.button__continue').classList.add('visibble-btn');
+			document.querySelector('.button__check').classList.remove('visibble-btn');
+			document.querySelector('.button__not-know').classList.remove('visibble-btn');
+			this.booleanForCheck = false;
 		},
 
 		check() {
+			const wordBefore = document.querySelectorAll(`.word${this.num}`);
 			const wordAll = document.querySelectorAll(`.word${this.num}`);
+			let count = 0;
+			if (this.booleanForCheck) {
+				return 1;
+			}
+			for (let i = 0; i < wordBefore.length; i += 1) {
+				wordBefore[i].setAttribute('draggable', 'false');
+			}
 			for (let i = 0; i < wordAll.length; i += 1) {
 				wordAll[i].classList.remove('right');
 				wordAll[i].classList.remove('wrong');
@@ -308,13 +331,45 @@ export default {
 				if (wordAll[i].closest(`.gig_end${this.num}`)) {
 					if (wordAll[i].innerHTML === this.arr[i]) {
 						wordAll[i].classList.add('right');
+						count += 1;
 					} else {
 						wordAll[i].classList.add('wrong');
+						document.querySelector('.button__not-know').classList.add('visibble-btn');
 					}
 				} else {
 					wordAll[i].classList.add('wrong');
 				}
+				if (count === wordAll.length) {
+					document.querySelector('.button__continue').classList.add('visibble-btn');
+				}
 			}
+			this.booleanForCheck = true;
+			return 1;
+		},
+
+		continueWord() {
+			this.booleanForCheck = false;
+			const wordBefore = document.querySelectorAll(`.word${this.num}`);
+			for (let i = 0; i < wordBefore.length; i += 1) {
+				this.$refs.beginWord.innerHTML = '';
+				document.querySelectorAll(`.gig_end${this.num}`)[i].innerHTML = '';
+			}
+			for (let i = 0; i < wordBefore.length; i += 1) {
+				document.querySelectorAll(`.gig_end${this.num}`)[i].innerHTML = this.wordRight[i].outerHTML;
+			}
+			const wordAfter = document.querySelectorAll(`.word${this.num}`);
+			for (let i = 0; i < wordBefore.length; i += 1) {
+				wordAfter[i].setAttribute('draggable', 'false');
+			}
+			if (this.num < 9) {
+				this.num += 1;
+				this.game();
+			} else {
+				this.gameStatus = false;
+				this.alertAction({ status: 'success', data: 'Game over!!' });
+			}
+			document.querySelector('.button__continue').classList.remove('visibble-btn');
+			document.querySelector('.button__check').classList.remove('visibble-btn');
 		},
 	},
 };
@@ -349,6 +404,7 @@ body {
 	font-family: 'Montserrat';
 	font-style: normal;
 	color: #476622;
+	user-select: none;
 }
 
 .img {
@@ -456,7 +512,7 @@ input {
 	display: flex;
 	justify-content: center;
 	width: 900px;
-	height: auto;
+	height: 45px;
 	margin: 10px auto 0px auto;
 }
 
@@ -517,7 +573,20 @@ input {
 }
 
 .button__check {
-	margin-left: 10px
+	display: none;
+	margin-left: 10px;
+}
+
+.button__continue {
+	display: none;
+}
+
+.button__not-know {
+	display: none;
+}
+
+.visibble-btn {
+	display: inline-block;
 }
 
 .right {
