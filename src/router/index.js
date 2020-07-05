@@ -64,12 +64,12 @@ const routes = [
 			},
 			{
 				path: '/speaking',
-				name: 'Speaking',
-				component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),
+				name: 'speaking',
+				component: () => import(/* webpackChunkName: "speaking" */ '../components/GameSpeakit.vue'),
 				meta: {
 					breadcrumb: [
 						{ text: 'Home', to: '/home' },
-						{ text: 'Speaking' },
+						{ text: 'speaking' },
 					],
 				},
 			},
@@ -138,6 +138,11 @@ const routes = [
 		path: '*',
 		name: 'Other',
 		redirect: '/home',
+	},
+	{
+		path: '/main-game',
+		name: 'Main-game',
+		component: () => import(/* webpackChunkName: 'main-game' */ '../components/MainGame/main-game.vue'),
 	},
 ];
 
