@@ -1,4 +1,133 @@
-<template lang='pug'>
-  div( class="about" )
-    h1 This is an about page
+<template>
+  <div class="about-wrapper">
+    <div class="about">
+      <h1>About "Dream Team 42"</h1>
+    </div>
+    <div class="p1">
+      <p>Here is short information about our team. First question is "Why Dream Team 42?</p>
+      <p>Answer is simple ))) - "Dream Team" - just because we are Dream Team ))))</p>
+      <p>"42" - is just because we are 42 team in the main table</p>
+      <p>So let me introduce participants:</p>
+      <br>
+    </div>
+    <hr>
+    <div class="profile-page">
+      <div
+        v-for="(item, i) in developers"
+        :key="i"
+        class="grid-container"
+      >
+        <div class="column1">
+          <img
+            :src="item.profilePicture"
+            class="avatar_img"
+          >
+        </div>
+        <div class="column2">
+          <b>Name:</b> <u>{{ item.name }}</u> <br>
+          <b>Github account:</b> {{ item.githubAccount }} <br>
+          <b>E-mail:</b> {{ item.emailAddress }} <br>
+          <b>Telephone:</b> {{ item.telephone }} <br>
+          <b>About:</b> {{ item.about }}
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
+
+<script>
+export default {
+	name: 'ProfilePage',
+	data() {
+		return {
+			developers: [
+				{
+					name: 'Maksim Kapustin',
+					profilePicture: './assets/img/Maksim_Kapustin.jpg',
+					emailAddress: 'makskapustin90@gmail.com',
+					githubAccount: 'https://github.com/TimeOfProgramming',
+					telephone: '+7-927-057-34-99',
+					about: 'He likes web development and he learn very fast.',
+				},
+				{
+					name: 'Andrei Medvedev',
+					profilePicture: './assets/img/Andrei_Medvedev.jpg',
+					emailAddress: 'andreiok@gmail.com',
+					githubAccount: 'https://github.com/andreimedvedevsaratov',
+					telephone: '+7-917-215-19-68',
+					about: `He is fulltime working in Import-Export Company now. Currently he is interesting in development of his 
+            skills in Web programming. Computer programming was his dream from school years. But life happens 
+            that he worked in other type of jobs. Now he is going to follow his earlier dreams and start to move toward it.`,
+				},
+				{
+					name: 'Nurlan Kurbandurdyev',
+					profilePicture: './assets/img/Nurlan_Kurbandurdyev.jpg',
+					emailAddress: 'nurlan.wap3@gmail.com',
+					githubAccount: 'https://github.com/ggnk',
+					telephone: '+7-967-501-81-87',
+					about:
+						'He use web programming both in his work, for solving various tasks, and as a hobby. He want to become a professional in the field of web technologies.',
+				},
+				{
+					name: 'Alexey Zhumaev',
+					profilePicture: './assets/img/Alexey_Zhumaev.jpg',
+					emailAddress: 'alex.zhumaev@mail.ru',
+					githubAccount: 'https://github.com/alexey221284',
+					telephone: '+7-904-244-04-62',
+					about: `His goal is to gain experience and skills in the JavaScript programming language for further employment. 
+					His skills are HTML, CSS, the basics of JavaScript, and he also have some experience with the Webix and 1C Bitrix frameworks.`,
+				},
+				{
+					name: 'Pavel Pronchatov',
+					profilePicture: './assets/img/Pavel_Pronchatov.jpg',
+					emailAddress: 'pavel.pronchatov155@gmail.ru',
+					githubAccount: 'https://github.com/pavelponchatov',
+					telephone: '+7-908-554-03-79',
+					about:
+						'He is studying at college and work as Junior Software Ingeneer',
+				},
+				{
+					name: 'Mark Flerko',
+					profilePicture: './assets/img/Mark_Flerko.jpg',
+					emailAddress: 'markflerko@gmail.com',
+					githubAccount: 'https://github.com/markflerko',
+					telephone: '+375447314001',
+					about: 'He developed PO "TKZ-RU" for "BelTEI"',
+				},
+				{
+					name: 'Aliaksei Palanevich',
+					profilePicture: './assets/img/Aliaksei_Palanevich.jpg',
+					emailAddress: 'palanevich.aleksey@gmail.com',
+					githubAccount: 'https://github.com/goldoragon',
+					telephone: '+375299069001',
+					about: `He likes: solve anything task (physics, logic, mathematical etc.); read and explore other people's solutions; 
+					to build his day as how he wants; work on an interesting project in a friendly team. So he’d like to find interesting things and good people.`,
+				},
+			],
+		};
+	},
+};
+</script>
+
+<style scoped>
+.about-wrapper {
+	max-width: 1440px;
+	margin: 0 auto;
+}
+.grid-container {
+  display: grid;
+  grid-template-rows: 310px;
+  grid-template-columns: 310px 1130px;
+}
+.avatar_img {
+	width: 300px;
+	height: 300px;
+	border-radius: 20%;
+}
+.column1 {
+	grid-column: 1/2;
+}
+.column2 {
+	grid-column: 2/2;
+}
+</style>

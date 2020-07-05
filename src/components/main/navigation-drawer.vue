@@ -67,10 +67,10 @@ export default {
 		],
 	}),
 	computed: {
-		...mapGetters(['isHtml']),
+		...mapGetters(['getHtmlParameters']),
 		drawer: {
 			get() {
-				return this.isHtml.main.drawer;
+				return this.getHtmlParameters.main.drawer;
 			},
 			set(value) {
 				this.editHtml({ one: 'main', key: 'drawer', value });

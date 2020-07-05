@@ -34,6 +34,15 @@
 				| About
 
 		v-spacer
+		v-btn(
+			:loading="load.loading"
+			:disabled="load.loading"
+			:color="load.status"
+			class="ma-2 white--text"
+			outlined
+		) {{ load.message }}
+			v-icon( :color="load.status" ) {{ load.icon }}
+
 		v-btn( icon)
 			v-icon mdi-bell
 
@@ -60,7 +69,10 @@ export default {
 	data: () => ({
 	}),
 	computed: {
-		...mapGetters(['isHtml']),
+		...mapGetters({
+			isHtml: 'getHtmlParameters',
+			load: 'getStatusLoadWithIcon',
+		}),
 		drawer: {
 			get() {
 				return this.isHtml.main.drawer;
