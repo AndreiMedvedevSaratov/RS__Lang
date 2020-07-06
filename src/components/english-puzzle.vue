@@ -6,14 +6,14 @@
 					option(
 						v-for="(item,i) in 6"
 						:key="i"
-						:value="item"
+						:value="item-1"
 					) Level {{item}}
 			label.page
 				select(v-model="selected_page")
 					option(
 						v-for="(item_page,i) in 30"
 						:key="i"
-						:value="item_page"
+						:value="item_page-1"
 					) Page {{item_page}}
 		.button_wrapper
 			button#button_1
@@ -70,8 +70,8 @@ export default {
 		imgSrc: ['../assets/img/9val.jpg'],
 		arr: null,
 		booleanForCheck: false,
-		selected_level: 1,
-		selected_page: 1,
+		selected_level: 0,
+		selected_page: 0,
 	}),
 	computed: {
 		...mapGetters({
@@ -80,24 +80,26 @@ export default {
 	},
 	watch: {
 		selected_level(number) {
-			console.log(number);
+			this.wordsAction({ group: number, page: this.selected_page });
+			this.game();
 		},
-		selected_page(number) {
-			console.log('2й консоль лог');
+		selected_page(spage) {
+			this.wordsAction({ group: this.selected_level, page: spage });
+			this.game();
 		},
 	},
 	created() {
-		this.wordsAction();
 	},
 	mounted() {
-		setTimeout(() => this.game(), 2000);
+		this.game();
 	},
 	methods: {
 		...mapActions({
 			wordsAction: 'APP_GET_WORDS',
 			alertAction: 'ALERT',
 		}),
-		game() {
+		async game() {
+			await this.wordsAction();
 			this.gameStatus = true;
 
 			const widthPx = (str) => +str.match(/[0-9]/g).join('');
@@ -125,12 +127,13 @@ export default {
 			const arrWord = clearWords(str).split(' ');
 			this.arr = arrWord;
 			const countWords = this.arr.length;
-
+			wordContainer[this.num].innerHTML = '';
 			for (let i = 0; i < countWords; i += 1) {
 				const div = document.createElement('div');
 				div.className = `gig gig_end${this.num}`;
 				wordContainer[this.num].append(div);
 			}
+			beginWord.innerHTML = '';
 			for (let i = 0; i < countWords; i += 1) {
 				const div = document.createElement('div');
 				div.className = `gig gig_begin${this.num}`;
