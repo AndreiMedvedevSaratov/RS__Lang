@@ -1,14 +1,20 @@
 <template lang='pug'>
 	div
 		.select_wrapper
-			label.level Level:
-				select#selectbox1(
-					ref="selectbox1"
-					)
-			label.page Page:
-				select#selectbox2(
-					ref="selectbox2"
-				)
+			label.level
+				select(v-model="selected_level")
+					option(
+						v-for="(item,i) in 6"
+						:key="i"
+						:value="item"
+					) Level {{item}}
+			label.page
+				select(v-model="selected_page")
+					option(
+						v-for="(item_page,i) in 30"
+						:key="i"
+						:value="item_page"
+					) Page {{item_page}}
 		.button_wrapper
 			button#button_1
 			button#button_2
@@ -64,23 +70,31 @@ export default {
 		imgSrc: ['../assets/img/9val.jpg'],
 		arr: null,
 		booleanForCheck: false,
+		selected_level: 1,
+		selected_page: 1,
 	}),
 	computed: {
 		...mapGetters({
-			words: 'getWordList',
+			words: 'getWords',
 		}),
 	},
 	watch: {
+		selected_level(number) {
+			console.log(number);
+		},
+		selected_page(number) {
+			console.log('2й консоль лог');
+		},
 	},
 	created() {
 		this.wordsAction();
 	},
 	mounted() {
-		setTimeout(() => this.game(), 1000);
+		setTimeout(() => this.game(), 2000);
 	},
 	methods: {
 		...mapActions({
-			wordsAction: 'GET_WORDS',
+			wordsAction: 'APP_GET_WORDS',
 			alertAction: 'ALERT',
 		}),
 		game() {
@@ -666,5 +680,20 @@ input {
 	border: solid 1px #476622;
 	border-radius: 5px;
 	font-family: 'Montserrat';
+	display: none;
 }
+
+select {
+	border: solid 2px #476622;
+	border-radius: 5px;
+	color: #476622;
+	margin-left: 15px;
+	width: 65px;
+	font-weight: 700;
+}
+
+option {
+	text-align: center;
+}
+
 </style>

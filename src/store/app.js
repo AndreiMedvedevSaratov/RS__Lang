@@ -92,7 +92,7 @@ const actions = {
 				});
 			});
 		if (wordsData) {
-			console.log('Get words', wordsData.data);
+			console.log('APP_GET_WORDS', wordsData.data);
 			commit('APP_GET_WORDS', wordsData.data);
 		}
 
