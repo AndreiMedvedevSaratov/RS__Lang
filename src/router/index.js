@@ -52,6 +52,16 @@ const routes = [
 				},
 			},
 			{
+				path: '/speakit',
+				component: () => import(/* webpackChunkName: "speakit" */ '../components/GameSpeakit.vue'),
+				name: 'Game Speakit',
+			},
+			{
+				path: '/AudioVizov',
+				component: () => import(/* webpackChunkName: "gameaudiovizov" */ '../components/GameAudioVizov.vue'),
+				name: 'Game AudioVizov',
+			},
+			{
 				path: '/english-puzzle',
 				name: 'English-puzzle',
 				component: () => import(/* webpackChunkName: "english-puzzle" */ '../components/english-puzzle.vue'),

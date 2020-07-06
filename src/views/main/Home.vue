@@ -162,7 +162,7 @@ export default {
 			{
 				title: 'Аудиовызов',
 				subtitle: 'textextexetxte',
-				link: '/',
+				link: '/AudioVizov',
 				img: 'assets/img/аудиовызов.png',
 				color: 'pink darken-1',
 			},
