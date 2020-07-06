@@ -4,6 +4,7 @@
 		style="background-image: url('./assets/img/sprint/fon.jpg');"
 		justify="center"
 		)
+		// Темплейт до запуска игры
 		v-col(
 			v-if="!gameStatus"
 			cols="12"
@@ -11,10 +12,27 @@
 			align="center"
 			class="start"
 		)
-			h2  {{ 'Sprint Game' | UP }}
-			v-btn( @click="game(countWords);" )
+			h2( class="text-uppercase" )  {{ 'Sprint Game'}}
+			v-row
+				v-col
+					v-select(
+						v-model="level"
+						:items="levels"
+						label="Your English level"
+					)
+				v-col
+					v-select(
+						v-model="complexity"
+						:items="levelСomplexity"
+						label="Complexity of game"
+					)
+			v-btn(
+				@click="game()"
+				block
+			)
 				span( style="color: #112595" ) St
 				span( style="color: #ba0410" ) art
+		// Темплейт после запуска игры
 		v-col(
 			v-else
 			cols="12"
@@ -22,6 +40,32 @@
 			align="center"
 			class="start game"
 		)
+			// Кнопки назад, таймер и статистика
+			v-row
+				v-col( v-if="!loading" )
+					v-btn(
+						@click="backMenu"
+						color="error"
+					)
+						v-icon(left) mdi-keyboard-backspace
+						| Back to main
+				v-overlay( :value="overlay" )
+					div(
+						class="timer text-center font-weight-black"
+						v-if="!loading"
+					) {{ currentTime }}
+				v-col(
+					v-if="!overlay && !loading"
+					class="font-weight-black h1"
+				) You have {{ currentTimeGame }} seconds left
+				v-col( v-if="!loading" )
+					v-btn(
+						@click=""
+						color="primary"
+					)
+						v-icon(left) mdi-information-outline
+						| Statistics
+			// Анимация загрузки игры
 			div( v-if="loading" ) Please stand by
 				v-progress-linear(
 					indeterminate
@@ -29,32 +73,34 @@
 					color="red darken-4"
 					class="mb-0"
 				)
+			// Скелет игры до запуска
+			v-skeleton-loader(
+				v-else-if="!statusTimerGame"
+				type="card"
+			)
+			// Игра
 			v-card(
 				v-else
 				class="mx-auto"
-				max-width="600"
 			)
 				v-img(
 					v-if="nextCorrectWord"
 					class="white--text align-center"
-					height="200px"
+					height="250px"
+					contain
 					:src="getImg"
 				)
-					v-card-title( class="justify-center primary" ) {{ nextCorrectWord.wordTranslate }}
+					v-card-title( class="justify-center primary text-h3" ) {{ nextCorrectWord.wordTranslate }}
 				v-card-text(
 					v-if="nextCorrectWord"
 				)
 					v-btn(
 						v-for="( word, i) in nextWords" :key="i"
-						v-if="i <= 3"
-						class="mx-2"
-						outlined
-						:color="word.correct ? (word.correct == true ? 'success' : 'error') : ''"
+						class="ma-2 font-weight-medium"
+						tile
+						color="cyan lighten-5"
 						@click="nextWord(word)"
 					) {{ word.word }}
-						br
-						| {{ word.transcription }}
-
 </template>
 
 <script>
@@ -71,38 +117,100 @@ export default {
 	name: 'Sprint',
 	components: {},
 	filters: {
-		UP(value) {
-			return value.toUpperCase();
-		},
 	},
 	props: [],
 	data: () => ({
 		gameStatus: false,
 		loading: false,
-		withImg: true,
+
+		overlay: false,
+
+		// Нужно обнулять
 		nextCorrectWord: null,
 		nextWords: [],
 		modifiedArray: [],
 		currentPosition: 0,
 
 		countWords: 20,
+		countСhoices: 4,
+		group: 0,
+		withImg: true,
+
+		level: 1,
+		levels: [
+			{
+				text: 'Elementary',
+				value: 1,
+			},
+			{
+				text: 'Intermediate',
+				value: 2,
+			},
+			{
+				text: 'Advanced',
+				value: 3,
+			},
+		],
+		complexity: 1,
+		levelСomplexity: [
+			{
+				text: 'Easy',
+				value: 1,
+			},
+			{
+				text: 'Medium',
+				value: 2,
+			},
+			{
+				text: 'Hard',
+				value: 3,
+			},
+		],
+
+		currentTimeGame: 60,
+		timerGame: null,
+		statusTimerGame: false,
+
+		currentTime: 3,
+		timer: null,
+		statusTimer: false,
 	}),
 	computed: {
 		...mapGetters({
 			words: 'getWords',
 			urlFiles: 'getUrlFiles',
 		}),
+		// Если выбрано играть без картинок то зарузить по умолчанию
 		getImg() {
 			return this.withImg ? `${this.urlFiles}${this.nextCorrectWord.image}` : './assets/img/sprint/fon3.jpg';
 		},
+
 	},
-	watch: {},
+	watch: {
+		currentTime(time) {
+			if (time === 0) {
+				this.stopTimer();
+				this.startTimerGame();
+			}
+		},
+		currentTimeGame(time) {
+			if (time === 0) {
+				this.stopTimerGame();
+			}
+		},
+	},
 	created() {},
 	mounted() {
+		// Перед началом игры изменим стиль страницы
 		this.appHtml([
+			// свернем меню
 			{ one: 'main', key: 'drawer', value: false },
+			// Уберем хлебные крошки
 			{ one: 'main', key: 'breadcrumbs', value: false },
+			// Изменим цвет header по таблице цветов
+			// https://vuetifyjs.com/en/styles/colors/#sass-color-pack
 			{ one: 'app', key: 'background', value: 'red darken-4' },
+			// Изменим цвет текста на белый в header
 			{ one: 'app', key: 'colorWhite', value: true },
 		]);
 		// TODO: проверить уход со страницы через сохранение статистики на слове
@@ -114,6 +222,7 @@ export default {
 		// }, false);
 	},
 	beforeDestroy() {
+		// Перед закрытием страницы возращаем настройки обратно
 		this.appHtml([
 			{ one: 'main', key: 'drawer', value: true },
 			{ one: 'main', key: 'breadcrumbs', value: true },
@@ -129,60 +238,179 @@ export default {
 			getWords: 'APP_GET_USER_WORDS_AGGREGATED',
 			alert: 'ALERT',
 		}),
-		// n - колличество слов нужно угадать
-		async game(n) {
+		// Главный метод
+		async game() {
 			this.loading = true;
 			this.gameStatus = true;
-
-			await this.builderArray(n);
+			await this.gameMode();
+			await this.getWords({
+				group: this.group,
+				wordsPerPage: this.countWords * this.countСhoices,
+				filter: {
+					userWord: null,
+				},
+			});
+			await this.builderArray();
 
 			this.nextWords = this.modifiedArray[this.currentPosition];
-
-			const random = this.randomWord(0, Object.keys(this.nextWords).length - 1);
+			const len = Object.keys(this.nextWords).length - 1;
+			const random = this.randomWord(0, len);
 
 			// Рандомное слово
 			this.nextCorrectWord = this.nextWords[random];
 
 			await setTimeout(() => {
 				this.loading = false;
-			}, 500);
+				this.startTimer();
+			}, 100);
 		},
-		async builderArray(n) {
-			await this.getWords({
-				wordsPerPage: n * 4,
-				filter: {
-					userWord: null,
-				},
-			});
-			const plen = Math.ceil(this.words.length / n);
-
+		// Создает новый массив из обьектов с n колличеством внутренних обьектов
+		builderArray() {
 			this.modifiedArray = this.words.reduce((p, c, i) => {
-				if (i % plen === 0) p.push({});
+				if (i % this.countСhoices === 0) p.push({});
 				// eslint-disable-next-line no-param-reassign
 				p[p.length - 1][i] = c;
 				return p;
 			}, []);
 		},
+		// Метод для выбора рандомного слова из пула ( для угадывания )
 		randomWord(min, max) {
 			// случайное число от min до (max+1)
 			const rand = min + Math.random() * (max + 1 - min);
 			return Math.floor(rand);
 		},
+		// Метод для получения следующего слова ( после угадывания )
+		// Срабатывает при нажатие на любое слово
 		nextWord(word) {
 			// eslint-disable-next-line no-underscore-dangle
 			if	(word._id === this.nextCorrectWord._id) {
 				console.log('Правильно');
 			} else console.log('Не правильно');
 
-			if (++this.currentPosition > this.countWords - 1) {
-				this.alert({ status: 'info', data: 'Игра закончена' });
-			} else {
+			if (++this.currentPosition > this.countWords - 1) this.gameOver();
+			else {
 				const next = Object.values(this.modifiedArray[this.currentPosition]);
 				this.nextWords = next;
 				const random = this.randomWord(0, this.nextWords.length - 1);
 				// Рандомное слово
 				this.nextCorrectWord = this.nextWords[random];
 			}
+		},
+		gameOver() {
+			this.alert({ status: 'info', data: 'Игра закончена' });
+			this.stopTimerGame();
+			this.currentTimeGame = 60;
+			this.statusTimerGame = false;
+
+			this.nextCorrectWord = null;
+			this.nextWords = [];
+			this.modifiedArray = [];
+			this.currentPosition = 0;
+		},
+		// Настройка игры под выбранные параметры уровня и сложности
+		gameMode() {
+			switch (this.level) {
+			case 1:
+				if (this.complexity === 1) {
+					this.countWords = 15;
+					this.group = 0;
+					this.withImg = true;
+					this.countСhoices = 4;
+				} else if (this.complexity === 2) {
+					this.countWords = 20;
+					this.group = 0;
+					this.withImg = true;
+					this.countСhoices = 4;
+				} else if (this.complexity === 3) {
+					this.countWords = 20;
+					this.group = 1;
+					this.withImg = true;
+					this.countСhoices = 4;
+				}
+				break;
+			case 2:
+				if (this.complexity === 1) {
+					this.countWords = 20;
+					this.group = 2;
+					this.withImg = true;
+					this.countСhoices = 4;
+				} else if (this.complexity === 2) {
+					this.countWords = 25;
+					this.group = 2;
+					this.withImg = false;
+					this.countСhoices = 4;
+				} else if (this.complexity === 3) {
+					this.countWords = 20;
+					this.group = 3;
+					this.withImg = false;
+					this.countСhoices = 5;
+				}
+				break;
+			case 3:
+				if (this.complexity === 1) {
+					this.countWords = 20;
+					this.group = 4;
+					this.withImg = true;
+					this.countСhoices = 5;
+				} else if (this.complexity === 2) {
+					this.countWords = 25;
+					this.group = 4;
+					this.withImg = false;
+					this.countСhoices = 5;
+				} else if (this.complexity === 3) {
+					this.countWords = 30;
+					this.group = 5;
+					this.withImg = false;
+					this.countСhoices = 5;
+				}
+				break;
+			default:
+				this.countWords = 15;
+				this.group = 0;
+				this.withImg = true;
+				this.countСhoices = 4;
+			}
+		},
+		backMenu() {
+			this.loading = true;
+			this.stopTimer();
+			this.stopTimerGame();
+			this.currentTimeGame = 60;
+			this.currentTime = 3;
+
+			this.nextCorrectWord = null;
+			this.nextWords = [];
+			this.modifiedArray = [];
+			this.currentPosition = 0;
+
+			setTimeout(() => {
+				this.loading = false;
+				this.gameStatus = false;
+			}, 500);
+		},
+
+		startTimer() {
+			this.timer = setInterval(() => {
+				this.currentTime--;
+			}, 1000);
+			this.statusTimer = true;
+			this.overlay = true;
+		},
+		stopTimer() {
+			this.statusTimer = false;
+			this.overlay = false;
+			clearTimeout(this.timer);
+		},
+
+		startTimerGame() {
+			this.timerGame = setInterval(() => {
+				this.currentTimeGame--;
+			}, 1000);
+			this.statusTimerGame = true;
+		},
+		stopTimerGame() {
+			this.statusTimerGame = false;
+			clearTimeout(this.timerGame);
 		},
 	},
 
@@ -199,10 +427,16 @@ export default {
 
 	.start {
 		position: absolute;
-		top: 40%;
+		top: 20%;
 	}
 	.game {
 		top: 15%!important;
+	}
+	.timer{
+		height: 300px;
+		width: 300px;
+		font-size: 15rem;
+		line-height: normal;
 	}
 }
 </style>
