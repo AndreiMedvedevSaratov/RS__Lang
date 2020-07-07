@@ -79,12 +79,12 @@ export default {
 		}),
 	},
 	watch: {
-		selected_level(number) {
-			this.wordsAction({ group: number, page: this.selected_page });
+		selected_level(number1) {
+			this.wordsAction({ group: number1, page: this.selected_page });
 			this.game();
 		},
-		selected_page(spage) {
-			this.wordsAction({ group: this.selected_level, page: spage });
+		selected_page(number2) {
+			this.wordsAction({ group: this.selected_level, page: number2 });
 			this.game();
 		},
 	},
