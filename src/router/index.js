@@ -73,13 +73,13 @@ const routes = [
 				},
 			},
 			{
-				path: '/speaking',
-				name: 'speaking',
+				path: '/speakit',
+				name: 'speakit',
 				component: () => import(/* webpackChunkName: "speaking" */ '../components/GameSpeakit.vue'),
 				meta: {
 					breadcrumb: [
 						{ text: 'Home', to: '/home' },
-						{ text: 'speaking' },
+						{ text: 'speakit' },
 					],
 				},
 			},

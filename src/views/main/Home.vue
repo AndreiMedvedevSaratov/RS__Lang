@@ -148,7 +148,7 @@ export default {
 			{
 				title: 'SpeakIt',
 				subtitle: 'textextexetxte',
-				link: '/',
+				link: '/speakit',
 				img: 'assets/img/speakit.png',
 				color: 'grey',
 			},
