@@ -40,7 +40,7 @@
 			align="center"
 			class="start game"
 		)
-			// Кнопки назад, таймер и статистика
+			// Кнопки назад, таймеры и статистика
 			v-row
 				v-col( v-if="!loading" )
 					v-btn(
