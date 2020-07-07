@@ -154,6 +154,16 @@ const routes = [
 		name: 'Main-game',
 		component: () => import(/* webpackChunkName: 'main-game' */ '../components/MainGame/main-game.vue'),
 	},
+	{
+		path: '/savanna-start',
+		name: 'Savanna',
+		component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-start.vue'),
+	},
+	{
+		path: '/savanna-game',
+		name: 'Savanna-game',
+		component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-game.vue'),
+	},
 ];
 
 const router = new VueRouter({
