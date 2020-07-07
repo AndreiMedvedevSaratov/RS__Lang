@@ -52,6 +52,16 @@ const routes = [
 				},
 			},
 			{
+				path: '/speakit',
+				component: () => import(/* webpackChunkName: "speakit" */ '../components/GameSpeakit.vue'),
+				name: 'Game Speakit',
+			},
+			{
+				path: '/AudioVizov',
+				component: () => import(/* webpackChunkName: "gameaudiovizov" */ '../components/GameAudioVizov.vue'),
+				name: 'Game AudioVizov',
+			},
+			{
 				path: '/english-puzzle',
 				name: 'English-puzzle',
 				component: () => import(/* webpackChunkName: "english-puzzle" */ '../components/english-puzzle.vue'),
@@ -63,13 +73,13 @@ const routes = [
 				},
 			},
 			{
-				path: '/speaking',
-				name: 'Speaking',
-				component: () => import(/* webpackChunkName: "speaking" */ '../components/speaking.vue'),
+				path: '/speakit',
+				name: 'speakit',
+				component: () => import(/* webpackChunkName: "speaking" */ '../components/GameSpeakit.vue'),
 				meta: {
 					breadcrumb: [
 						{ text: 'Home', to: '/home' },
-						{ text: 'Speaking' },
+						{ text: 'speakit' },
 					],
 				},
 			},
@@ -149,6 +159,21 @@ const routes = [
 		path: '*',
 		name: 'Other',
 		redirect: '/home',
+	},
+	{
+		path: '/main-game',
+		name: 'Main-game',
+		component: () => import(/* webpackChunkName: 'main-game' */ '../components/MainGame/main-game.vue'),
+	},
+	{
+		path: '/savanna-start',
+		name: 'Savanna',
+		component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-start.vue'),
+	},
+	{
+		path: '/savanna-game',
+		name: 'Savanna-game',
+		component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-game.vue'),
 	},
 ];
 
