@@ -1,5 +1,7 @@
 <template lang='pug'>
 	div
+		.modal-wrapper
+			.modal-results
 		.select_wrapper
 			label.level Level:
 				select#selectbox1(
@@ -38,6 +40,9 @@
 				button.button__continue.button_style(
 					@click="continueWord"
 				) Continue
+				button.button__result.button_style(
+					@click="results"
+				) Result
 				button.button__check.button_style(
 				v-if="!gameStatus"
 			) Next level
@@ -61,13 +66,14 @@ export default {
 		wordRight: null,
 		moveY: 0,
 		gameStatus: false,
-		imgSrc: ['../assets/img/9val.jpg'],
+		imgSrc: 0,
 		arr: null,
 		booleanForCheck: false,
+		continueCount: 0,
 	}),
 	computed: {
 		...mapGetters({
-			words: 'getWordList',
+			words: 'getWords',
 		}),
 	},
 	watch: {
@@ -76,11 +82,11 @@ export default {
 		this.wordsAction();
 	},
 	mounted() {
-		setTimeout(() => this.game(), 1000);
+		setTimeout(() => this.game(), 2000);
 	},
 	methods: {
 		...mapActions({
-			wordsAction: 'GET_WORDS',
+			wordsAction: 'APP_GET_WORDS',
 			alertAction: 'ALERT',
 		}),
 		game() {
@@ -132,7 +138,7 @@ export default {
 			// Array div word
 			const wordAll = document.querySelectorAll(`.word${this.num}`);
 			this.wordRight = wordAll;
-
+			let sumWidth = 0;
 			const map = new Map();
 			for (let i = 0; i < countWords; i += 1) {
 				const width = wordAll[i].offsetWidth;
@@ -141,10 +147,19 @@ export default {
 
 			for (let i = 0; i < countWords; i += 1) {
 				wordAll[i].style.width = `${map.get(`${i}`)}px`;
+				sumWidth += +map.get(`${i}`);
+			}
+
+			if (sumWidth > 900) {
+				sumWidth -= 900;
+				wordAll[wordAll.length - 1].style.width = `${+map.get(`${wordAll.length - 1}`) - sumWidth}px`;
+			} else if (sumWidth < 900) {
+				sumWidth = 900 - sumWidth;
+				wordAll[wordAll.length - 1].style.width = `${+map.get(`${wordAll.length - 1}`) + sumWidth}px`;
 			}
 
 			for (let i = 0; i < countWords; i += 1) {
-				wordAll[i].style.backgroundImage = 'url(./assets/img/9val.jpg)';
+				wordAll[i].style.backgroundImage = `url(./assets/img/${this.imgSrc}.jpg)`;
 			}
 
 			let moveX = 0;
@@ -348,6 +363,20 @@ export default {
 		},
 
 		continueWord() {
+			this.continueCount += 1;
+			if (this.continueCount === 10) {
+				const wordAll = document.querySelectorAll('.word');
+				for (let i = 0; i < wordAll.length; i += 1) {
+					wordAll[i].innerHTML = '';
+					wordAll[i].classList.add('border-none');
+				}
+				document.querySelector('.button__result').classList.add('visibble-btn');
+				return 1;
+			}
+			if (this.continueCount === 11) {
+				this.continueCount = 0;
+			}
+
 			this.booleanForCheck = false;
 			const wordBefore = document.querySelectorAll(`.word${this.num}`);
 			for (let i = 0; i < wordBefore.length; i += 1) {
@@ -368,9 +397,13 @@ export default {
 				this.gameStatus = false;
 				this.alertAction({ status: 'success', data: 'Game over!!' });
 			}
-			console.log(this.num);
 			document.querySelector('.button__continue').classList.remove('visibble-btn');
 			document.querySelector('.button__check').classList.remove('visibble-btn');
+			return 1;
+		},
+
+		results() {
+			return 1;
 		},
 	},
 };
@@ -536,18 +569,22 @@ input {
 	border: none;
 	display: flex;
 	justify-content: center;
-	color: #d7e5d2;
+	color: blanchedalmond;
 	font-weight: bold;
 }
 
 .word {
 	width: -webkit-fill-available;
 	height: 45px;
-	border: 1px solid;
+	border: 1px solid blanchedalmond;
 	text-align: center;
 	padding: 12px 5px 12px 5px;
 	background-repeat: no-repeat;
 	cursor: pointer;
+}
+
+.border-none {
+	border: none
 }
 
 /*.fuck {*/
@@ -574,6 +611,11 @@ input {
 }
 
 .button__check {
+	display: none;
+	margin-left: 10px;
+}
+
+.button__result {
 	display: none;
 	margin-left: 10px;
 }
@@ -667,4 +709,23 @@ input {
 	border-radius: 5px;
 	font-family: 'Montserrat';
 }
+
+.modal-wrapper {
+	position: absolute;
+	display: none;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.7);
+    z-index: 100;
+}
+
+.modal-results {
+	width: 600px;
+    height: 400px;
+    background: white;
+    top: calc(50% - 200px);
+    left: calc(50% - 300px);
+    position: relative;
+}
+
 </style>

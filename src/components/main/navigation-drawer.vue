@@ -63,7 +63,6 @@ export default {
 			{ icon: 'mdi-cog', text: 'Settings', to: '/setting' },
 			{ icon: 'mdi-message', text: 'Send feedback', to: '/' },
 			{ icon: 'mdi-help-circle', text: 'Help', to: '/' },
-			{ icon: 'mdi-plus', text: 'EnglishPuzzle2', to: '/english-puzzle2' },
 		],
 	}),
 	computed: {

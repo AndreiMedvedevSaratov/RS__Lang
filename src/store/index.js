@@ -5,7 +5,6 @@ import auth from './auth';
 import user from './user';
 
 Vue.use(Vuex);
-Vue.use(VueDragDrop);
 
 export default new Vuex.Store({
 	// Строгий режим. Все изменения проводить через мутацию (в режиме разработчика)

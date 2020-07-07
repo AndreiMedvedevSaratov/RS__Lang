@@ -52,17 +52,6 @@ const routes = [
 				},
 			},
 			{
-				path: '/english-puzzle2',
-				name: 'English-puzzle',
-				component: () => import(/* webpackChunkName: "english-puzzle2" */ '../components/EnglishPuzzle.vue'),
-				meta: {
-					breadcrumb: [
-						{ text: 'Home', to: '/home' },
-						{ text: 'English Puzzle' },
-					],
-				},
-			},
-			{
 				path: '/english-puzzle',
 				name: 'English-puzzle',
 				component: () => import(/* webpackChunkName: "english-puzzle" */ '../components/english-puzzle.vue'),
