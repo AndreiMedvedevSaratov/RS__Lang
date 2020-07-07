@@ -16,10 +16,16 @@
 						:value="item_page-1"
 					) Page {{item_page}}
 		.button_wrapper
-			button#button_1
-			button#button_2
+			button#button_1(
+				@click="audiohint"
+			)
+			button#button_2(
+				@click="texthint"
+			)
 			button#button_3
 			button#button_4
+		.hunt
+			p#textExampleTranslate
 		.result-word(
 			ref="resultWord"
 		)
@@ -47,9 +53,6 @@
 				button.button__check.button_style(
 				v-if="!gameStatus"
 			) Next level
-		.card
-			p#textExampleTranslate подсказка-перевод
-			p#audioExample путь к аудио файлу
 </template>
 
 <script>
@@ -82,10 +85,12 @@ export default {
 		selected_level(number1) {
 			this.selected_level = number1;
 			this.game();
+			this.deletehint();
 		},
 		selected_page(number2) {
 			this.selected_page = number2;
 			this.game();
+			this.deletehint();
 		},
 	},
 	created() {
@@ -309,6 +314,7 @@ export default {
 		},
 
 		dontKnow() {
+			this.deletehint();
 			const wordBefore = document.querySelectorAll(`.word${this.num}`);
 			document.querySelector('.button__check').classList.remove('visibble-btn');
 			for (let i = 0; i < wordBefore.length; i += 1) {
@@ -329,6 +335,7 @@ export default {
 		},
 
 		check() {
+			this.deletehint();
 			const wordBefore = document.querySelectorAll(`.word${this.num}`);
 			const wordAll = document.querySelectorAll(`.word${this.num}`);
 			let count = 0;
@@ -386,6 +393,13 @@ export default {
 			console.log(this.num);
 			document.querySelector('.button__continue').classList.remove('visibble-btn');
 			document.querySelector('.button__check').classList.remove('visibble-btn');
+		},
+		audiohint() {},
+		texthint() {
+			document.getElementById('textExampleTranslate').innerText = this.words[this.num].textExampleTranslate;
+		},
+		deletehint() {
+			document.getElementById('textExampleTranslate').innerText = '';
 		},
 	},
 };
@@ -520,7 +534,7 @@ input {
 	height: 450px;
 	background: #476622;
 	margin: 0 auto;
-	margin-top: 20px;
+	margin-top: 0px;
 	border-top: 1px solid;
 }
 
@@ -625,14 +639,15 @@ input {
 
 .button_wrapper {
 	position: relative;
-	left: 70vw;
-	top: 1vh;
+	width: 185px;
+	left: 940px;
+	top: -10px;
 }
 
 #button_1, #button_2, #button_3, #button_4 {
-	width: 23px;
-	height: 23px;
-	margin-left: .3vw;
+	width: 40px;
+	height: 40px;
+	margin-left: 5px;
 	color: #476622;
 	border-radius: 5px;
 	border: solid 1px #476622;
@@ -640,8 +655,8 @@ input {
 
 #selectbox1, #selectbox2 {
 	width: 75px;
-	height: 25px;
-	margin-left: .3vw;
+	height: 40px;
+	margin-right: 5px;
 	color: #476622;
 	border-radius: 5px;
 	border: solid 1px #476622;
@@ -651,37 +666,36 @@ input {
 
 .select_wrapper {
 	position: relative;
-	left: 20vw;
-	top: 4vh;
+	width: 180px;
+	left: 220px;
+	top: 30px;
 }
 
 #button_1 {
-	background: url("../assets/img/1.png") no-repeat;
+	background: url("../assets/img/111.png") no-repeat;
 }
 #button_2 {
-	background: url("../assets/img/2.png") no-repeat;
+	background: url("../assets/img/222.png") no-repeat;
 }
 
 #button_3 {
-	background: url("../assets/img/3.png") no-repeat;
+	background: url("../assets/img/333.png") no-repeat;
 }
 
 #button_4 {
-	background: url("../assets/img/4.png") no-repeat;
+	background: url("../assets/img/444.jpg") no-repeat;
 }
 
-.card {
+.hunt {
 	position: absolute;
-	left: 45vw;
-	top: 6vh;
-	width: auto;
-	height: auto;
+	left: 400px;
+	top: 105px;
+	width: 540px;
 	color:#476622;
-	font-size: 14px;
-	border: solid 1px #476622;
-	border-radius: 5px;
+	font-size: 12px;
+	font-weight: bold;
 	font-family: 'Montserrat';
-	display: none;
+	text-align: center;
 }
 
 select {
@@ -691,6 +705,7 @@ select {
 	margin-left: 15px;
 	width: 65px;
 	font-weight: 700;
+	text-align-last: center;
 }
 
 option {
