@@ -80,11 +80,11 @@ export default {
 	},
 	watch: {
 		selected_level(number1) {
-			this.wordsAction({ group: number1, page: this.selected_page });
+			this.selected_level = number1;
 			this.game();
 		},
 		selected_page(number2) {
-			this.wordsAction({ group: this.selected_level, page: number2 });
+			this.selected_page = number2;
 			this.game();
 		},
 	},
@@ -99,9 +99,8 @@ export default {
 			alertAction: 'ALERT',
 		}),
 		async game() {
-			await this.wordsAction();
+			await this.wordsAction({ group: this.selected_level, page: this.selected_page });
 			this.gameStatus = true;
-
 			const widthPx = (str) => +str.match(/[0-9]/g).join('');
 			const sortArr = (arr) => arr.sort(() => Math.random() - 0.5);
 			const clearWords = (str) => {
@@ -122,7 +121,6 @@ export default {
 			};
 
 			const { beginWord, wordContainer } = this.$refs;
-
 			const str = this.words[this.num].textExample;
 			const arrWord = clearWords(str).split(' ');
 			this.arr = arrWord;
