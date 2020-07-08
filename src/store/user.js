@@ -189,7 +189,9 @@ const state = {
 	},
 	statistics: {
 		learnedWords: 500,
-		optional: {},
+		optional: {
+
+		},
 	},
 	settings: {
 		wordsPerDay: 0,
