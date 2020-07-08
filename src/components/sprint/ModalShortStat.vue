@@ -7,7 +7,27 @@
 			max-width="500px"
 		)
 			v-card
-				v-card-title {{ title }}
+				v-card-title
+					| {{ title }}
+					v-spacer
+					v-chip(
+						color="error"
+						class="mr-2"
+						small
+						label
+					) {{words.wrong.length}}
+					v-chip(
+						color="success"
+						class="mr-2"
+						small
+						label
+					) {{words.correct.length}}
+					v-chip(
+						color="primary"
+						class="mr-2"
+						small
+						label
+					) {{words.correct.length + words.wrong.length}}
 				v-divider
 				v-card-text
 					v-list(

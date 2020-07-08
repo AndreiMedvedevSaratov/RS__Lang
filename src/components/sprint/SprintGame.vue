@@ -99,7 +99,7 @@
 						class="ma-2 font-weight-medium"
 						tile
 						color="cyan lighten-5"
-						@click="nextWord(word)"
+						@click="nextWord(word._id)"
 					) {{ word.word }}
 			v-btn(
 				v-if="!statusTimerGame && !loading"
@@ -306,12 +306,11 @@ export default {
 		},
 		// Метод для получения следующего слова ( после угадывания )
 		// Срабатывает при нажатие на любое слово
-		nextWord(word) {
+		nextWord(wordId) {
 			// eslint-disable-next-line no-underscore-dangle
-			if	(word._id === this.nextCorrectWord._id) {
-				this.stat(true, word);
-				console.log('Правильно');
-			} else this.stat(false, word);
+			if	(wordId === this.nextCorrectWord._id) {
+				this.stat(true, this.nextCorrectWord);
+			} else this.stat(false, this.nextCorrectWord);
 
 			if (++this.currentPosition > this.countWords - 1) this.gameOver();
 			else {
@@ -440,9 +439,6 @@ export default {
 			this.nextCorrectWord = null;
 			this.nextWords = [];
 			this.currentPosition = 0;
-
-			console.log(this.correctWords);
-			console.log(this.wrongWords);
 		},
 		replay() {
 			this.nextWords = this.modifiedArray[this.currentPosition];
