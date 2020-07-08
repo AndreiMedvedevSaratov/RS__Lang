@@ -384,11 +384,13 @@ const getters = {
 		};
 	},
 	getServerUrl: (state) => state.server,
+	getUrlFiles: (state) => state.urlFiles,
 };
 
 const state = {
 	status: 'success',
 	server: 'https://afternoon-falls-25894.herokuapp.com',
+	urlFiles: 'https://raw.githubusercontent.com/Dream-Team-42/rslang-data/master/',
 	html: {
 		main: {
 			drawer: true,
