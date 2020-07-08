@@ -60,7 +60,7 @@
 				) You have {{ currentTimeGame }} seconds left
 				v-col( v-if="!loading" )
 					v-btn(
-						@click=""
+						@click="showStatistics = true"
 						color="primary"
 					)
 						v-icon(left) mdi-information-outline
@@ -101,6 +101,14 @@
 						color="cyan lighten-5"
 						@click="nextWord(word)"
 					) {{ word.word }}
+			v-btn(
+				v-if="!statusTimerGame && !loading"
+				@click="replay"
+				color="red lighten-5 ma-3"
+			)
+				v-icon(left) mdi-replay
+				| Replay
+		vDialog( :dialog="showStatistics" :words="{ correct: correctWords, wrong: wrongWords }" )
 </template>
 
 <script>
@@ -109,13 +117,16 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-plusplus */
 import { mapMutations, mapActions, mapGetters } from 'vuex';
+import vDialog from '../dialog.vue';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
 	name: 'Sprint',
-	components: {},
+	components: {
+		vDialog,
+	},
 	filters: {
 	},
 	props: [],
@@ -130,6 +141,8 @@ export default {
 		nextWords: [],
 		modifiedArray: [],
 		currentPosition: 0,
+		correctWords: [],
+		wrongWords: [],
 
 		countWords: 20,
 		countСhoices: 4,
@@ -174,6 +187,9 @@ export default {
 		currentTime: 3,
 		timer: null,
 		statusTimer: false,
+
+		// TODO: сделать через модуль
+		showStatistics: false,
 	}),
 	computed: {
 		...mapGetters({
@@ -284,8 +300,9 @@ export default {
 		nextWord(word) {
 			// eslint-disable-next-line no-underscore-dangle
 			if	(word._id === this.nextCorrectWord._id) {
+				this.stat(true, word);
 				console.log('Правильно');
-			} else console.log('Не правильно');
+			} else this.stat(false, word);
 
 			if (++this.currentPosition > this.countWords - 1) this.gameOver();
 			else {
@@ -299,13 +316,7 @@ export default {
 		gameOver() {
 			this.alert({ status: 'info', data: 'Игра закончена' });
 			this.stopTimerGame();
-			this.currentTimeGame = 60;
-			this.statusTimerGame = false;
-
-			this.nextCorrectWord = null;
-			this.nextWords = [];
-			this.modifiedArray = [];
-			this.currentPosition = 0;
+			this.showStatistics = true;
 		},
 		// Настройка игры под выбранные параметры уровня и сложности
 		gameMode() {
@@ -371,17 +382,20 @@ export default {
 				this.countСhoices = 4;
 			}
 		},
+		stat(correct, word) {
+			if (correct) {
+				this.correctWords.push(word);
+				// TODO: добавить вставки элементов, которые показывали что пользователь угадал
+				return;
+			}
+			this.wrongWords.push(word);
+			// TODO: добавить вставки элементов, которые показывали что пользователь не угадал
+		},
 		backMenu() {
 			this.loading = true;
 			this.stopTimer();
 			this.stopTimerGame();
-			this.currentTimeGame = 60;
-			this.currentTime = 3;
-
-			this.nextCorrectWord = null;
-			this.nextWords = [];
 			this.modifiedArray = [];
-			this.currentPosition = 0;
 
 			setTimeout(() => {
 				this.loading = false;
@@ -400,6 +414,7 @@ export default {
 			this.statusTimer = false;
 			this.overlay = false;
 			clearTimeout(this.timer);
+			this.currentTime = 3;
 		},
 
 		startTimerGame() {
@@ -411,6 +426,24 @@ export default {
 		stopTimerGame() {
 			this.statusTimerGame = false;
 			clearTimeout(this.timerGame);
+			this.currentTimeGame = 60;
+
+			this.nextCorrectWord = null;
+			this.nextWords = [];
+			this.currentPosition = 0;
+
+			console.log(this.correctWords);
+			console.log(this.wrongWords);
+		},
+		replay() {
+			this.nextWords = this.modifiedArray[this.currentPosition];
+			const len = Object.keys(this.nextWords).length - 1;
+			const random = this.randomWord(0, len);
+
+			// Рандомное слово
+			this.nextCorrectWord = this.nextWords[random];
+
+			this.startTimer();
 		},
 	},
 
