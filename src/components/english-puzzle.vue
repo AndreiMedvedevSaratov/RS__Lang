@@ -1,5 +1,7 @@
 <template lang='pug'>
 	div
+		.modal-wrapper
+			.modal-results
 		.select_wrapper
 			label.level
 				select(v-model="selected_level")
@@ -50,6 +52,9 @@
 				button.button__continue.button_style(
 					@click="continueWord"
 				) Continue
+				button.button__result.button_style(
+					@click="results"
+				) Result
 				button.button__check.button_style(
 				v-if="!gameStatus"
 			) Next level
@@ -70,11 +75,12 @@ export default {
 		wordRight: null,
 		moveY: 0,
 		gameStatus: false,
-		imgSrc: ['../assets/img/9val.jpg'],
+		imgSrc: 0,
 		arr: null,
 		booleanForCheck: false,
 		selected_level: 0,
 		selected_page: 0,
+		continueCount: 0,
 	}),
 	computed: {
 		...mapGetters({
@@ -84,11 +90,25 @@ export default {
 	watch: {
 		selected_level(number1) {
 			this.selected_level = number1;
+			document.querySelectorAll('.word-container').forEach((item) => {
+				const a = item;
+				a.innerHTML = '';
+			});
+			this.num = 0;
+			this.moveY = 0;
+			this.continueCount = 0;
 			this.game();
 			this.deletehint();
 		},
 		selected_page(number2) {
 			this.selected_page = number2;
+			document.querySelectorAll('.word-container').forEach((item) => {
+				const a = item;
+				a.innerHTML = '';
+			});
+			this.num = 0;
+			this.moveY = 0;
+			this.continueCount = 0;
 			this.game();
 			this.deletehint();
 		},
@@ -116,7 +136,7 @@ export default {
 						while (strWithOutTrim[i] !== '>') {
 							i += 1;
 						}
-					} else if (strWithOutTrim[i] === '.') {
+					} else if (strWithOutTrim[i] === '.' && strWithOutTrim[i + 1] !== ' ') {
 						return newStr;
 					} else {
 						newStr += strWithOutTrim[i];
@@ -152,7 +172,7 @@ export default {
 			// Array div word
 			const wordAll = document.querySelectorAll(`.word${this.num}`);
 			this.wordRight = wordAll;
-
+			let sumWidth = 0;
 			const map = new Map();
 			for (let i = 0; i < countWords; i += 1) {
 				const width = wordAll[i].offsetWidth;
@@ -161,10 +181,19 @@ export default {
 
 			for (let i = 0; i < countWords; i += 1) {
 				wordAll[i].style.width = `${map.get(`${i}`)}px`;
+				sumWidth += +map.get(`${i}`);
+			}
+
+			if (sumWidth > 900) {
+				sumWidth -= 900;
+				wordAll[wordAll.length - 1].style.width = `${+map.get(`${wordAll.length - 1}`) - sumWidth}px`;
+			} else if (sumWidth < 900) {
+				sumWidth = 900 - sumWidth;
+				wordAll[wordAll.length - 1].style.width = `${+map.get(`${wordAll.length - 1}`) + sumWidth}px`;
 			}
 
 			for (let i = 0; i < countWords; i += 1) {
-				wordAll[i].style.backgroundImage = 'url(./assets/img/9val.jpg)';
+				wordAll[i].style.backgroundImage = `url(./assets/img/${this.imgSrc}.jpg)`;
 			}
 
 			let moveX = 0;
@@ -370,6 +399,23 @@ export default {
 		},
 
 		continueWord() {
+			this.continueCount += 1;
+			if (this.continueCount === 10) {
+				const wordAll = document.querySelectorAll('.word');
+				for (let i = 0; i < wordAll.length; i += 1) {
+					wordAll[i].innerHTML = '';
+					wordAll[i].classList.add('border-none');
+				}
+				document.querySelector('.button__result').classList.add('visibble-btn');
+				return 1;
+			}
+			if (this.continueCount === 11) {
+				this.continueCount = 0;
+				document.querySelector('.button__result').classList.remove('visibble-btn');
+				document.querySelector('.button__continue').classList.remove('visibble-btn');
+				return 1;
+			}
+
 			this.booleanForCheck = false;
 			const wordBefore = document.querySelectorAll(`.word${this.num}`);
 			for (let i = 0; i < wordBefore.length; i += 1) {
@@ -390,9 +436,13 @@ export default {
 				this.gameStatus = false;
 				this.alertAction({ status: 'success', data: 'Game over!!' });
 			}
-			console.log(this.num);
 			document.querySelector('.button__continue').classList.remove('visibble-btn');
 			document.querySelector('.button__check').classList.remove('visibble-btn');
+			return 1;
+		},
+
+		results() {
+			return 1;
 		},
 		audiohint() {
 			// const audio = new Audio(this.isUrlFiles + this.words[this.num].audioExample);
@@ -571,18 +621,22 @@ input {
 	border: none;
 	display: flex;
 	justify-content: center;
-	color: #d7e5d2;
+	color: blanchedalmond;
 	font-weight: bold;
 }
 
 .word {
 	width: -webkit-fill-available;
 	height: 45px;
-	border: 1px solid;
+	border: 1px solid blanchedalmond;
 	text-align: center;
 	padding: 12px 5px 12px 5px;
 	background-repeat: no-repeat;
 	cursor: pointer;
+}
+
+.border-none {
+	border: none
 }
 
 /*.fuck {*/
@@ -609,6 +663,11 @@ input {
 }
 
 .button__check {
+	display: none;
+	margin-left: 10px;
+}
+
+.button__result {
 	display: none;
 	margin-left: 10px;
 }
