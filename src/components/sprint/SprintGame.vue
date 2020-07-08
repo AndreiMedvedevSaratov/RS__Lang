@@ -108,7 +108,7 @@
 			)
 				v-icon(left) mdi-replay
 				| Replay
-		vDialog( :dialog="showStatistics" :words="{ correct: correctWords, wrong: wrongWords }" )
+		vModal( :words="{ correct: correctWords, wrong: wrongWords }" )
 </template>
 
 <script>
@@ -117,7 +117,7 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-plusplus */
 import { mapMutations, mapActions, mapGetters } from 'vuex';
-import vDialog from '../dialog.vue';
+import vModal from './ModalShortStat.vue';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
@@ -125,7 +125,7 @@ import vDialog from '../dialog.vue';
 export default {
 	name: 'Sprint',
 	components: {
-		vDialog,
+		vModal,
 	},
 	filters: {
 	},
@@ -188,17 +188,25 @@ export default {
 		timer: null,
 		statusTimer: false,
 
-		// TODO: сделать через модуль
-		showStatistics: false,
 	}),
 	computed: {
 		...mapGetters({
 			words: 'getWords',
 			urlFiles: 'getUrlFiles',
+			getStatistics: 'sprint/showStatistics',
 		}),
 		// Если выбрано играть без картинок то зарузить по умолчанию
 		getImg() {
 			return this.withImg ? `${this.urlFiles}${this.nextCorrectWord.image}` : './assets/img/sprint/fon3.jpg';
+		},
+		// Открыть/Закрыть краткосрочную статистику
+		showStatistics: {
+			get() {
+				return this.getStatistics;
+			},
+			set() {
+				this.offStatistics();
+			},
 		},
 
 	},
@@ -249,6 +257,7 @@ export default {
 	methods: {
 		...mapMutations({
 			appHtml: 'EDIT_HTML',
+			offStatistics: 'sprint/SPRINT_SHOW_STATISTICS',
 		}),
 		...mapActions({
 			getWords: 'APP_GET_USER_WORDS_AGGREGATED',
@@ -314,7 +323,7 @@ export default {
 			}
 		},
 		gameOver() {
-			this.alert({ status: 'info', data: 'Игра закончена' });
+			this.alert({ data: 'Игра закончена' });
 			this.stopTimerGame();
 			this.showStatistics = true;
 		},

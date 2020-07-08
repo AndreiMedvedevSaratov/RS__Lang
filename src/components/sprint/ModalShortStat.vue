@@ -1,7 +1,7 @@
 <template lang='pug'>
 	div
 		v-dialog(
-			v-model="dialog"
+			v-model="showStatistics"
 			v-if="words"
 			scrollable
 			max-width="500px"
@@ -28,7 +28,9 @@
 								height="150"
 							)
 								template( v-slot="{ item }" )
-									v-list-item()
+									v-list-item(
+										@click="playAudio(`${urlFiles}${item.audio}`)"
+									)
 										v-list-item-icon
 											v-icon mdi-volume-high
 										v-list-item-content
@@ -49,7 +51,9 @@
 								height="150"
 							)
 								template( v-slot="{ item }" )
-									v-list-item()
+									v-list-item(
+										@click="playAudio(`${urlFiles}${item.audio}`)"
+									)
 										v-list-item-icon
 											v-icon mdi-volume-high
 										v-list-item-content
@@ -61,19 +65,15 @@
 </template>
 
 <script>
+import { mapMutations, mapGetters } from 'vuex';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
-	name: 'Dialog',
+	name: 'SprintModalShort',
 	components: {},
 	props: {
-		dialog: {
-			type: Boolean,
-			default: false,
-			required: true,
-		},
 		title: {
 			type: String,
 			default: 'Statistics',
@@ -87,11 +87,31 @@ export default {
 
 	}),
 	computed: {
+		...mapGetters({
+			getStatistics: 'sprint/showStatistics',
+			urlFiles: 'getUrlFiles',
+		}),
+		showStatistics: {
+			get() {
+				return this.getStatistics;
+			},
+			set() {
+				this.offStatistics();
+			},
+		},
 	},
 	watch: {},
 	created() {},
 	mounted() {},
-	methods: {},
+	methods: {
+		...mapMutations({
+			offStatistics: 'sprint/SPRINT_SHOW_STATISTICS',
+		}),
+		playAudio: (dataAudio) => {
+			const audio = new Audio(dataAudio);
+			audio.play();
+		},
+	},
 
 };
 </script>

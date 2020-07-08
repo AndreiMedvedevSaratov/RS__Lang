@@ -5,6 +5,7 @@ import auth from './auth';
 import user from './user';
 import speakit from './modules/speakit';
 import audiovizov from './modules/audiovizov';
+import sprint from './sprint';
 
 Vue.use(Vuex);
 
@@ -15,6 +16,7 @@ export default new Vuex.Store({
 		auth,
 		app,
 		user,
+		sprint,
 		speakit,
 		audiovizov,
 	},
