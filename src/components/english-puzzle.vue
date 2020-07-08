@@ -394,7 +394,13 @@ export default {
 			document.querySelector('.button__continue').classList.remove('visibble-btn');
 			document.querySelector('.button__check').classList.remove('visibble-btn');
 		},
-		audiohint() {},
+		audiohint() {
+			// const audio = new Audio(this.isUrlFiles + this.words[this.num].audioExample);
+			// await audio.play();
+			// console.log(this.isUrlFiles);
+			const audio = new Audio(this.isUrlFiles + this.words[this.num].audioExample);
+			audio.play();
+		},
 		texthint() {
 			document.getElementById('textExampleTranslate').innerText = this.words[this.num].textExampleTranslate;
 		},
