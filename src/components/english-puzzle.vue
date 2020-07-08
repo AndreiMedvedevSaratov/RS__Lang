@@ -293,11 +293,19 @@ export default {
 				for (let i = 0; i < gigEnd.length; i += 1) {
 					if (this === gigEnd[i]) {
 						if (gigEnd[i].innerHTML) {
+							if (this.firstChild === target) {
+								return 1;
+							}
 							let a = gigEnd[i].innerHTML;
 							let b = null;
 							gigEnd[i].innerHTML = '';
 							gigEnd[i].append(target);
-							for (let j = i + 1; j < gigEnd.length; j += 1) {
+							console.log(this);
+							for (let j = i; j < gigEnd.length; j += 1) {
+								j += 1;
+								if (j === gigEnd.length) {
+									console.log(1);
+								}
 								if (!gigEnd[j].innerHTML) {
 									gigEnd[j].innerHTML = `${a}`;
 									break;
@@ -323,6 +331,7 @@ export default {
 				}
 				// this.append(target)
 				this.classList.remove('hovered');
+				return 1;
 			}
 
 			gigEnd.forEach((item) => {
