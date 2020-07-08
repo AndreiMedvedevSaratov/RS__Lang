@@ -108,12 +108,12 @@ export default {
 	}),
 	computed: {
 		...mapGetters({
-			getStatistics: 'sprint/showStatistics',
+			getShortStatistics: 'showShortStatistics',
 			urlFiles: 'getUrlFiles',
 		}),
 		showStatistics: {
 			get() {
-				return this.getStatistics;
+				return this.getShortStatistics;
 			},
 			set() {
 				this.offStatistics();
@@ -125,7 +125,7 @@ export default {
 	mounted() {},
 	methods: {
 		...mapMutations({
-			offStatistics: 'sprint/SPRINT_SHOW_STATISTICS',
+			offStatistics: 'SHOW_SHORT_STATISTICS',
 		}),
 		playAudio: (dataAudio) => {
 			const audio = new Audio(dataAudio);

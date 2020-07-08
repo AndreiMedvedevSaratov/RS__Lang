@@ -117,7 +117,7 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-plusplus */
 import { mapMutations, mapActions, mapGetters } from 'vuex';
-import vModal from './ModalShortStat.vue';
+import vModal from '../modal/ModalShortStat.vue';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
@@ -193,7 +193,7 @@ export default {
 		...mapGetters({
 			words: 'getWords',
 			urlFiles: 'getUrlFiles',
-			getStatistics: 'sprint/showStatistics',
+			getShortStatistics: 'showShortStatistics',
 		}),
 		// Если выбрано играть без картинок то зарузить по умолчанию
 		getImg() {
@@ -202,7 +202,7 @@ export default {
 		// Открыть/Закрыть краткосрочную статистику
 		showStatistics: {
 			get() {
-				return this.getStatistics;
+				return this.getShortStatistics;
 			},
 			set() {
 				this.offStatistics();
@@ -257,7 +257,7 @@ export default {
 	methods: {
 		...mapMutations({
 			appHtml: 'EDIT_HTML',
-			offStatistics: 'sprint/SPRINT_SHOW_STATISTICS',
+			offStatistics: 'SHOW_SHORT_STATISTICS',
 		}),
 		...mapActions({
 			getWords: 'APP_GET_USER_WORDS_AGGREGATED',
@@ -322,7 +322,7 @@ export default {
 			}
 		},
 		gameOver() {
-			this.alert({ data: 'Игра закончена' });
+			this.alert({ data: 'Игра закончена, Ваша статистика!' });
 			this.stopTimerGame();
 			this.showStatistics = true;
 		},

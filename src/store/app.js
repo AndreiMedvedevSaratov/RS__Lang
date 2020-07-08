@@ -365,6 +365,9 @@ const mutations = {
 			state.status = status;
 		} else state.status = 'error';
 	},
+	SHOW_SHORT_STATISTICS: (state) => {
+		state.showShortStatistics = !state.showShortStatistics;
+	},
 };
 /**
  * Instructions for working with getters
@@ -387,6 +390,7 @@ const getters = {
 	},
 	getServerUrl: (state) => state.server,
 	getUrlFiles: (state) => state.urlFiles,
+	showShortStatistics: (state) => state.showShortStatistics,
 };
 
 const state = {
@@ -407,6 +411,8 @@ const state = {
 	words: [],
 	countWords: [],
 	wordStat: [],
+
+	showShortStatistics: false,
 };
 
 export default {
