@@ -85,6 +85,7 @@ export default {
 	computed: {
 		...mapGetters({
 			words: 'getWords',
+			urlFiles: 'getUrlFiles',
 		}),
 	},
 	watch: {
@@ -448,7 +449,7 @@ export default {
 			// const audio = new Audio(this.isUrlFiles + this.words[this.num].audioExample);
 			// await audio.play();
 			// console.log(this.isUrlFiles);
-			const audio = new Audio(this.isUrlFiles + this.words[this.num].audioExample);
+			const audio = new Audio(this.urlFiles + this.words[this.num].audioExample);
 			audio.play();
 		},
 		texthint() {
