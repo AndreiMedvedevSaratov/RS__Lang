@@ -3,14 +3,20 @@
 		.modal-wrapper
 			.modal-results
 		.select_wrapper
-			label.level Level:
-				select#selectbox1(
-					ref="selectbox1"
-					)
-			label.page Page:
-				select#selectbox2(
-					ref="selectbox2"
-				)
+			label.level
+				select(v-model="selected_level")
+					option(
+						v-for="(item,i) in 6"
+						:key="i"
+						:value="item-1"
+					) Level {{item}}
+			label.page
+				select(v-model="selected_page")
+					option(
+						v-for="(item_page,i) in 30"
+						:key="i"
+						:value="item_page-1"
+					) Page {{item_page}}
 		.button_wrapper
 			button#button_1
 			button#button_2
@@ -69,6 +75,8 @@ export default {
 		imgSrc: 0,
 		arr: null,
 		booleanForCheck: false,
+		selected_level: 0,
+		selected_page: 0,
 		continueCount: 0,
 	}),
 	computed: {
@@ -77,21 +85,42 @@ export default {
 		}),
 	},
 	watch: {
+		selected_level(number1) {
+			this.selected_level = number1;
+			document.querySelectorAll('.word-container').forEach((item) => {
+				const a = item;
+				a.innerHTML = '';
+			});
+			this.num = 0;
+			this.moveY = 0;
+			this.continueCount = 0;
+			this.game();
+		},
+		selected_page(number2) {
+			this.selected_page = number2;
+			document.querySelectorAll('.word-container').forEach((item) => {
+				const a = item;
+				a.innerHTML = '';
+			});
+			this.num = 0;
+			this.moveY = 0;
+			this.continueCount = 0;
+			this.game();
+		},
 	},
 	created() {
-		this.wordsAction();
 	},
 	mounted() {
-		setTimeout(() => this.game(), 2000);
+		this.game();
 	},
 	methods: {
 		...mapActions({
 			wordsAction: 'APP_GET_WORDS',
 			alertAction: 'ALERT',
 		}),
-		game() {
+		async game() {
+			await this.wordsAction({ group: this.selected_level, page: this.selected_page });
 			this.gameStatus = true;
-
 			const widthPx = (str) => +str.match(/[0-9]/g).join('');
 			const sortArr = (arr) => arr.sort(() => Math.random() - 0.5);
 			const clearWords = (str) => {
@@ -102,7 +131,7 @@ export default {
 						while (strWithOutTrim[i] !== '>') {
 							i += 1;
 						}
-					} else if (strWithOutTrim[i] === '.') {
+					} else if (strWithOutTrim[i] === '.' && strWithOutTrim[i + 1] !== ' ') {
 						return newStr;
 					} else {
 						newStr += strWithOutTrim[i];
@@ -112,17 +141,17 @@ export default {
 			};
 
 			const { beginWord, wordContainer } = this.$refs;
-
 			const str = this.words[this.num].textExample;
 			const arrWord = clearWords(str).split(' ');
 			this.arr = arrWord;
 			const countWords = this.arr.length;
-
+			wordContainer[this.num].innerHTML = '';
 			for (let i = 0; i < countWords; i += 1) {
 				const div = document.createElement('div');
 				div.className = `gig gig_end${this.num}`;
 				wordContainer[this.num].append(div);
 			}
+			beginWord.innerHTML = '';
 			for (let i = 0; i < countWords; i += 1) {
 				const div = document.createElement('div');
 				div.className = `gig gig_begin${this.num}`;
@@ -375,6 +404,9 @@ export default {
 			}
 			if (this.continueCount === 11) {
 				this.continueCount = 0;
+				document.querySelector('.button__result').classList.remove('visibble-btn');
+				document.querySelector('.button__continue').classList.remove('visibble-btn');
+				return 1;
 			}
 
 			this.booleanForCheck = false;
@@ -708,24 +740,20 @@ input {
 	border: solid 1px #476622;
 	border-radius: 5px;
 	font-family: 'Montserrat';
-}
-
-.modal-wrapper {
-	position: absolute;
 	display: none;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,.7);
-    z-index: 100;
 }
 
-.modal-results {
-	width: 600px;
-    height: 400px;
-    background: white;
-    top: calc(50% - 200px);
-    left: calc(50% - 300px);
-    position: relative;
+select {
+	border: solid 2px #476622;
+	border-radius: 5px;
+	color: #476622;
+	margin-left: 15px;
+	width: 65px;
+	font-weight: 700;
+}
+
+option {
+	text-align: center;
 }
 
 </style>
