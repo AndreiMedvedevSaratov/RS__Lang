@@ -318,7 +318,7 @@ export default {
 								newArr.splice([i], 1, 1);
 								newArr.splice([i + 1], 1, 1);
 								console.log(1);
-							} else if (gigEnd[i - 1].firstElementChild !== target) {
+							} else if (gigEnd[i + 1].firstElementChild === target) {
 								const a = gigEnd[i].firstElementChild;
 								gigEnd[i].innerHTML = '';
 								gigEnd[i + 1].append(a);
@@ -326,6 +326,8 @@ export default {
 								newArr.splice([i], 1, 1);
 								newArr.splice([i + 1], 1, 1);
 								console.log(2);
+							} else {
+								console.log(3);
 							}
 						} else {
 							gigEnd[i].append(target);
