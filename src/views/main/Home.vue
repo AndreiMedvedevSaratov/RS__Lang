@@ -139,7 +139,7 @@ export default {
 				color: 'green',
 			},
 			{
-				title: 'Speaking',
+				title: 'speaking',
 				subtitle: 'textextexetxte',
 				link: '/speaking',
 				img: 'assets/img/speaking.png',

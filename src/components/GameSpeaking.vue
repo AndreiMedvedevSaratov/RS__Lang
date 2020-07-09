@@ -4,7 +4,7 @@
 		div( class="main" )
 			video(
 				class="main__image"
-				:src="isUrlImage"
+				controls
 			)
 				source(
 					:src="isVideoSrc"
