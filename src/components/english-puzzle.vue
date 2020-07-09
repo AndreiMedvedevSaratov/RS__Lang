@@ -2,30 +2,33 @@
 	div
 		.modal-wrapper
 			.modal-results
-		.select_wrapper
-			label.level
-				select(v-model="selected_level")
-					option(
-						v-for="(item,i) in 6"
-						:key="i"
-						:value="item-1"
-					) Level {{item}}
-			label.page
-				select(v-model="selected_page")
-					option(
-						v-for="(item_page,i) in 30"
-						:key="i"
-						:value="item_page-1"
-					) Page {{item_page}}
-		.button_wrapper
-			button#button_1(
-				@click="audiohint"
-			)
-			button#button_2(
-				@click="texthint"
-			)
-			button#button_3
-			button#button_4
+		.header
+			.select_wrapper
+				label.level
+					select(v-model="selected_level")
+						option(
+							v-for="(item,i) in 6"
+							:key="i"
+							:value="item-1"
+						) Level {{item}}
+				label.page
+					select.select-two(v-model="selected_page")
+						option(
+							v-for="(item_page,i) in 30"
+							:key="i"
+							:value="item_page-1"
+						) Page {{item_page}}
+			.button_wrapper
+				button#button_1(
+					@click="audiohint"
+				)
+				button#button_2(
+					@click="texthint"
+				)
+				button#button_3
+				button#button_4(
+					@click="img"
+				)
 		.hunt
 			p#textExampleTranslate
 		.result-word(
@@ -74,6 +77,7 @@ export default {
 		num: 0,
 		wordRight: null,
 		moveY: 0,
+		runRight: false,
 		gameStatus: false,
 		imgSrc: 0,
 		arr: null,
@@ -81,6 +85,7 @@ export default {
 		selected_level: 0,
 		selected_page: 0,
 		continueCount: 0,
+		nameGallery: ['Иван Айвазовский - Девятый вал (1850 г.)', '', 'Иван Шишкин - Утро в сосновом лесу (1889 г.)'],
 	}),
 	computed: {
 		...mapGetters({
@@ -245,6 +250,9 @@ export default {
 			const gigEnd = document.querySelectorAll(`.gig_end${this.num}`);
 			const newWordAll = document.querySelectorAll(`.word${this.num}`);
 			for (let i = 0; i < newWordAll.length; i += 1) {
+				newWordAll[i].classList.add('img-none');
+			}
+			for (let i = 0; i < newWordAll.length; i += 1) {
 				newWordAll[i].addEventListener('click', (e) => {
 					if (this.booleanForCheck) {
 						return 1;
@@ -302,24 +310,22 @@ export default {
 							if (this.firstChild === target) {
 								return 1;
 							}
-							let a = gigEnd[i].innerHTML;
-							let b = null;
-							gigEnd[i].innerHTML = '';
-							gigEnd[i].append(target);
-							console.log(this);
-							for (let j = i; j < gigEnd.length; j += 1) {
-								j += 1;
-								if (j === gigEnd.length) {
-									console.log(1);
-								}
-								if (!gigEnd[j].innerHTML) {
-									gigEnd[j].innerHTML = `${a}`;
-									break;
-								} else {
-									b = gigEnd[j].innerHTML;
-									gigEnd[j].innerHTML = `${a}`;
-									a = b;
-								}
+							if (gigEnd[i - 1].firstElementChild === target) {
+								const a = gigEnd[i].firstElementChild;
+								gigEnd[i].innerHTML = '';
+								gigEnd[i - 1].append(a);
+								gigEnd[i].append(target);
+								newArr.splice([i], 1, 1);
+								newArr.splice([i + 1], 1, 1);
+								console.log(1);
+							} else if (gigEnd[i - 1].firstElementChild !== target) {
+								const a = gigEnd[i].firstElementChild;
+								gigEnd[i].innerHTML = '';
+								gigEnd[i + 1].append(a);
+								gigEnd[i].append(target);
+								newArr.splice([i], 1, 1);
+								newArr.splice([i + 1], 1, 1);
+								console.log(2);
 							}
 						} else {
 							gigEnd[i].append(target);
@@ -356,6 +362,10 @@ export default {
 			this.deletehint();
 			const wordBefore = document.querySelectorAll(`.word${this.num}`);
 			document.querySelector('.button__check').classList.remove('visibble-btn');
+			document.querySelector('#button_1').classList.remove('btn-opacity');
+			document.querySelector('#button_2').classList.remove('btn-opacity');
+			document.querySelector('#button_3').classList.remove('btn-opacity');
+			document.querySelector('#button_4').classList.remove('btn-opacity');
 			for (let i = 0; i < wordBefore.length; i += 1) {
 				this.$refs.beginWord.innerHTML = '';
 				document.querySelectorAll(`.gig_end${this.num}`)[i].innerHTML = '';
@@ -366,17 +376,27 @@ export default {
 			const wordAfter = document.querySelectorAll(`.word${this.num}`);
 			for (let i = 0; i < wordBefore.length; i += 1) {
 				wordAfter[i].setAttribute('draggable', 'false');
+				wordAfter[i].classList.remove('img-none');
 			}
 			document.querySelector('.button__continue').classList.add('visibble-btn');
 			document.querySelector('.button__check').classList.remove('visibble-btn');
 			document.querySelector('.button__not-know').classList.remove('visibble-btn');
+			this.audiohint();
+			this.texthint();
+			document.querySelector('#button_1').classList.remove('btn-opacity');
+			document.querySelector('#button_2').classList.remove('btn-opacity');
+			document.querySelector('#button_3').classList.remove('btn-opacity');
+			document.querySelector('#button_4').classList.remove('btn-opacity');
 			this.booleanForCheck = false;
 		},
 
 		check() {
-			this.deletehint();
 			const wordBefore = document.querySelectorAll(`.word${this.num}`);
 			const wordAll = document.querySelectorAll(`.word${this.num}`);
+			document.querySelector('#button_1').classList.remove('btn-opacity');
+			document.querySelector('#button_2').classList.remove('btn-opacity');
+			document.querySelector('#button_3').classList.remove('btn-opacity');
+			document.querySelector('#button_4').classList.remove('btn-opacity');
 			let count = 0;
 			if (this.booleanForCheck) {
 				return 1;
@@ -402,6 +422,15 @@ export default {
 				}
 				if (count === wordAll.length) {
 					document.querySelector('.button__continue').classList.add('visibble-btn');
+					for (let j = 0; j < wordBefore.length; j += 1) {
+						wordBefore[j].classList.remove('img-none');
+					}
+					this.audiohint();
+					this.texthint();
+					document.querySelector('#button_1').classList.remove('btn-opacity');
+					document.querySelector('#button_2').classList.remove('btn-opacity');
+					document.querySelector('#button_3').classList.remove('btn-opacity');
+					document.querySelector('#button_4').classList.remove('btn-opacity');
 				}
 			}
 			this.booleanForCheck = true;
@@ -409,6 +438,7 @@ export default {
 		},
 
 		continueWord() {
+			this.deletehint();
 			this.continueCount += 1;
 			if (this.continueCount === 10) {
 				const wordAll = document.querySelectorAll('.word');
@@ -417,10 +447,25 @@ export default {
 					wordAll[i].classList.add('border-none');
 				}
 				document.querySelector('.button__result').classList.add('visibble-btn');
+				document.querySelector('.begin-word').innerHTML = this.nameGallery[this.imgSrc];
 				return 1;
 			}
 			if (this.continueCount === 11) {
+				if (this.imgSrc < 2) {
+					this.imgSrc += 1;
+				} else {
+					this.imgSrc = 0;
+				}
 				this.continueCount = 0;
+				if (this.selected_level === 5 && this.selected_page === 29) {
+					this.selected_level = 0;
+					this.selected_page = 0;
+				} else if (this.selected_page === 29) {
+					this.selected_level += 1;
+					this.selected_page = 0;
+				} else {
+					this.selected_page += 1;
+				}
 				document.querySelector('.button__result').classList.remove('visibble-btn');
 				document.querySelector('.button__continue').classList.remove('visibble-btn');
 				return 1;
@@ -448,6 +493,22 @@ export default {
 			}
 			document.querySelector('.button__continue').classList.remove('visibble-btn');
 			document.querySelector('.button__check').classList.remove('visibble-btn');
+			document.querySelector('#button_1').classList.remove('btn-opacity');
+			document.querySelector('#button_2').classList.remove('btn-opacity');
+			document.querySelector('#button_3').classList.remove('btn-opacity');
+			document.querySelector('#button_4').classList.remove('btn-opacity');
+			return 1;
+		},
+
+		img() {
+			if (document.querySelector('#button_4').classList.contains('btn-opacity')) {
+				return 1;
+			}
+			const wordAllImg = document.querySelectorAll(`.word${this.num}`);
+			for (let i = 0; i < wordAllImg.length; i += 1) {
+				wordAllImg[i].classList.remove('img-none');
+			}
+			document.querySelector('#button_4').classList.add('btn-opacity');
 			return 1;
 		},
 
@@ -458,11 +519,21 @@ export default {
 			// const audio = new Audio(this.isUrlFiles + this.words[this.num].audioExample);
 			// await audio.play();
 			// console.log(this.isUrlFiles);
+			if (document.querySelector('#button_1').classList.contains('btn-opacity')) {
+				return 1;
+			}
 			const audio = new Audio(this.urlFiles + this.words[this.num].audioExample);
 			audio.play();
+			document.querySelector('#button_1').classList.add('btn-opacity');
+			return 1;
 		},
 		texthint() {
+			if (document.querySelector('#button_2').classList.contains('btn-opacity')) {
+				return 1;
+			}
 			document.getElementById('textExampleTranslate').innerText = this.words[this.num].textExampleTranslate;
+			document.querySelector('#button_2').classList.add('btn-opacity');
+			return 1;
 		},
 		deletehint() {
 			document.getElementById('textExampleTranslate').innerText = '';
@@ -503,11 +574,18 @@ body {
 	user-select: none;
 }
 
-.img {
-	background: url('../assets/img/nature.jpg') no-repeat;
-	background-size: cover;
-	width: 100%;
-	height: 100vh;
+.header {
+	width: 900px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.img-none {
+	background-image: unset !important;
+	background-color: #C2B4A2;
 }
 
 .title {
@@ -601,15 +679,16 @@ input {
 	background: #476622;
 	margin: 0 auto;
 	margin-top: 0px;
-	border-top: 1px solid;
+	border: 1px solid;
 }
 
 .begin-word {
 	display: flex;
-	justify-content: center;
-	width: 900px;
-	height: 45px;
-	margin: 10px auto 0px auto;
+    justify-content: center;
+    width: 900px;
+    height: 45px;
+    margin: 25px auto 0px auto;
+    align-items: center;
 }
 
 .word-container {
@@ -618,8 +697,11 @@ input {
 	width: 100%;
 	height: 45px;
 	background: #d7e5d2;
-	border: 1px solid;
 	align-items: center;
+}
+
+.word-container:last-child {
+	border-bottom: 1px solid;
 }
 
 .gig {
@@ -627,7 +709,7 @@ input {
 	width: auto;
 	min-width: 40px;
 	height: 45px;
-	background: #a8d06f;
+	background: #919A8D;
 	border: none;
 	display: flex;
 	justify-content: center;
@@ -640,9 +722,12 @@ input {
 	height: 45px;
 	border: 1px solid blanchedalmond;
 	text-align: center;
-	padding: 12px 5px 12px 5px;
+	padding: 7px 5px 8px 5px;
 	background-repeat: no-repeat;
 	cursor: pointer;
+	-webkit-text-stroke: 1px white;
+    color: black;
+	font-size: 20px;
 }
 
 .border-none {
@@ -663,13 +748,14 @@ input {
 	cursor: pointer;
 	border: 1px solid;
 	border-radius: 5px;
-	background: #476622;
+	background: #993366;
 	color: #d7e5d2;
 	font-family: 'Montserrat';
 	width: 180px;
 	height: 50px;
 	position: relative;
 	top: 5px;
+    font-weight: bold;
 }
 
 .button__check {
@@ -712,13 +798,6 @@ input {
 
 /*мой код*/
 
-.button_wrapper {
-	position: relative;
-	width: 185px;
-	left: 940px;
-	top: -10px;
-}
-
 #button_1, #button_2, #button_3, #button_4 {
 	width: 40px;
 	height: 40px;
@@ -739,13 +818,6 @@ input {
 	font-size: 14px;
 }
 
-.select_wrapper {
-	position: relative;
-	width: 180px;
-	left: 220px;
-	top: 30px;
-}
-
 #button_1 {
 	background: url("../assets/img/111.png") no-repeat;
 }
@@ -762,29 +834,42 @@ input {
 }
 
 .hunt {
-	position: absolute;
-	left: 400px;
-	top: 105px;
-	width: 540px;
-	color:#476622;
-	font-size: 12px;
-	font-weight: bold;
-	font-family: 'Montserrat';
-	text-align: center;
+	width: 900px;
+    color: #757D72;
+    font-size: 15px;
+    font-weight: bold;
+    font-family: "Montserrat";
+    text-align: center;
+    margin: 0 auto;
+    margin-bottom: 15px;
+	height: 25px;
 }
 
 select {
-	border: solid 2px #476622;
-	border-radius: 5px;
-	color: #476622;
-	margin-left: 15px;
-	width: 65px;
-	font-weight: 700;
-	text-align-last: center;
+	border: solid 2px #80887C;
+    border-radius: 5px;
+    color: #80887C;
+    font-weight: 700;
+    padding: 5px 25px 5px 10px;
+    -moz-text-align-last: center;
+    text-align-last: center;
+	cursor: pointer;
+}
+
+.select-two {
+	margin-left: 20px;
 }
 
 option {
 	text-align: center;
+}
+
+#textExampleTranslate {
+	margin-bottom: 0px;
+}
+
+.btn-opacity {
+	opacity: 0.5;
 }
 
 </style>
