@@ -24,7 +24,9 @@
 			button#button_2(
 				@click="texthint"
 			)
-			button#button_3
+			button#button_3(
+				@click="audiomeaning"
+			)
 			button#button_4
 		.hunt
 			p#textExampleTranslate
@@ -454,6 +456,10 @@ export default {
 		},
 		texthint() {
 			document.getElementById('textExampleTranslate').innerText = this.words[this.num].textExampleTranslate;
+		},
+		audiomeaning() {
+			const audio = new Audio(this.urlFiles + this.words[this.num].audioMeaning);
+			audio.play();
 		},
 		deletehint() {
 			document.getElementById('textExampleTranslate').innerText = '';
