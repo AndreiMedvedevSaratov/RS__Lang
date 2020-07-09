@@ -68,7 +68,7 @@ const routes = [
 				meta: {
 					breadcrumb: [
 						{ text: 'Home', to: '/home' },
-						{ text: 'English Puzzle' },
+						{ text: 'English Puzzle2' },
 					],
 				},
 			},
