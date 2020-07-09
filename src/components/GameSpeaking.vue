@@ -44,7 +44,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex';
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
-	name: 'SpeakIt',
+	name: 'speaking',
 	components: {},
 	props: [],
 	data: () => ({}),
@@ -52,7 +52,7 @@ export default {
 		...mapGetters({
 			isWords: 'speakit/getWords',
 			isUrlFiles: 'speakit/getUrlFiles',
-			isVideoSrc: 'speakit/getSrcVideo',
+			isVideoSrc: 'speaking/getSrcVideo',
 			isUrlImage: 'speakit/getUrlImage',
 			gameStatus: 'speakit/gameStatus',
 		}),
