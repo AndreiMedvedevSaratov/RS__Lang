@@ -2,10 +2,14 @@
 	div( class="game" )
 
 		div( class="main" )
-			img(
+			video(
 				class="main__image"
 				:src="isUrlImage"
 			)
+				source(
+					:src="isVideoSrc"
+					type="video/mp4"
+				)
 
 			input(
 				type="button"
@@ -48,6 +52,7 @@ export default {
 		...mapGetters({
 			isWords: 'speakit/getWords',
 			isUrlFiles: 'speakit/getUrlFiles',
+			isVideoSrc: 'speakit/getSrcVideo',
 			isUrlImage: 'speakit/getUrlImage',
 			gameStatus: 'speakit/gameStatus',
 		}),
