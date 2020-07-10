@@ -60,9 +60,9 @@ const actions = {
 		const user = { email: state.profile.email, password: state.profile.password };
 		await axios.post(`${rootState.app.server}/users`, user)
 			.then((response) => {
-				commit('USER_DATA', response);
-				commit('USER_SUCCESS');
+				commit('USER_DATA', response.data);
 				dispatch('AUTH_REQUEST', user, { root: true });
+				commit('USER_SUCCESS');
 			})
 			.catch((error) => {
 				commit('USER_ERROR');
@@ -141,11 +141,11 @@ const mutations = {
 	},
 	USER_SUCCESS: (state) => {
 		state.status = 'success';
+		state.profile.password = '';
 	},
 	USER_DATA: (state, payload) => {
 		state.profile.userId = payload.id;
 		state.profile.email = payload.email;
-		state.profile.password = '';
 	},
 	USER_LOGOUT: (state) => {
 		state.profile = {
