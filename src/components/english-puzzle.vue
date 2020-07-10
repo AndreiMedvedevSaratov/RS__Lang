@@ -60,17 +60,21 @@
 				button.button__check.button_style(
 				v-if="!gameStatus"
 			) Next level
+		vModal( :words="{ correct: correctWords, wrong: wrongWords }" )
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
+import vModal from './modal/ModalShortStat.vue';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
 	name: 'EnglishPuzzle',
-	components: {},
+	components: {
+		vModal,
+	},
 	props: [],
 	data: () => ({
 		num: 0,
@@ -83,12 +87,23 @@ export default {
 		selected_level: 0,
 		selected_page: 0,
 		continueCount: 0,
+		correctWords: [],
+		wrongWords: [],
 	}),
 	computed: {
 		...mapGetters({
 			words: 'getWords',
 			urlFiles: 'getUrlFiles',
+			getShortStatistics: 'showShortStatistics',
 		}),
+		showStatistics: {
+			get() {
+				return this.getShortStatistics;
+			},
+			set() {
+				this.offStatistics();
+			},
+		},
 	},
 	watch: {
 		selected_level(number1) {
@@ -122,6 +137,9 @@ export default {
 		this.game();
 	},
 	methods: {
+		...mapMutations({
+			offStatistics: 'SHOW_SHORT_STATISTICS',
+		}),
 		...mapActions({
 			wordsAction: 'APP_GET_WORDS',
 			alertAction: 'ALERT',
@@ -395,7 +413,13 @@ export default {
 				}
 				if (count === wordAll.length) {
 					document.querySelector('.button__continue').classList.add('visibble-btn');
+					// предложение собрано 100% правильно
+					this.stat(true, this.words[this.num]);
 				}
+			}
+			if (count !== wordAll.length) {
+				// предложение собрано не правильно
+				this.stat(false, this.words[this.num]);
 			}
 			this.booleanForCheck = true;
 			return 1;
@@ -437,20 +461,26 @@ export default {
 				this.game();
 			} else {
 				this.gameStatus = false;
-				this.alertAction({ status: 'success', data: 'Game over!!' });
+				this.alertAction({ status: 'success', data: 'Game over' });
 			}
 			document.querySelector('.button__continue').classList.remove('visibble-btn');
 			document.querySelector('.button__check').classList.remove('visibble-btn');
 			return 1;
 		},
+		stat(correct, word) {
+			if (correct) {
+				this.correctWords.push(word);
+				// TODO: добавить вставки элементов, которые показывали что пользователь угадал
+				return;
+			}
+			this.wrongWords.push(word);
+			// TODO: добавить вставки элементов, которые показывали что пользователь не угадал
+		},
 
 		results() {
-			return 1;
+			this.showStatistics = true;
 		},
 		audiohint() {
-			// const audio = new Audio(this.isUrlFiles + this.words[this.num].audioExample);
-			// await audio.play();
-			// console.log(this.isUrlFiles);
 			const audio = new Audio(this.urlFiles + this.words[this.num].audioExample);
 			audio.play();
 		},
