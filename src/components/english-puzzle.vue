@@ -77,7 +77,6 @@ export default {
 		num: 0,
 		wordRight: null,
 		moveY: 0,
-		runRight: false,
 		gameStatus: false,
 		imgSrc: 0,
 		arr: null,
@@ -300,34 +299,61 @@ export default {
 				this.classList.remove('hovered');
 			}
 			let target = null;
+			let runRight = false;
+			let runLeft = false;
 			document.addEventListener('mousedown', (e) => {
 				target = e.target;
 			});
 			function dragDrop() {
+				runRight = false;
+				runLeft = false;
 				for (let i = 0; i < gigEnd.length; i += 1) {
 					if (this === gigEnd[i]) {
 						if (gigEnd[i].innerHTML) {
 							if (this.firstChild === target) {
 								return 1;
 							}
-							if (gigEnd[i - 1].firstElementChild === target) {
+							if (i !== 0 && gigEnd[i - 1].firstElementChild === target) {
 								const a = gigEnd[i].firstElementChild;
 								gigEnd[i].innerHTML = '';
 								gigEnd[i - 1].append(a);
 								gigEnd[i].append(target);
 								newArr.splice([i], 1, 1);
 								newArr.splice([i + 1], 1, 1);
-								console.log(1);
-							} else if (gigEnd[i + 1].firstElementChild === target) {
+							} else if (i !== gigEnd.length - 1 && gigEnd[i + 1].firstElementChild === target) {
 								const a = gigEnd[i].firstElementChild;
 								gigEnd[i].innerHTML = '';
 								gigEnd[i + 1].append(a);
 								gigEnd[i].append(target);
 								newArr.splice([i], 1, 1);
 								newArr.splice([i + 1], 1, 1);
-								console.log(2);
 							} else {
-								console.log(3);
+								for (let j = i; j < gigEnd.length; j += 1) {
+									if (!gigEnd[j].innerHTML) {
+										runRight = true;
+									}
+								}
+								for (let k = i; k >= 0; k -= 1) {
+									if (!gigEnd[k].innerHTML) {
+										runLeft = true;
+									}
+								}
+								if (runRight) {
+									const a = gigEnd[i].firstElementChild;
+									gigEnd[i].innerHTML = '';
+									gigEnd[i + 1].append(a);
+									gigEnd[i].append(target);
+									newArr.splice([i], 1, 1);
+									newArr.splice([i + 1], 1, 1);
+								}
+								if (runLeft) {
+									const a = gigEnd[i].firstElementChild;
+									gigEnd[i].innerHTML = '';
+									gigEnd[i + 1].append(a);
+									gigEnd[i].append(target);
+									newArr.splice([i], 1, 1);
+									newArr.splice([i + 1], 1, 1);
+								}
 							}
 						} else {
 							gigEnd[i].append(target);
