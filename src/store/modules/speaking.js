@@ -4,8 +4,8 @@
  */
 
 const actions = {
-	SPEAKING_GAME: ({ mutations }) => {
-		mutations('SPEAKING_ANSWER');
+	SPEAKING_GAME({ commit }) {
+		commit('SPEAKING_ANSWER');
 	},
 };
 
@@ -14,11 +14,10 @@ const actions = {
  * link https://vuex.vuejs.org/guide/mutations.html
  */
 const mutations = {
-	SPEAKING_ANSWER: ({ state }) => {
+	SPEAKING_ANSWER: (state) => {
 		document.querySelector('.answer').textContent = state.answer;
 	},
-	SPEAKING_SPEAK: ({ state }) => {
-		this.SPEAKING_ANSWER({ state });
+	SPEAKING_SPEAK: () => {
 		const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 		const recognition = new SpeechRecognition();
 		recognition.lang = 'en-US';
