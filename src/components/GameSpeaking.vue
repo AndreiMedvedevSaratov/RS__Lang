@@ -19,7 +19,7 @@
 			input(
 				type="button"
 				value="undefined"
-				@click="game()"
+				@click="video()"
 				id="btn"
 			)
 
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { mapGetters, /*  mapMutations, */ mapActions } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 
 /**
  * API Vue
@@ -42,9 +42,17 @@ export default {
 	computed: {
 		...mapGetters({
 			isVideoSrc: 'speaking/getSrcVideo',
+			videoIsEnded: 'speaking/getVideoIsEnded',
+			// answer: 'speaking/getAnswer',
 		}),
 	},
-	watch: {},
+	watch: {
+		videoIsEnded() {
+			console.log('FFFFFFFFFFFFFFFFF');
+			this.answer();
+			this.speak();
+		},
+	},
 	created() {},
 	mounted() {
 		/** Examples
@@ -55,9 +63,11 @@ export default {
 		 */
 	},
 	methods: {
-		// ...mapMutations({
-		// 	speak: 'speaking/SPEAKING_SPEAK',
-		// }),
+		...mapMutations({
+			video: 'speaking/SPEAKING_VIDEO',
+			answer: 'speaking/SPEAKING_ANSWER',
+			speak: 'speaking/SPEAKING_SPEAK',
+		}),
 		...mapActions({
 			game: 'speaking/SPEAKING_GAME',
 		}),
@@ -90,8 +100,7 @@ export default {
 	}
 
 	.answer {
-		display:block;
-
+		display: block;
 	}
 }
 </style>

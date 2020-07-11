@@ -5,7 +5,6 @@
 
 const actions = {
 	SPEAKING_GAME({ commit }) {
-		commit('SPEAKING_ANSWER');
 		commit('SPEAKING_VIDEO');
 	},
 };
@@ -39,8 +38,11 @@ const mutations = {
 		});
 		recognition.start();
 	},
-	SPEAKING_VIDEO: () => {
+	SPEAKING_VIDEO: (state) => {
 		const video = document.getElementById('video');
+		video.addEventListener('ended', () => {
+			state.videoIsEnded = true;
+		});
 		video.play();
 	},
 };
@@ -48,12 +50,14 @@ const mutations = {
 const getters = {
 	getSrcVideo: (state) => state.srcVideo,
 	getAnswer: (state) => state.answer,
+	getVideoIsEnded: (state) => state.videoIsEnded,
 };
 
 const state = {
 	status: '',
 	srcVideo: './assets/video/first.mp4',
 	answer: 'Yes, actually I am lost! How did you know?',
+	videoIsEnded: false,
 };
 
 export default {
