@@ -1,5 +1,12 @@
 <template lang='pug'>
 	div
+		div( v-if="loading" ) Please wait...
+			v-progress-linear(
+				indeterminate
+				rounded
+				color="light-green darken-4"
+				class="mb-0"
+			)
 		.modal-wrapper
 			.modal-results
 		.select_wrapper
@@ -89,6 +96,7 @@ export default {
 		continueCount: 0,
 		correctWords: [],
 		wrongWords: [],
+		loading: false,
 	}),
 	computed: {
 		...mapGetters({
@@ -135,9 +143,24 @@ export default {
 	},
 	mounted() {
 		this.game();
+		this.appHtml([
+			{ one: 'main', key: 'drawer', value: false },
+			{ one: 'main', key: 'breadcrumbs', value: false },
+			{ one: 'app', key: 'background', value: 'light-green darken-4' },
+			{ one: 'app', key: 'colorWhite', value: true },
+		]);
+	},
+	beforeDestroy() {
+		this.appHtml([
+			{ one: 'main', key: 'drawer', value: true },
+			{ one: 'main', key: 'breadcrumbs', value: true },
+			{ one: 'app', key: 'background', value: 'grey lighten-5' },
+			{ one: 'app', key: 'colorWhite', value: false },
+		]);
 	},
 	methods: {
 		...mapMutations({
+			appHtml: 'EDIT_HTML',
 			offStatistics: 'SHOW_SHORT_STATISTICS',
 		}),
 		...mapActions({
@@ -145,6 +168,10 @@ export default {
 			alertAction: 'ALERT',
 		}),
 		async game() {
+			this.loading = true;
+			await setTimeout(() => {
+				this.loading = false;
+			}, 3000);
 			await this.wordsAction({ group: this.selected_level, page: this.selected_page });
 			this.gameStatus = true;
 			const widthPx = (str) => +str.match(/[0-9]/g).join('');
@@ -526,7 +553,7 @@ url('../assets/fonts/montserrat-v14-latin_cyrillic-regular.woff2') format('woff2
 body {
 	font-family: 'Montserrat';
 	font-style: normal;
-	color: #476622;
+	color: #33691E;
 	user-select: none;
 }
 
@@ -580,7 +607,7 @@ form {
 input {
 	width: 220px;
 	height: 30px;
-	border: 1px solid #476622;
+	border: 1px solid #33691E;
 	border-radius: 5px;
 }
 
@@ -625,7 +652,7 @@ input {
 .result-word {
 	width: 900px;
 	height: 450px;
-	background: #476622;
+	background: #33691E;
 	margin: 0 auto;
 	margin-top: 0px;
 	border-top: 1px solid;
@@ -690,8 +717,8 @@ input {
 	cursor: pointer;
 	border: 1px solid;
 	border-radius: 5px;
-	background: #476622;
-	color: #d7e5d2;
+	background: #33691E;
+	color: white;
 	font-family: 'Montserrat';
 	width: 180px;
 	height: 50px;
@@ -722,7 +749,7 @@ input {
 }
 
 .right {
-	box-shadow: 0 0 5px #476622;
+	box-shadow: 0 0 5px #33691E;
 }
 
 .wrong {
@@ -750,18 +777,18 @@ input {
 	width: 40px;
 	height: 40px;
 	margin-left: 5px;
-	color: #476622;
+	color: #33691E;
 	border-radius: 5px;
-	border: solid 1px #476622;
+	border: solid 1px #33691E;
 }
 
 #selectbox1, #selectbox2 {
 	width: 75px;
 	height: 40px;
 	margin-right: 5px;
-	color: #476622;
+	color: #33691E;
 	border-radius: 5px;
-	border: solid 1px #476622;
+	border: solid 1px #33691E;
 	font-family: 'Montserrat';
 	font-size: 14px;
 }
@@ -791,9 +818,9 @@ input {
 .hunt {
 	position: absolute;
 	left: 400px;
-	top: 105px;
+	top: 47px;
 	width: 540px;
-	color:#476622;
+	color:#33691E;
 	font-size: 12px;
 	font-weight: bold;
 	font-family: 'Montserrat';
@@ -801,9 +828,9 @@ input {
 }
 
 select {
-	border: solid 2px #476622;
+	border: solid 2px #33691E;
 	border-radius: 5px;
-	color: #476622;
+	color: #33691E;
 	margin-left: 15px;
 	width: 65px;
 	font-weight: 700;
