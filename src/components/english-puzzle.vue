@@ -64,17 +64,22 @@
 					button.button__check.button_style(
 					v-if="!gameStatus"
 				) Next level
+			vModal( :words="{ correct: correctWords, wrong: wrongWords }"
+				:textExample="true")
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
+import vModal from './modal/ModalShortStat.vue';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
 	name: 'EnglishPuzzle',
-	components: {},
+	components: {
+		vModal,
+	},
 	props: [],
 	data: () => ({
 		num: 0,
@@ -90,12 +95,24 @@ export default {
 		nameGallery: ['Иван Айвазовский - Девятый вал (1850 г.)', 'Иван Шишкин - Утро в сосновом лесу (1889 г.)', 'Карл Брюллов - Последний день Помпеи (1833 г.)',
 			'Алексей Саврасов - Плоты (1868 г.)', 'Алексей Саврасов - Грачи прилетели (1871 г.)', 'Илья Репин - Бурлаки на Волге (1870 - 1873 гг.)',
 			'Иван Шишкин - Рожь (1878 г.)'],
+		correctWords: [],
+		wrongWords: [],
+		loading: false,
 	}),
 	computed: {
 		...mapGetters({
 			words: 'getWords',
 			urlFiles: 'getUrlFiles',
+			getShortStatistics: 'showShortStatistics',
 		}),
+		showStatistics: {
+			get() {
+				return this.getShortStatistics;
+			},
+			set() {
+				this.offStatistics();
+			},
+		},
 	},
 	watch: {
 		selected_level(number1) {
@@ -136,8 +153,26 @@ export default {
 	mounted() {
 		this.local();
 		this.game();
+		this.appHtml([
+			{ one: 'main', key: 'drawer', value: false },
+			{ one: 'main', key: 'breadcrumbs', value: false },
+			{ one: 'app', key: 'background', value: 'light-green darken-4' },
+			{ one: 'app', key: 'colorWhite', value: true },
+		]);
+	},
+	beforeDestroy() {
+		this.appHtml([
+			{ one: 'main', key: 'drawer', value: true },
+			{ one: 'main', key: 'breadcrumbs', value: true },
+			{ one: 'app', key: 'background', value: 'grey lighten-5' },
+			{ one: 'app', key: 'colorWhite', value: false },
+		]);
 	},
 	methods: {
+		...mapMutations({
+			appHtml: 'EDIT_HTML',
+			offStatistics: 'SHOW_SHORT_STATISTICS',
+		}),
 		...mapActions({
 			wordsAction: 'APP_GET_WORDS',
 			alertAction: 'ALERT',
@@ -145,6 +180,10 @@ export default {
 		async game() {
 			localStorage.setItem('level', this.selected_level);
 			localStorage.setItem('page', this.selected_page);
+			this.loading = true;
+			await setTimeout(() => {
+				this.loading = false;
+			}, 3000);
 			await this.wordsAction({ group: this.selected_level, page: this.selected_page });
 			this.gameStatus = true;
 			const widthPx = (str) => +str.match(/[0-9]/g).join('');
@@ -219,6 +258,7 @@ export default {
 			}
 			if (localStorage.getItem('img')) {
 				const img = +localStorage.getItem('img');
+				this.imgSrc = img;
 				for (let i = 0; i < countWords; i += 1) {
 					wordAll[i].style.backgroundImage = `url(./assets/img/${img}.jpg)`;
 				}
@@ -547,6 +587,8 @@ export default {
 				}
 				if (count === wordAll.length) {
 					document.querySelector('.button__continue').classList.add('visibble-btn');
+					// предложение собрано 100% правильно
+					this.stat(true, this.words[this.num]);
 					for (let j = 0; j < wordBefore.length; j += 1) {
 						wordBefore[j].classList.remove('img-none');
 					}
@@ -557,6 +599,10 @@ export default {
 					document.querySelector('#button_3').classList.remove('btn-opacity');
 					document.querySelector('#button_4').classList.remove('btn-opacity');
 				}
+			}
+			if (count !== wordAll.length) {
+				// предложение собрано не правильно
+				this.stat(false, this.words[this.num]);
 			}
 			this.booleanForCheck = true;
 			return 1;
@@ -616,7 +662,7 @@ export default {
 				this.game();
 			} else {
 				this.gameStatus = false;
-				this.alertAction({ status: 'success', data: 'Game over!!' });
+				this.alertAction({ status: 'success', data: 'Game over' });
 			}
 			document.querySelector('.button__continue').classList.remove('visibble-btn');
 			document.querySelector('.button__check').classList.remove('visibble-btn');
@@ -638,9 +684,18 @@ export default {
 			document.querySelector('#button_4').classList.add('btn-opacity');
 			return 1;
 		},
+		stat(correct, word) {
+			if (correct) {
+				this.correctWords.push(word);
+				// TODO: добавить вставки элементов, которые показывали что пользователь угадал
+				return;
+			}
+			this.wrongWords.push(word);
+			// TODO: добавить вставки элементов, которые показывали что пользователь не угадал
+		},
 
 		results() {
-			return 1;
+			this.showStatistics = true;
 		},
 		audiohint() {
 			// const audio = new Audio(this.isUrlFiles + this.words[this.num].audioExample);
@@ -713,7 +768,7 @@ url('../assets/fonts/montserrat-v14-latin_cyrillic-regular.woff2') format('woff2
 body {
 	font-family: 'Montserrat';
 	font-style: normal;
-	color: #476622;
+	color: #33691E;
 	user-select: none;
 }
 
@@ -724,6 +779,7 @@ body {
     justify-content: space-between;
     margin-bottom: 15px;
     flex-wrap: wrap;
+	margin-top: 20px;
 }
 
 .img-none {
@@ -774,7 +830,7 @@ form {
 input {
 	width: 220px;
 	height: 30px;
-	border: 1px solid #476622;
+	border: 1px solid #33691E;
 	border-radius: 5px;
 }
 
@@ -819,7 +875,7 @@ input {
 .result-word {
 	width: 900px;
 	height: 450px;
-	background: #476622;
+	background: #33691E;
 	margin: 0 auto;
 	margin-top: 0px;
 	border: 1px solid;
@@ -852,7 +908,7 @@ input {
 	width: auto;
 	min-width: 40px;
 	height: 45px;
-	background: #919A8D;
+	background: #a8d06f;
 	border: none;
 	display: flex;
 	justify-content: center;
@@ -891,8 +947,8 @@ input {
 	cursor: pointer;
 	border: 1px solid;
 	border-radius: 5px;
-	background: #993366;
-	color: #d7e5d2;
+	background: #33691E;
+	color: white;
 	font-family: 'Montserrat';
 	width: 180px;
 	height: 50px;
@@ -924,7 +980,7 @@ input {
 }
 
 .right {
-	box-shadow: 0 0 5px #476622;
+	box-shadow: 0 0 5px #33691E;
 }
 
 .wrong {
@@ -941,18 +997,17 @@ input {
 	width: 40px;
 	height: 40px;
 	margin-left: 5px;
-	color: #476622;
+	color: #33691E;
 	border-radius: 5px;
-	border: solid 1px #476622;
 }
 
 #selectbox1, #selectbox2 {
 	width: 75px;
 	height: 40px;
 	margin-right: 5px;
-	color: #476622;
+	color: #33691E;
 	border-radius: 5px;
-	border: solid 1px #476622;
+	border: solid 1px #33691E;
 	font-family: 'Montserrat';
 	font-size: 14px;
 }
@@ -985,10 +1040,11 @@ input {
 }
 
 select {
-	border: solid 2px #80887C;
-    border-radius: 5px;
-    color: #80887C;
-    font-weight: 700;
+	border: solid 2px #33691E;
+	border-radius: 5px;
+	color: #33691E;
+	font-weight: 700;
+	text-align-last: center;
     padding: 5px 25px 5px 10px;
     -moz-text-align-last: center;
     text-align-last: center;
@@ -1016,7 +1072,7 @@ option {
     width: 230px;
     height: 100px;
     background: aquamarine;
-    margin: 0 auto;
+    margin: 90px auto 0px auto;
     text-align: center;
     font-size: 14px;
     border-radius: 4px;
