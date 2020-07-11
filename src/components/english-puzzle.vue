@@ -2,33 +2,32 @@
 	div
 		.modal-wrapper
 			.modal-results
-		.header
-			.select_wrapper
-				label.level
-					select(v-model="selected_level")
-						option(
-							v-for="(item,i) in 6"
-							:key="i"
-							:value="item-1"
-						) Level {{item}}
-				label.page
-					select.select-two(v-model="selected_page")
-						option(
-							v-for="(item_page,i) in 30"
-							:key="i"
-							:value="item_page-1"
-						) Page {{item_page}}
-			.button_wrapper
-				button#button_1(
-					@click="audiohint"
-				)
-				button#button_2(
-					@click="texthint"
-				)
-				button#button_3
-				button#button_4(
-					@click="img"
-				)
+		.select_wrapper
+			label.level
+				select(v-model="selected_level")
+					option(
+						v-for="(item,i) in 6"
+						:key="i"
+						:value="item-1"
+					) Level {{item}}
+			label.page
+				select(v-model="selected_page")
+					option(
+						v-for="(item_page,i) in 30"
+						:key="i"
+						:value="item_page-1"
+					) Page {{item_page}}
+		.button_wrapper
+			button#button_1(
+				@click="audiohint"
+			)
+			button#button_2(
+				@click="texthint"
+			)
+			button#button_3(
+				@click="audiomeaning"
+			)
+			button#button_4
 		.hunt
 			p#textExampleTranslate
 		.result-word(
@@ -133,18 +132,23 @@ export default {
 			this.gameStatus = true;
 			const widthPx = (str) => +str.match(/[0-9]/g).join('');
 			const sortArr = (arr) => arr.sort(() => Math.random() - 0.5);
-			const clearWords = (str) => {
+			const clearWords = (string) => {
 				let newStr = '';
-				const strWithOutTrim = str.trim();
-				for (let i = 0; i < strWithOutTrim.length; i += 1) {
-					if (strWithOutTrim[i] === '<') {
-						while (strWithOutTrim[i] !== '>') {
+				const str = string.trim();
+				for (let i = 0; i < str.length; i += 1) {
+					if (str[i] === ',') {
+						i += 1;
+					}
+					if (str[i] === '<' || str[i] === ',') {
+						while (str[i] !== '>') {
 							i += 1;
 						}
-					} else if (strWithOutTrim[i] === '.' && strWithOutTrim[i + 1] !== ' ') {
+					} else if (str[i] === '.' && i + 1 === str.length) {
 						return newStr;
+					} else if ((str[i] === '.' && str[i + 1] !== ' ') || (str[i] === '.' && str[i + 1] === ' ')) {
+						newStr += str[i];
 					} else {
-						newStr += strWithOutTrim[i];
+						newStr += str[i];
 					}
 				}
 				return newStr;
@@ -338,21 +342,91 @@ export default {
 										runLeft = true;
 									}
 								}
+								if (!runRight && !runLeft) {
+									for (let h = 0; h < gigEnd.length; h += 1) {
+										if (target === gigEnd[h].firstElementChild) {
+											for (let q = 0; q < gigEnd.length; q += 1) {
+												if (this === gigEnd[q]) {
+													if (h > q) {
+														const a = gigEnd[h].firstElementChild;
+														let b = gigEnd[q].firstElementChild;
+														gigEnd[h].innerHTML = '';
+														gigEnd[q].innerHTML = '';
+														gigEnd[q].append(a);
+														for (let p = q + 1; p <= h; p += 1) {
+															const c = gigEnd[p].firstElementChild;
+															gigEnd[p].innerHTML = '';
+															gigEnd[p].append(b);
+															b = c;
+														}
+													}
+													if (h < q) {
+														const a = gigEnd[h].firstElementChild;
+														let b = gigEnd[q].firstElementChild;
+														gigEnd[h].innerHTML = '';
+														gigEnd[q].innerHTML = '';
+														gigEnd[q].append(a);
+														for (let p = q - 1; p >= h; p -= 1) {
+															const c = gigEnd[p].firstElementChild;
+															gigEnd[p].innerHTML = '';
+															gigEnd[p].append(b);
+															b = c;
+														}
+													}
+												}
+											}
+										}
+									}
+								}
 								if (runRight) {
-									const a = gigEnd[i].firstElementChild;
+									let a = gigEnd[i].firstElementChild;
 									gigEnd[i].innerHTML = '';
-									gigEnd[i + 1].append(a);
 									gigEnd[i].append(target);
-									newArr.splice([i], 1, 1);
-									newArr.splice([i + 1], 1, 1);
+									for (let p = i + 1; p < gigEnd.length; p += 1) {
+										if (gigEnd[p].innerHTML) {
+											const c = gigEnd[p].firstElementChild;
+											gigEnd[p].innerHTML = '';
+											gigEnd[p].append(a);
+											newArr.splice([p], 1, 1);
+											console.log(newArr);
+											if (!newArr.includes(0)) {
+												document.querySelector('.button__check').classList.add('visibble-btn');
+											}
+											a = c;
+										} else {
+											gigEnd[p].append(a);
+											newArr.splice([p], 1, 1);
+											if (!newArr.includes(0)) {
+												document.querySelector('.button__check').classList.add('visibble-btn');
+											}
+											console.log(newArr);
+											return 1;
+										}
+									}
 								}
 								if (runLeft) {
-									const a = gigEnd[i].firstElementChild;
+									let a = gigEnd[i].firstElementChild;
 									gigEnd[i].innerHTML = '';
-									gigEnd[i + 1].append(a);
 									gigEnd[i].append(target);
-									newArr.splice([i], 1, 1);
-									newArr.splice([i + 1], 1, 1);
+									for (let p = i - 1; p >= 0; p -= 1) {
+										if (gigEnd[p].innerHTML) {
+											const c = gigEnd[p].firstElementChild;
+											gigEnd[p].innerHTML = '';
+											gigEnd[p].append(a);
+											if (!newArr.includes(0)) {
+												document.querySelector('.button__check').classList.add('visibble-btn');
+											}
+											a = c;
+										} else {
+											gigEnd[p].append(a);
+											newArr.splice([p], 1, 1);
+											if (!newArr.includes(0)) {
+												document.querySelector('.button__check').classList.add('visibble-btn');
+											}
+											console.log(newArr);
+											return 1;
+										}
+									}
 								}
 							}
 						} else {
@@ -562,6 +636,10 @@ export default {
 			document.getElementById('textExampleTranslate').innerText = this.words[this.num].textExampleTranslate;
 			document.querySelector('#button_2').classList.add('btn-opacity');
 			return 1;
+		},
+		audiomeaning() {
+			const audio = new Audio(this.urlFiles + this.words[this.num].audioMeaning);
+			audio.play();
 		},
 		deletehint() {
 			document.getElementById('textExampleTranslate').innerText = '';
