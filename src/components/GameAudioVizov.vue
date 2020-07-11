@@ -45,6 +45,8 @@ export default {
 	components: {
 		vModal,
 	},
+	filters: {
+	},
 	props: [],
 	data: () => ({
 		correctWords: [],
@@ -147,6 +149,7 @@ export default {
 	methods: {
 		...mapActions({
 			getWords: 'audiovizov/GET_WORDS',
+			wordProcessing: 'APP_WORD_PROCESSING',
 		}),
 		...mapMutations({
 			setImgAndAudio: 'audiovizov/AUDIOVIZOV_SET_IMAGE_AND_AUDIO',
@@ -248,10 +251,8 @@ export default {
 		async stat(right, word) {
 			if (right) {
 				this.correctWords.push(word);
-				// TODO: добавить вставки элементов, которые показывали что пользователь угадал
 			} else {
 				this.wrongWords.push(word);
-				// TODO: добавить вставки элементов, которые показывали что пользователь не угадал
 			}
 			await this.wordProcessing({ word, right });
 		},
