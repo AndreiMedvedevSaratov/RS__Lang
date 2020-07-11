@@ -67,7 +67,8 @@
 				button.button__check.button_style(
 				v-if="!gameStatus"
 			) Next level
-		vModal( :words="{ correct: correctWords, wrong: wrongWords }" )
+		vModal( :words="{ correct: correctWords, wrong: wrongWords }"
+			:textExample="true")
 </template>
 
 <script>
@@ -1009,6 +1010,19 @@ input {
     margin: 0 auto;
     margin-bottom: 15px;
 	height: 25px;
+}
+.select_wrapper {
+	position: relative;
+	width: 180px;
+	left: 220px;
+	top: 30px;
+}
+
+.button_wrapper {
+	position: relative;
+	width: 185px;
+	left: 940px;
+	top: -10px;
 }
 
 select {
