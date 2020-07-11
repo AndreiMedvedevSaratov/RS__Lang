@@ -1,6 +1,5 @@
 <template lang="pug">
 	div( class="game" )
-		div( class="header") header
 
 		div( class="main" )
 			div( class="start-game-button" @click="startGame")
@@ -26,17 +25,32 @@
 						p( class="card__info__translation"
 							:ref="item.word" ) {{ item.wordTranslate }}
 
-		div( class="buttonsRow" ) buttonsRow
+			v-col( )
+					v-btn(
+						@click="showStatistics = true"
+						color="primary"
+					)
+						v-icon(left) mdi-information-outline
+						| Statistics
+
+		vModal( :words="{ correct: correctWords, wrong: wrongWords }" )
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex';
+import vModal from './modal/ModalShortStat.vue';
 
 export default {
 	name: 'AudioVizov',
-	components: {},
+	components: {
+		vModal,
+	},
+	filters: {
+	},
 	props: [],
 	data: () => ({
+		correctWords: [],
+		wrongWords: [],
 		isStartGame: false,
 		isNextRound: false,
 		myWords: {},
@@ -85,6 +99,17 @@ export default {
 			isWords: 'audiovizov/getWords',
 			isUrlFiles: 'audiovizov/getUrlFiles',
 			isUrlImage: 'audiovizov/getUrlImage',
+			getShortStatistics: 'showShortStatistics',
+
+			// Открыть/Закрыть краткосрочную статистику
+			showStatistics: {
+				get() {
+					return this.getShortStatistics;
+				},
+				set() {
+					this.offStatistics();
+				},
+			},
 		}),
 	},
 	watch: {
@@ -99,13 +124,37 @@ export default {
 		const a = this.wordsForTrain[this.currentGameRound].levelOfDifficulty;
 		const b = this.wordsForTrain[this.currentGameRound].pageNumber;
 		this.getWordsForGame(a, b);
+		// Перед началом игры изменим стиль страницы
+		this.appHtml([
+			// свернем меню
+			{ one: 'main', key: 'drawer', value: false },
+			// Уберем хлебные крошки
+			{ one: 'main', key: 'breadcrumbs', value: false },
+			// Изменим цвет header по таблице цветов
+			// https://vuetifyjs.com/en/styles/colors/#sass-color-pack
+			{ one: 'app', key: 'background', value: 'pink darken-1' },
+			// Изменим цвет текста на белый в header
+			{ one: 'app', key: 'colorWhite', value: true },
+		]);
+	},
+	beforeDestroy() {
+		// Перед закрытием страницы возращаем настройки обратно
+		this.appHtml([
+			{ one: 'main', key: 'drawer', value: true },
+			{ one: 'main', key: 'breadcrumbs', value: true },
+			{ one: 'app', key: 'background', value: 'grey lighten-5' },
+			{ one: 'app', key: 'colorWhite', value: false },
+		]);
 	},
 	methods: {
 		...mapActions({
 			getWords: 'audiovizov/GET_WORDS',
+			wordProcessing: 'APP_WORD_PROCESSING',
 		}),
 		...mapMutations({
 			setImgAndAudio: 'audiovizov/AUDIOVIZOV_SET_IMAGE_AND_AUDIO',
+			appHtml: 'EDIT_HTML',
+			offStatistics: 'SHOW_SHORT_STATISTICS',
 		}),
 		pronounceSound() {
 			this.playSound(this.isUrlFiles + this.wordForGuessAudio);
@@ -135,6 +184,7 @@ export default {
 				result += this.wordsForTrain[i].result;
 			}
 			alert(`End of the game! ${result}`);
+			this.showStatistics = true;
 		},
 		async playRoundOfTheGame() {
 			this.isNextRound = false;
@@ -198,6 +248,14 @@ export default {
 				console.log(e);
 			}
 		},
+		async stat(right, word) {
+			if (right) {
+				this.correctWords.push(word);
+			} else {
+				this.wrongWords.push(word);
+			}
+			await this.wordProcessing({ word, right });
+		},
 	},
 };
 
@@ -207,7 +265,7 @@ export default {
 .game {
     height: 100vh;
     padding: 0 15%;
-    background-color: #ccd8cc;
+    background-color: #F48FB1;
 	box-sizing: border-box;
 	p {
 		margin: 0;
@@ -228,7 +286,7 @@ export default {
 		.start-game-button {
 			width: 300px;
 			height: 60px;
-			margin: 10px auto;
+			margin: 0px auto;
 			background-color: #d8c9d8;
 			border: #dadada solid 1px;
 			box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
