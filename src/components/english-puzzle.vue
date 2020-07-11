@@ -1,65 +1,69 @@
 <template lang='pug'>
 	div
 		.modal-wrapper
-			.modal-results
-		.select_wrapper
-			label.level
-				select(v-model="selected_level")
-					option(
-						v-for="(item,i) in 6"
-						:key="i"
-						:value="item-1"
-					) Level {{item}}
-			label.page
-				select(v-model="selected_page")
-					option(
-						v-for="(item_page,i) in 30"
-						:key="i"
-						:value="item_page-1"
-					) Page {{item_page}}
-		.button_wrapper
-			button#button_1(
-				@click="audiohint"
+			p.text Извините, но для этой игры необходимо разрешение экрана не менее 900х640
+		.main-wrapper
+			.header
+				.select_wrapper
+					label.level
+						select(v-model="selected_level")
+							option(
+								v-for="(item,i) in 6"
+								:key="i"
+								:value="item-1"
+							) Level {{item}}
+					label.page
+						select.select-two(v-model="selected_page")
+							option(
+								v-for="(item_page,i) in 30"
+								:key="i"
+								:value="item_page-1"
+							) Page {{item_page}}
+				.button_wrapper
+					button#button_1(
+						@click="audiohint"
+					)
+					button#button_2(
+						@click="texthint"
+					)
+					button#button_3(
+						@click="audiomeaning"
+					)
+					button#button_4(
+						@click="img"
+					)
+			.hunt
+				p#textExampleTranslate
+			.result-word(
+				ref="resultWord"
 			)
-			button#button_2(
-				@click="texthint"
+				.word-container(
+					v-for="(item, i) in 10"
+					:key="i"
+					ref="wordContainer"
+				)
+			.begin-word(
+				ref="beginWord"
 			)
-			button#button_3(
-				@click="audiomeaning"
-			)
-			button#button_4
-		.hunt
-			p#textExampleTranslate
-		.result-word(
-			ref="resultWord"
-		)
-			.word-container(
-				v-for="(item, i) in 10"
-				:key="i"
-				ref="wordContainer"
-			)
-		.begin-word(
-			ref="beginWord"
-		)
-		.button
-			div(
-				v-if="gameStatus"
-			)
-				button.button__not-know.button_style(
-					@click="dontKnow"
-				) I don't know
-				button.button__check.button_style(
-					@click="check"
-				) Check
-				button.button__continue.button_style(
-					@click="continueWord"
-				) Continue
-				button.button__result.button_style(
-					@click="results"
-				) Result
-				button.button__check.button_style(
-				v-if="!gameStatus"
-			) Next level
+			.button
+				div(
+					v-if="gameStatus"
+				)
+					button.button__not-know.button_style(
+						@click="dontKnow"
+					) I don't know
+					button.button__check.button_style(
+						@click="check"
+					) Check
+					button.button__continue.button_style(
+						@click="continueWord"
+					) Continue
+					button.button__result.button_style(
+						@click="results"
+					) Result
+					button.button__check.button_style(
+					v-if="!gameStatus"
+				) Next level
 </template>
 
 <script>
@@ -83,7 +87,9 @@ export default {
 		selected_level: 0,
 		selected_page: 0,
 		continueCount: 0,
-		nameGallery: ['Иван Айвазовский - Девятый вал (1850 г.)', '', 'Иван Шишкин - Утро в сосновом лесу (1889 г.)'],
+		nameGallery: ['Иван Айвазовский - Девятый вал (1850 г.)', 'Иван Шишкин - Утро в сосновом лесу (1889 г.)', 'Карл Брюллов - Последний день Помпеи (1833 г.)',
+			'Алексей Саврасов - Плоты (1868 г.)', 'Алексей Саврасов - Грачи прилетели (1871 г.)', 'Илья Репин - Бурлаки на Волге (1870 - 1873 гг.)',
+			'Иван Шишкин - Рожь (1878 г.)'],
 	}),
 	computed: {
 		...mapGetters({
@@ -98,6 +104,10 @@ export default {
 				const a = item;
 				a.innerHTML = '';
 			});
+			document.querySelector('#button_1').classList.remove('btn-opacity');
+			document.querySelector('#button_2').classList.remove('btn-opacity');
+			document.querySelector('#button_3').classList.remove('btn-opacity');
+			document.querySelector('#button_4').classList.remove('btn-opacity');
 			this.num = 0;
 			this.moveY = 0;
 			this.continueCount = 0;
@@ -110,6 +120,10 @@ export default {
 				const a = item;
 				a.innerHTML = '';
 			});
+			document.querySelector('#button_1').classList.remove('btn-opacity');
+			document.querySelector('#button_2').classList.remove('btn-opacity');
+			document.querySelector('#button_3').classList.remove('btn-opacity');
+			document.querySelector('#button_4').classList.remove('btn-opacity');
 			this.num = 0;
 			this.moveY = 0;
 			this.continueCount = 0;
@@ -120,6 +134,7 @@ export default {
 	created() {
 	},
 	mounted() {
+		this.local();
 		this.game();
 	},
 	methods: {
@@ -128,6 +143,8 @@ export default {
 			alertAction: 'ALERT',
 		}),
 		async game() {
+			localStorage.setItem('level', this.selected_level);
+			localStorage.setItem('page', this.selected_page);
 			await this.wordsAction({ group: this.selected_level, page: this.selected_page });
 			this.gameStatus = true;
 			const widthPx = (str) => +str.match(/[0-9]/g).join('');
@@ -200,9 +217,15 @@ export default {
 				sumWidth = 900 - sumWidth;
 				wordAll[wordAll.length - 1].style.width = `${+map.get(`${wordAll.length - 1}`) + sumWidth}px`;
 			}
-
-			for (let i = 0; i < countWords; i += 1) {
-				wordAll[i].style.backgroundImage = `url(./assets/img/${this.imgSrc}.jpg)`;
+			if (localStorage.getItem('img')) {
+				const img = +localStorage.getItem('img');
+				for (let i = 0; i < countWords; i += 1) {
+					wordAll[i].style.backgroundImage = `url(./assets/img/${img}.jpg)`;
+				}
+			} else {
+				for (let i = 0; i < countWords; i += 1) {
+					wordAll[i].style.backgroundImage = `url(./assets/img/${this.imgSrc}.jpg)`;
+				}
 			}
 
 			let moveX = 0;
@@ -388,7 +411,6 @@ export default {
 											gigEnd[p].innerHTML = '';
 											gigEnd[p].append(a);
 											newArr.splice([p], 1, 1);
-											console.log(newArr);
 											if (!newArr.includes(0)) {
 												document.querySelector('.button__check').classList.add('visibble-btn');
 											}
@@ -399,10 +421,10 @@ export default {
 											if (!newArr.includes(0)) {
 												document.querySelector('.button__check').classList.add('visibble-btn');
 											}
-											console.log(newArr);
 											return 1;
 										}
 									}
+									console.log(newArr);
 								}
 								if (runLeft) {
 									let a = gigEnd[i].firstElementChild;
@@ -427,6 +449,7 @@ export default {
 											return 1;
 										}
 									}
+									console.log(newArr);
 								}
 							}
 						} else {
@@ -553,10 +576,12 @@ export default {
 				return 1;
 			}
 			if (this.continueCount === 11) {
-				if (this.imgSrc < 2) {
+				if (this.imgSrc < 6) {
 					this.imgSrc += 1;
+					localStorage.setItem('img', this.imgSrc);
 				} else {
 					this.imgSrc = 0;
+					localStorage.setItem('img', this.imgSrc);
 				}
 				this.continueCount = 0;
 				if (this.selected_level === 5 && this.selected_page === 29) {
@@ -638,17 +663,29 @@ export default {
 			return 1;
 		},
 		audiomeaning() {
+			if (document.querySelector('#button_3').classList.contains('btn-opacity')) {
+				return 1;
+			}
 			const audio = new Audio(this.urlFiles + this.words[this.num].audioMeaning);
 			audio.play();
+			document.querySelector('#button_3').classList.add('btn-opacity');
+			return 1;
 		},
 		deletehint() {
 			document.getElementById('textExampleTranslate').innerText = '';
+		},
+		local() {
+			if (localStorage.getItem('level')) {
+				this.selected_level = +localStorage.getItem('level');
+				this.selected_page = +localStorage.getItem('page');
+			}
 		},
 	},
 };
 
 </script>
 <style lang='scss'>
+
 @font-face {
 	font-family: 'Montserrat';
 	font-style: normal;
@@ -898,10 +935,6 @@ input {
 	display: none;
 }
 
-.hovered {
-	background-color: #a8d06f;
-}
-
 /*мой код*/
 
 #button_1, #button_2, #button_3, #button_4 {
@@ -978,4 +1011,29 @@ option {
 	opacity: 0.5;
 }
 
+.modal-wrapper {
+	display: none;
+    width: 230px;
+    height: 100px;
+    background: aquamarine;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 4px;
+    padding: 17px;
+}
+
+.text {
+	margin-bottom: 0px !important;
+}
+
+@media (max-width: 990px) {
+	.main-wrapper {
+		display: none;
+	}
+
+	.modal-wrapper {
+		display: block;
+	}
+}
 </style>
