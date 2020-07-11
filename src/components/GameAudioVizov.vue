@@ -135,6 +135,7 @@ export default {
 			{ one: 'app', key: 'background', value: 'pink darken-1' },
 			// Изменим цвет текста на белый в header
 			{ one: 'app', key: 'colorWhite', value: true },
+			{ one: 'main', key: 'background', value: 'pink darken-1' },
 		]);
 	},
 	beforeDestroy() {
@@ -144,6 +145,7 @@ export default {
 			{ one: 'main', key: 'breadcrumbs', value: true },
 			{ one: 'app', key: 'background', value: 'grey lighten-5' },
 			{ one: 'app', key: 'colorWhite', value: false },
+			{ one: 'main', key: 'background', value: '' },
 		]);
 	},
 	methods: {
