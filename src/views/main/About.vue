@@ -1,34 +1,80 @@
 <template>
-  <div class="about-wrapper">
-    <div class="about">
-      <h1>About "Dream Team 42"</h1>
+  <div class="about-team">
+    <div class="about-team__wrapper">
+      <h1 class="about-team__title">
+        Dream Team 42
+      </h1>
     </div>
-    <div class="p1">
-      <p>Here is short information about our team. First question is "Why Dream Team 42?</p>
-      <p>Answer is simple ))) - "Dream Team" - just because we are Dream Team ))))</p>
-      <p>"42" - is just because we are 42 team in the main table</p>
-      <p>So let me introduce participants:</p>
-      <br>
+    <div class="about-team__questions">
+      <h2 class="questions__title">
+        Here is short information about our team
+      </h2>
+      <ul class="questions__list">
+        <li class="questions__item ">
+          First question is "Why Dream Team 42?
+          <p class="questions__anwear">
+            Answer is simple - "Dream Team" - just because we are Dream Team
+          </p>
+        </li>
+        <li class="questions__item ">
+          First question is "Why Dream Team 42?
+          <p class="questions__anwear">
+            Answer is simple - "Dream Team" - just because we are Dream Team
+          </p>
+        </li>
+        <li class="questions__item ">
+          First question is "Why Dream Team 42?
+          <p class="questions__anwear">
+            Answer is simple - "Dream Team" - just because we are Dream Team
+          </p>
+        </li>
+
+        <!-- <p>Here is short information about our team. First question is "Why Dream Team 42?</p>
+		<p>Answer is simple ))) - "Dream Team" - just because we are Dream Team ))))</p>
+		<p>"42" - is just because we are 42 team in the main table</p>
+		<p>So let me introduce participants:</p> -->
+      </ul>
     </div>
-    <hr>
-    <div class="profile-page">
-      <div
-        v-for="(item, i) in developers"
-        :key="i"
-        class="grid-container"
-      >
-        <div class="column1">
-          <img
-            :src="item.profilePicture"
-            class="avatar_img"
-          >
-        </div>
-        <div class="column2">
-          <b>Name:</b> <u>{{ item.name }}</u> <br>
-          <b>Github account:</b> {{ item.githubAccount }} <br>
-          <b>E-mail:</b> {{ item.emailAddress }} <br>
-          <b>Telephone:</b> {{ item.telephone }} <br>
-          <b>About:</b> {{ item.about }}
+
+    <div class="about-team__profile-page">
+      <h3 class="profile-page__title">
+        our team
+      </h3>
+      <div class="profile-page__wrapper">
+        <div
+          v-for="(item, i) in developers"
+          :key="i"
+          class="profile-page__item"
+        >
+          <div class="profile-page__img">
+            <img
+              :src="item.profilePicture"
+              class="avatar_img"
+            >
+
+            <div class="profile-page__info">
+              <div class="info__name">
+                <span class="name">Name:</span> {{ item.name }}
+              </div>
+              <div class="info__name">
+                <span class="name">Name:</span> {{ item.githubAccount }}
+              </div>
+              <div class="info__name">
+                <span class="name">Name:</span> {{ item.emailAddress }}
+              </div>
+              <div class="info__name">
+                <span class="name">Name:</span> {{ item.telephone }}
+              </div>
+              <div class="info__name">
+                <p>{{ item.about }}</p>
+              </div>
+              <!-- <b>Name:</b> <u>{{ item.name }}</u>
+          <b>Github account:</b> {{ item.githubAccount }}
+          <b>E-mail:</b> {{ item.emailAddress }}
+          <b>Telephone:</b> {{ item.telephone }}
+          <b>About:</b> {{ item.about }} -->
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -109,25 +155,121 @@ export default {
 };
 </script>
 
-<style scoped>
-.about-wrapper {
-	max-width: 1440px;
-	margin: 0 auto;
+<style scoped lang="scss">
+.about-team {
+	&__wrapper {
+		width: 100%;
+		height: 100vh;
+		background-image: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-bottom: 100px;
+	}
+	&__title {
+		color: #FFF;
+		font-size: 100px;
+	}
+	.questions__title {
+		color: #000;
+		font-size: 48px;
+		text-align: center;
+		margin-bottom: 100px;
+	}
+	.questions__list {
+		list-style-type: none;
+		counter-reset: num;
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 200px;
+	}
+	.questions__item {
+		width: 30%;
+		color: #000;
+		font-size: 22px;
+		opacity: 1;
+		cursor: pointer;
+		transition: color .3s;
+		text-align: center;
+		.questions__anwear {
+			opacity: .6;
+		}
+		&:before {
+			content: counter(num, decimal-leading-zero) ".";
+			counter-increment: num;
+			margin-right: 10px;
+			color: #000;
+		}
+		&:hover {
+			&::before {
+				color: orange;
+			}
+		}
+	}
+	.profile-page {
+		&__title {
+			color: #000;
+			font-size: 48px;
+			text-align: center;
+			margin-bottom: 100px;
+			text-transform: uppercase;
+		}
+		&__wrapper {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+		}
+		&__item {
+			width: 31%;
+			height: 500px;
+			margin-bottom: 20px;
+			cursor: pointer;
+			&:hover {
+				.profile-page__info {
+					display: block;
+				}
+			}
+		}
+		&__img {
+				width: 100%;
+				height: 100%;
+				position: relative;
+			.avatar_img {
+				width: 100%;
+				height: 100%;
+				border-radius: 15px;
+			}
+		}
+		&__info {
+			width: 100%;
+			padding: 15px;
+			display: none;
+			animation: fadein .4s;
+			border-radius: 15px;
+			background-color: #FF9900;
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			color: white;
+			opacity: 1;
+			.name {
+				font-weight: 700;
+			}
+			&:hover {
+				display: block;
+			}
+		}
+	}
 }
-.grid-container {
-  display: grid;
-  grid-template-rows: 310px;
-  grid-template-columns: 310px 1130px;
-}
-.avatar_img {
-	width: 300px;
-	height: 300px;
-	border-radius: 20%;
-}
-.column1 {
-	grid-column: 1/2;
-}
-.column2 {
-	grid-column: 2/2;
+
+@keyframes fadein {
+	from {
+		bottom: -100%;
+		opacity: 0;
+	}
+	to {
+		bottom: 0;
+		opacity: 1;
+	}
 }
 </style>
