@@ -2,33 +2,32 @@
 	div
 		.modal-wrapper
 			.modal-results
-		.header
-			.select_wrapper
-				label.level
-					select(v-model="selected_level")
-						option(
-							v-for="(item,i) in 6"
-							:key="i"
-							:value="item-1"
-						) Level {{item}}
-				label.page
-					select.select-two(v-model="selected_page")
-						option(
-							v-for="(item_page,i) in 30"
-							:key="i"
-							:value="item_page-1"
-						) Page {{item_page}}
-			.button_wrapper
-				button#button_1(
-					@click="audiohint"
-				)
-				button#button_2(
-					@click="texthint"
-				)
-				button#button_3
-				button#button_4(
-					@click="img"
-				)
+		.select_wrapper
+			label.level
+				select(v-model="selected_level")
+					option(
+						v-for="(item,i) in 6"
+						:key="i"
+						:value="item-1"
+					) Level {{item}}
+			label.page
+				select(v-model="selected_page")
+					option(
+						v-for="(item_page,i) in 30"
+						:key="i"
+						:value="item_page-1"
+					) Page {{item_page}}
+		.button_wrapper
+			button#button_1(
+				@click="audiohint"
+			)
+			button#button_2(
+				@click="texthint"
+			)
+			button#button_3(
+				@click="audiomeaning"
+			)
+			button#button_4
 		.hunt
 			p#textExampleTranslate
 		.result-word(
@@ -637,6 +636,10 @@ export default {
 			document.getElementById('textExampleTranslate').innerText = this.words[this.num].textExampleTranslate;
 			document.querySelector('#button_2').classList.add('btn-opacity');
 			return 1;
+		},
+		audiomeaning() {
+			const audio = new Audio(this.urlFiles + this.words[this.num].audioMeaning);
+			audio.play();
 		},
 		deletehint() {
 			document.getElementById('textExampleTranslate').innerText = '';
