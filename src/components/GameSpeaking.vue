@@ -5,6 +5,7 @@
 			video(
 				class="main__image"
 				controls
+				id="video"
 			)
 				source(
 					:src="isVideoSrc"

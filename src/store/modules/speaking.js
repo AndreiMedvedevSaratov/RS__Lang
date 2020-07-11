@@ -6,6 +6,7 @@
 const actions = {
 	SPEAKING_GAME({ commit }) {
 		commit('SPEAKING_ANSWER');
+		commit('SPEAKING_VIDEO');
 	},
 };
 
@@ -37,6 +38,10 @@ const mutations = {
 			recognition.onend = () => recognition.stop();
 		});
 		recognition.start();
+	},
+	SPEAKING_VIDEO: () => {
+		const video = document.getElementById('video');
+		video.play();
 	},
 };
 
