@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
 /* eslint-disable no-prototype-builtins */
 import Vue from 'vue';
@@ -92,7 +93,7 @@ const actions = {
 				});
 			});
 		if (wordsData) {
-			console.log('Get words', wordsData.data);
+			console.log('APP_GET_WORDS', wordsData.data);
 			commit('APP_GET_WORDS', wordsData.data);
 		}
 
@@ -280,8 +281,8 @@ const actions = {
 		await axios.get(
 			`${rootState.app.server}/users/${rootState.user.profile.userId}/aggregatedWords?group=${words.group}&wordsPerPage=${words.wordsPerPage}&filter=${words.filter}`,
 		).then((wordsData) => {
-			commit('APP_GET_WORDS', wordsData.data);
-			console.log('aggregatedWords', wordsData.data);
+			commit('APP_GET_WORDS', wordsData.data[0].paginatedResults);
+			console.log('aggregatedWords', wordsData.data[0].paginatedResults);
 
 			commit('APP_STATUS', 'success');
 		}).catch((error) => {
@@ -321,6 +322,27 @@ const actions = {
 			});
 		});
 	},
+
+	/**
+	 * Function for creating / updating and saving word statistics
+	 *
+	 * @param {object} payload
+	 * @param {object} payload.word
+	 * @param {boolean} payload.right
+	 * @example dispatch('APP_WORD_PROCESSING', { word, right }, { root: true })
+	 */
+	async APP_WORD_PROCESSING({
+		state, commit, dispatch,
+	}, payload) {
+		commit('STATISTIC_WORD', payload.word);
+		commit('RIGHT_CHOICE_WORD', payload.right);
+		commit('NEXT_TRAIN_TIME');
+		await dispatch('APP_SET_USER_WORD_STAT', {
+			method: state.wordHasStat ? 'put' : 'post',
+			wordId: payload.word._id,
+			wordStat: state.wordStat,
+		});
+	},
 };
 
 /**
@@ -329,7 +351,9 @@ const actions = {
  */
 const mutations = {
 	EDIT_HTML: (state, payload) => {
-		state.html[payload.one][payload.key] = payload.value;
+		payload.forEach((item) => {
+			state.html[item.one][item.key] = item.value;
+		});
 	},
 	APP_GET_WORDS: (state, words) => {
 		state.words = words;
@@ -345,23 +369,98 @@ const mutations = {
 	},
 	APP_GET_USER_WORD_STAT: (state, words) => {
 		if (words.length > 1) {
-			state.wordStat = words;
+			state.wordsStat = words;
 			return;
 		}
-		state.wordStat.push(words);
+		state.wordsStat.push(words);
 	},
 	APP_SET_USER_WORD_STAT: (state, word) => {
-		const ind = state.wordStat.indexOf(word.wordId);
-		if (!ind === -1) return state.wordStat.push(word);
-		return state.wordStat.splice(ind, 1);
+		const ind = state.wordsStat.indexOf(word.wordId);
+		if (!ind === -1) return state.wordsStat.push(word);
+		return state.wordsStat.splice(ind, 1);
 	},
 	APP_DELETE_USER_WORD_STAT: (state, wordId) => {
-		state.wordStat.splice(state.wordStat.indexOf(wordId), 1);
+		// TODO: Что то тут не так, удаляет не то
+		state.wordsStat.splice(state.wordsStat.indexOf(wordId), 1);
 	},
 	APP_STATUS: (state, status) => {
 		if (status === 'loading' || status === 'success') {
 			state.status = status;
 		} else state.status = 'error';
+	},
+	SHOW_SHORT_STATISTICS: (state) => {
+		state.showShortStatistics = !state.showShortStatistics;
+	},
+	STATISTIC_WORD: (state, word) => {
+		if (word.userWord && (word.userWord.optional || word.userWord.difficulty)) {
+			state.wordHasStat = true;
+			const { optional } = word.userWord;
+			state.wordStat.optional = {
+				name: word.word,
+				learnGroup: optional.learnGroup || 1,
+				isDelete: optional.isDelete || false,
+				allRepeats: optional.allRepeats || 0,
+				successRepeats: optional.successRepeats || 0,
+				previousTrain: optional.previousTrain || new Date(),
+				nextTrain: optional.nextTrain || new Date(),
+			};
+		} else {
+			state.wordHasStat = false;
+			state.wordStat = {
+				optional: {
+					name: word.word,
+					learnGroup: 1,
+					isDelete: false,
+					allRepeats: 0,
+					successRepeats: 0,
+					previousTrain: new Date(),
+					nextTrain: new Date(),
+				},
+			};
+		}
+	},
+	RIGHT_CHOICE_WORD: (state, right) => {
+		const minLearnLevel = 0;
+		const maxLearnLevel = 5;
+		const { optional } = state.wordStat;
+		if (right) {
+			optional.learnGroup = optional.learnGroup < maxLearnLevel
+				? optional.learnGroup += 1
+				: maxLearnLevel;
+			optional.successRepeats += 1;
+		} else {
+			optional.learnGroup = optional.learnGroup > minLearnLevel
+				? optional.learnGroup -= 1
+				: minLearnLevel;
+		}
+		optional.allRepeats += 1;
+	},
+	NEXT_TRAIN_TIME: (state) => {
+		const { optional } = state.wordStat;
+		const breakInDays = [0, 1, 2, 7, 18];
+		const formDate = (dateD) => dateD.toJSON().replace(/T.+/, '');
+		const date = new Date();
+		optional.previousTrain = formDate(date);
+
+		switch (optional.learnGroup) {
+		case 1:
+			date.setDate(date.getDate() + breakInDays[0]);
+			break;
+		case 2:
+			date.setDate(date.getDate() + breakInDays[1]);
+			break;
+		case 3:
+			date.setDate(date.getDate() + breakInDays[2]);
+			break;
+		case 4:
+			date.setDate(date.getDate() + breakInDays[3]);
+			break;
+		case 5:
+			date.setDate(date.getDate() + breakInDays[4]);
+			break;
+		default:
+		}
+		optional.nextTrain = formDate(date);
 	},
 };
 /**
@@ -372,7 +471,7 @@ const getters = {
 	getHtmlParameters: (state) => state.html,
 	getWords: (state) => state.words,
 	getCountWords: (state) => state.countWords,
-	getWordStat: (state) => state.wordStat,
+	getWordsStat: (state) => state.wordsStat,
 	getStatusLoadWithIcon: (state) => {
 		const { status } = state;
 		const loading = status === 'loading';
@@ -384,20 +483,43 @@ const getters = {
 		};
 	},
 	getServerUrl: (state) => state.server,
+	getUrlFiles: (state) => state.urlFiles,
+	showShortStatistics: (state) => state.showShortStatistics,
 };
 
 const state = {
 	status: 'success',
 	server: 'https://afternoon-falls-25894.herokuapp.com',
+	urlFiles: 'https://raw.githubusercontent.com/Dream-Team-42/rslang-data/master/',
 	html: {
 		main: {
 			drawer: true,
+			background: '',
+			breadcrumbs: true,
+		},
+		app: {
+			background: 'grey lighten-5',
+			colorWhite: false,
 		},
 	},
 
 	words: [],
 	countWords: [],
-	wordStat: [],
+	wordsStat: [],
+	wordStat: {
+		optional: {
+			name: '',
+			learnGroup: 1,
+			isDelete: false,
+			allRepeats: 0,
+			successRepeats: 0,
+			previousTrain: '',
+			nextTrain: '',
+		},
+	},
+	wordHasStat: false,
+
+	showShortStatistics: false,
 };
 
 export default {

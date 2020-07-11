@@ -7,9 +7,14 @@
 		// Компонент AppBar
 		appbar
 
-		v-main
+		v-main(
+			:style="`background: ${background}`"
+		)
 			// Хлебные крошки
-			v-breadcrumbs( :items="breadcrumbList" )
+			v-breadcrumbs(
+				v-if="breadcrumbs"
+				:items="breadcrumbList"
+			)
 
 			v-container(
 				fluid
@@ -23,6 +28,7 @@
 <script>
 import navigationBrawer from '@/components/main/navigation-drawer.vue';
 import appbar from '@/components/main/app-bar.vue';
+import { mapGetters } from 'vuex';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
@@ -38,6 +44,17 @@ export default {
 		return {
 			breadcrumbList: [],
 		};
+	},
+	computed: {
+		...mapGetters({
+			appHtml: 'getHtmlParameters',
+		}),
+		breadcrumbs() {
+			return this.appHtml.main.breadcrumbs;
+		},
+		background() {
+			return this.appHtml.main.background;
+		},
 	},
 	watch: {
 		$route() {

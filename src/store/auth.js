@@ -15,6 +15,7 @@ const actions = {
 			commit('AUTH_DATA', user.data);
 			dispatch('user/USER_REQUEST', user.data.userId, { root: true });
 			commit('AUTH_SUCCESS');
+			commit('APP_STATUS', 'success');
 		}).catch((err) => {
 			commit('AUTH_ERROR', err.response);
 			dispatch('ALERT', { status: 'error', data: err.response.data });
@@ -39,8 +40,8 @@ const actions = {
 	},
 	AUTH_LOGOUT({ commit }) {
 		return new Promise(((resolve) => {
-			commit('AUTH_LOGOUT');
 			commit('APP_STATUS', 'success');
+			commit('AUTH_LOGOUT');
 			commit('AUTH_SUCCESS');
 			resolve();
 		}));

@@ -2,7 +2,8 @@
 	v-app-bar(
 		:clipped-left="$vuetify.breakpoint.lgAndUp"
 		app
-		color="grey lighten-5"
+		:color="background"
+		:dark="colorWhite"
 	)
 		v-app-bar-nav-icon( @click.stop="drawer = !drawer" )
 		v-toolbar-title(
@@ -78,8 +79,14 @@ export default {
 				return this.isHtml.main.drawer;
 			},
 			set(value) {
-				this.editHtml({ one: 'main', key: 'drawer', value });
+				this.editHtml([{ one: 'main', key: 'drawer', value }]);
 			},
+		},
+		background() {
+			return this.isHtml.app.background;
+		},
+		colorWhite() {
+			return this.isHtml.app.colorWhite;
 		},
 	},
 	watch: {},

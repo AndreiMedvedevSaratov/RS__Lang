@@ -72,7 +72,7 @@ export default {
 				return this.getHtmlParameters.main.drawer;
 			},
 			set(value) {
-				this.editHtml({ one: 'main', key: 'drawer', value });
+				this.editHtml([{ one: 'main', key: 'drawer', value }]);
 			},
 		},
 	},
