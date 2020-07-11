@@ -97,6 +97,7 @@ export default {
 		correctWords: [],
 		wrongWords: [],
 		loading: false,
+		nameGallery: ['Иван Айвазовский - Девятый вал (1850 г.)', '', 'Иван Шишкин - Утро в сосновом лесу (1889 г.)'],
 	}),
 	computed: {
 		...mapGetters({
@@ -176,18 +177,23 @@ export default {
 			this.gameStatus = true;
 			const widthPx = (str) => +str.match(/[0-9]/g).join('');
 			const sortArr = (arr) => arr.sort(() => Math.random() - 0.5);
-			const clearWords = (str) => {
+			const clearWords = (string) => {
 				let newStr = '';
-				const strWithOutTrim = str.trim();
-				for (let i = 0; i < strWithOutTrim.length; i += 1) {
-					if (strWithOutTrim[i] === '<') {
-						while (strWithOutTrim[i] !== '>') {
+				const str = string.trim();
+				for (let i = 0; i < str.length; i += 1) {
+					if (str[i] === ',') {
+						i += 1;
+					}
+					if (str[i] === '<' || str[i] === ',') {
+						while (str[i] !== '>') {
 							i += 1;
 						}
-					} else if (strWithOutTrim[i] === '.' && strWithOutTrim[i + 1] !== ' ') {
+					} else if (str[i] === '.' && i + 1 === str.length) {
 						return newStr;
+					} else if ((str[i] === '.' && str[i + 1] !== ' ') || (str[i] === '.' && str[i + 1] === ' ')) {
+						newStr += str[i];
 					} else {
-						newStr += strWithOutTrim[i];
+						newStr += str[i];
 					}
 				}
 				return newStr;
@@ -292,6 +298,9 @@ export default {
 			const gigEnd = document.querySelectorAll(`.gig_end${this.num}`);
 			const newWordAll = document.querySelectorAll(`.word${this.num}`);
 			for (let i = 0; i < newWordAll.length; i += 1) {
+				newWordAll[i].classList.add('img-none');
+			}
+			for (let i = 0; i < newWordAll.length; i += 1) {
 				newWordAll[i].addEventListener('click', (e) => {
 					if (this.booleanForCheck) {
 						return 1;
@@ -339,25 +348,130 @@ export default {
 				this.classList.remove('hovered');
 			}
 			let target = null;
+			let runRight = false;
+			let runLeft = false;
 			document.addEventListener('mousedown', (e) => {
 				target = e.target;
 			});
 			function dragDrop() {
+				runRight = false;
+				runLeft = false;
 				for (let i = 0; i < gigEnd.length; i += 1) {
 					if (this === gigEnd[i]) {
 						if (gigEnd[i].innerHTML) {
-							let a = gigEnd[i].innerHTML;
-							let b = null;
-							gigEnd[i].innerHTML = '';
-							gigEnd[i].append(target);
-							for (let j = i + 1; j < gigEnd.length; j += 1) {
-								if (!gigEnd[j].innerHTML) {
-									gigEnd[j].innerHTML = `${a}`;
-									break;
-								} else {
-									b = gigEnd[j].innerHTML;
-									gigEnd[j].innerHTML = `${a}`;
-									a = b;
+							if (this.firstChild === target) {
+								return 1;
+							}
+							if (i !== 0 && gigEnd[i - 1].firstElementChild === target) {
+								const a = gigEnd[i].firstElementChild;
+								gigEnd[i].innerHTML = '';
+								gigEnd[i - 1].append(a);
+								gigEnd[i].append(target);
+								newArr.splice([i], 1, 1);
+								newArr.splice([i + 1], 1, 1);
+							} else if (i !== gigEnd.length - 1 && gigEnd[i + 1].firstElementChild === target) {
+								const a = gigEnd[i].firstElementChild;
+								gigEnd[i].innerHTML = '';
+								gigEnd[i + 1].append(a);
+								gigEnd[i].append(target);
+								newArr.splice([i], 1, 1);
+								newArr.splice([i + 1], 1, 1);
+							} else {
+								for (let j = i; j < gigEnd.length; j += 1) {
+									if (!gigEnd[j].innerHTML) {
+										runRight = true;
+									}
+								}
+								for (let k = i; k >= 0; k -= 1) {
+									if (!gigEnd[k].innerHTML) {
+										runLeft = true;
+									}
+								}
+								if (!runRight && !runLeft) {
+									for (let h = 0; h < gigEnd.length; h += 1) {
+										if (target === gigEnd[h].firstElementChild) {
+											for (let q = 0; q < gigEnd.length; q += 1) {
+												if (this === gigEnd[q]) {
+													if (h > q) {
+														const a = gigEnd[h].firstElementChild;
+														let b = gigEnd[q].firstElementChild;
+														gigEnd[h].innerHTML = '';
+														gigEnd[q].innerHTML = '';
+														gigEnd[q].append(a);
+														for (let p = q + 1; p <= h; p += 1) {
+															const c = gigEnd[p].firstElementChild;
+															gigEnd[p].innerHTML = '';
+															gigEnd[p].append(b);
+															b = c;
+														}
+													}
+													if (h < q) {
+														const a = gigEnd[h].firstElementChild;
+														let b = gigEnd[q].firstElementChild;
+														gigEnd[h].innerHTML = '';
+														gigEnd[q].innerHTML = '';
+														gigEnd[q].append(a);
+														for (let p = q - 1; p >= h; p -= 1) {
+															const c = gigEnd[p].firstElementChild;
+															gigEnd[p].innerHTML = '';
+															gigEnd[p].append(b);
+															b = c;
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+								if (runRight) {
+									let a = gigEnd[i].firstElementChild;
+									gigEnd[i].innerHTML = '';
+									gigEnd[i].append(target);
+									for (let p = i + 1; p < gigEnd.length; p += 1) {
+										if (gigEnd[p].innerHTML) {
+											const c = gigEnd[p].firstElementChild;
+											gigEnd[p].innerHTML = '';
+											gigEnd[p].append(a);
+											newArr.splice([p], 1, 1);
+											console.log(newArr);
+											if (!newArr.includes(0)) {
+												document.querySelector('.button__check').classList.add('visibble-btn');
+											}
+											a = c;
+										} else {
+											gigEnd[p].append(a);
+											newArr.splice([p], 1, 1);
+											if (!newArr.includes(0)) {
+												document.querySelector('.button__check').classList.add('visibble-btn');
+											}
+											console.log(newArr);
+											return 1;
+										}
+									}
+								}
+								if (runLeft) {
+									let a = gigEnd[i].firstElementChild;
+									gigEnd[i].innerHTML = '';
+									gigEnd[i].append(target);
+									for (let p = i - 1; p >= 0; p -= 1) {
+										if (gigEnd[p].innerHTML) {
+											const c = gigEnd[p].firstElementChild;
+											gigEnd[p].innerHTML = '';
+											gigEnd[p].append(a);
+											if (!newArr.includes(0)) {
+												document.querySelector('.button__check').classList.add('visibble-btn');
+											}
+											a = c;
+										} else {
+											gigEnd[p].append(a);
+											newArr.splice([p], 1, 1);
+											if (!newArr.includes(0)) {
+												document.querySelector('.button__check').classList.add('visibble-btn');
+											}
+											console.log(newArr);
+											return 1;
+										}
+									}
 								}
 							}
 						} else {
@@ -376,6 +490,7 @@ export default {
 				}
 				// this.append(target)
 				this.classList.remove('hovered');
+				return 1;
 			}
 
 			gigEnd.forEach((item) => {
@@ -394,6 +509,10 @@ export default {
 			this.deletehint();
 			const wordBefore = document.querySelectorAll(`.word${this.num}`);
 			document.querySelector('.button__check').classList.remove('visibble-btn');
+			document.querySelector('#button_1').classList.remove('btn-opacity');
+			document.querySelector('#button_2').classList.remove('btn-opacity');
+			document.querySelector('#button_3').classList.remove('btn-opacity');
+			document.querySelector('#button_4').classList.remove('btn-opacity');
 			for (let i = 0; i < wordBefore.length; i += 1) {
 				this.$refs.beginWord.innerHTML = '';
 				document.querySelectorAll(`.gig_end${this.num}`)[i].innerHTML = '';
@@ -404,17 +523,27 @@ export default {
 			const wordAfter = document.querySelectorAll(`.word${this.num}`);
 			for (let i = 0; i < wordBefore.length; i += 1) {
 				wordAfter[i].setAttribute('draggable', 'false');
+				wordAfter[i].classList.remove('img-none');
 			}
 			document.querySelector('.button__continue').classList.add('visibble-btn');
 			document.querySelector('.button__check').classList.remove('visibble-btn');
 			document.querySelector('.button__not-know').classList.remove('visibble-btn');
+			this.audiohint();
+			this.texthint();
+			document.querySelector('#button_1').classList.remove('btn-opacity');
+			document.querySelector('#button_2').classList.remove('btn-opacity');
+			document.querySelector('#button_3').classList.remove('btn-opacity');
+			document.querySelector('#button_4').classList.remove('btn-opacity');
 			this.booleanForCheck = false;
 		},
 
 		check() {
-			this.deletehint();
 			const wordBefore = document.querySelectorAll(`.word${this.num}`);
 			const wordAll = document.querySelectorAll(`.word${this.num}`);
+			document.querySelector('#button_1').classList.remove('btn-opacity');
+			document.querySelector('#button_2').classList.remove('btn-opacity');
+			document.querySelector('#button_3').classList.remove('btn-opacity');
+			document.querySelector('#button_4').classList.remove('btn-opacity');
 			let count = 0;
 			if (this.booleanForCheck) {
 				return 1;
@@ -442,6 +571,15 @@ export default {
 					document.querySelector('.button__continue').classList.add('visibble-btn');
 					// предложение собрано 100% правильно
 					this.stat(true, this.words[this.num]);
+					for (let j = 0; j < wordBefore.length; j += 1) {
+						wordBefore[j].classList.remove('img-none');
+					}
+					this.audiohint();
+					this.texthint();
+					document.querySelector('#button_1').classList.remove('btn-opacity');
+					document.querySelector('#button_2').classList.remove('btn-opacity');
+					document.querySelector('#button_3').classList.remove('btn-opacity');
+					document.querySelector('#button_4').classList.remove('btn-opacity');
 				}
 			}
 			if (count !== wordAll.length) {
@@ -453,6 +591,7 @@ export default {
 		},
 
 		continueWord() {
+			this.deletehint();
 			this.continueCount += 1;
 			if (this.continueCount === 10) {
 				const wordAll = document.querySelectorAll('.word');
@@ -461,10 +600,25 @@ export default {
 					wordAll[i].classList.add('border-none');
 				}
 				document.querySelector('.button__result').classList.add('visibble-btn');
+				document.querySelector('.begin-word').innerHTML = this.nameGallery[this.imgSrc];
 				return 1;
 			}
 			if (this.continueCount === 11) {
+				if (this.imgSrc < 2) {
+					this.imgSrc += 1;
+				} else {
+					this.imgSrc = 0;
+				}
 				this.continueCount = 0;
+				if (this.selected_level === 5 && this.selected_page === 29) {
+					this.selected_level = 0;
+					this.selected_page = 0;
+				} else if (this.selected_page === 29) {
+					this.selected_level += 1;
+					this.selected_page = 0;
+				} else {
+					this.selected_page += 1;
+				}
 				document.querySelector('.button__result').classList.remove('visibble-btn');
 				document.querySelector('.button__continue').classList.remove('visibble-btn');
 				return 1;
@@ -492,6 +646,22 @@ export default {
 			}
 			document.querySelector('.button__continue').classList.remove('visibble-btn');
 			document.querySelector('.button__check').classList.remove('visibble-btn');
+			document.querySelector('#button_1').classList.remove('btn-opacity');
+			document.querySelector('#button_2').classList.remove('btn-opacity');
+			document.querySelector('#button_3').classList.remove('btn-opacity');
+			document.querySelector('#button_4').classList.remove('btn-opacity');
+			return 1;
+		},
+
+		img() {
+			if (document.querySelector('#button_4').classList.contains('btn-opacity')) {
+				return 1;
+			}
+			const wordAllImg = document.querySelectorAll(`.word${this.num}`);
+			for (let i = 0; i < wordAllImg.length; i += 1) {
+				wordAllImg[i].classList.remove('img-none');
+			}
+			document.querySelector('#button_4').classList.add('btn-opacity');
 			return 1;
 		},
 		stat(correct, word) {
@@ -508,11 +678,24 @@ export default {
 			this.showStatistics = true;
 		},
 		audiohint() {
+			// const audio = new Audio(this.isUrlFiles + this.words[this.num].audioExample);
+			// await audio.play();
+			// console.log(this.isUrlFiles);
+			if (document.querySelector('#button_1').classList.contains('btn-opacity')) {
+				return 1;
+			}
 			const audio = new Audio(this.urlFiles + this.words[this.num].audioExample);
 			audio.play();
+			document.querySelector('#button_1').classList.add('btn-opacity');
+			return 1;
 		},
 		texthint() {
+			if (document.querySelector('#button_2').classList.contains('btn-opacity')) {
+				return 1;
+			}
 			document.getElementById('textExampleTranslate').innerText = this.words[this.num].textExampleTranslate;
+			document.querySelector('#button_2').classList.add('btn-opacity');
+			return 1;
 		},
 		audiomeaning() {
 			const audio = new Audio(this.urlFiles + this.words[this.num].audioMeaning);
@@ -557,11 +740,18 @@ body {
 	user-select: none;
 }
 
-.img {
-	background: url('../assets/img/nature.jpg') no-repeat;
-	background-size: cover;
-	width: 100%;
-	height: 100vh;
+.header {
+	width: 900px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.img-none {
+	background-image: unset !important;
+	background-color: #C2B4A2;
 }
 
 .title {
@@ -655,15 +845,16 @@ input {
 	background: #33691E;
 	margin: 0 auto;
 	margin-top: 0px;
-	border-top: 1px solid;
+	border: 1px solid;
 }
 
 .begin-word {
 	display: flex;
-	justify-content: center;
-	width: 900px;
-	height: 45px;
-	margin: 10px auto 0px auto;
+    justify-content: center;
+    width: 900px;
+    height: 45px;
+    margin: 25px auto 0px auto;
+    align-items: center;
 }
 
 .word-container {
@@ -672,8 +863,11 @@ input {
 	width: 100%;
 	height: 45px;
 	background: #d7e5d2;
-	border: 1px solid;
 	align-items: center;
+}
+
+.word-container:last-child {
+	border-bottom: 1px solid;
 }
 
 .gig {
@@ -694,9 +888,12 @@ input {
 	height: 45px;
 	border: 1px solid blanchedalmond;
 	text-align: center;
-	padding: 12px 5px 12px 5px;
+	padding: 7px 5px 8px 5px;
 	background-repeat: no-repeat;
 	cursor: pointer;
+	-webkit-text-stroke: 1px white;
+    color: black;
+	font-size: 20px;
 }
 
 .border-none {
@@ -724,6 +921,7 @@ input {
 	height: 50px;
 	position: relative;
 	top: 5px;
+    font-weight: bold;
 }
 
 .button__check {
@@ -766,13 +964,6 @@ input {
 
 /*мой код*/
 
-.button_wrapper {
-	position: relative;
-	width: 185px;
-	left: 940px;
-	top: -10px;
-}
-
 #button_1, #button_2, #button_3, #button_4 {
 	width: 40px;
 	height: 40px;
@@ -793,13 +984,6 @@ input {
 	font-size: 14px;
 }
 
-.select_wrapper {
-	position: relative;
-	width: 180px;
-	left: 220px;
-	top: 30px;
-}
-
 #button_1 {
 	background: url("../assets/img/111.png") no-repeat;
 }
@@ -816,15 +1000,15 @@ input {
 }
 
 .hunt {
-	position: absolute;
-	left: 400px;
-	top: 47px;
-	width: 540px;
-	color:#33691E;
-	font-size: 12px;
-	font-weight: bold;
-	font-family: 'Montserrat';
-	text-align: center;
+	width: 900px;
+    color: #757D72;
+    font-size: 15px;
+    font-weight: bold;
+    font-family: "Montserrat";
+    text-align: center;
+    margin: 0 auto;
+    margin-bottom: 15px;
+	height: 25px;
 }
 
 select {
@@ -835,10 +1019,30 @@ select {
 	width: 65px;
 	font-weight: 700;
 	text-align-last: center;
+	border: solid 2px #80887C;
+    border-radius: 5px;
+    color: #80887C;
+    font-weight: 700;
+    padding: 5px 25px 5px 10px;
+    -moz-text-align-last: center;
+    text-align-last: center;
+	cursor: pointer;
+}
+
+.select-two {
+	margin-left: 20px;
 }
 
 option {
 	text-align: center;
+}
+
+#textExampleTranslate {
+	margin-bottom: 0px;
+}
+
+.btn-opacity {
+	opacity: 0.5;
 }
 
 </style>

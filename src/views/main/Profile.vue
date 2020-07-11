@@ -37,12 +37,10 @@ export default {
 	created() {
 	},
 	mounted() {
-		this.stat();
 	},
 	methods: {
 		...mapActions({
 			refreshToken: 'AUTH_REFRESH_TOKEN',
-			stat: 'user/USER_GET_SET_STATISTICS',
 		}),
 	},
 

@@ -117,13 +117,13 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-plusplus */
 import { mapMutations, mapActions, mapGetters } from 'vuex';
-import vModal from '../modal/ModalShortStat.vue';
+import vModal from './modal/ModalShortStat.vue';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
-	name: 'Sprint',
+	name: 'GameSprint',
 	components: {
 		vModal,
 	},
@@ -224,6 +224,10 @@ export default {
 		},
 	},
 	created() {},
+	beforeMount() {
+		// Запускаем прослушиватель, на закрытие вкладки (в beforeDestroy удалить надо)
+		// window.addEventListener('beforeunload', this.preventNav);
+	},
 	mounted() {
 		// Перед началом игры изменим стиль страницы
 		this.appHtml([
@@ -237,13 +241,6 @@ export default {
 			// Изменим цвет текста на белый в header
 			{ one: 'app', key: 'colorWhite', value: true },
 		]);
-		// TODO: проверить уход со страницы через сохранение статистики на слове
-		// window.addEventListener('beforeunload', (e) => {
-		// 	e.preventDefault();
-		// 	const confirmationMessage = 'Почти закрыл';
-		// 	console.log('Вроде сработало!');
-		// 	return confirmationMessage;
-		// }, false);
 	},
 	beforeDestroy() {
 		// Перед закрытием страницы возращаем настройки обратно
@@ -253,6 +250,8 @@ export default {
 			{ one: 'app', key: 'background', value: 'grey lighten-5' },
 			{ one: 'app', key: 'colorWhite', value: false },
 		]);
+		// Удаляем прослушиватель, что бы он не распространялся на другие компоненты
+		// window.removeEventListener('beforeunload', this.preventNav);
 	},
 	methods: {
 		...mapMutations({
@@ -262,7 +261,13 @@ export default {
 		...mapActions({
 			getWords: 'APP_GET_USER_WORDS_AGGREGATED',
 			alert: 'ALERT',
+			wordProcessing: 'APP_WORD_PROCESSING',
 		}),
+		// preventNav(e) {
+		// 	e.preventDefault();
+		// 	e.returnValue = '';
+		// 	console.log('Вроде сработало!');
+		// },
 		// Главный метод
 		async game() {
 			this.loading = true;
@@ -283,6 +288,9 @@ export default {
 
 			// Рандомное слово
 			this.nextCorrectWord = this.nextWords[random];
+
+			this.correctWords = [];
+			this.wrongWords = [];
 
 			await setTimeout(() => {
 				this.loading = false;
@@ -390,14 +398,15 @@ export default {
 				this.countСhoices = 4;
 			}
 		},
-		stat(correct, word) {
-			if (correct) {
+		async stat(right, word) {
+			if (right) {
 				this.correctWords.push(word);
 				// TODO: добавить вставки элементов, которые показывали что пользователь угадал
-				return;
+			} else {
+				this.wrongWords.push(word);
+				// TODO: добавить вставки элементов, которые показывали что пользователь не угадал
 			}
-			this.wrongWords.push(word);
-			// TODO: добавить вставки элементов, которые показывали что пользователь не угадал
+			await this.wordProcessing({ word, right });
 		},
 		backMenu() {
 			this.loading = true;
