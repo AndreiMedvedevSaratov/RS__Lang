@@ -4,7 +4,7 @@ import app from './app';
 import auth from './auth';
 import user from './user';
 import speakit from './modules/speakit';
-import audiovizov from './modules/audiovizov';
+import audiovizov from './audiovizov';
 
 Vue.use(Vuex);
 
