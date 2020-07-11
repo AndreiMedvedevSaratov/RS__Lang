@@ -2,7 +2,10 @@
   <div class="savanna-game">
     <div class="container">
       <div class="savanna-game__wrapper">
-        <h3 class="savanna-game__word">
+        <h3
+          class="savanna-game__word"
+          @click="fallingWord"
+        >
           careful
         </h3>
         <ul class="savanna-game__healths">
@@ -13,32 +16,45 @@
           <li class="helth" />
         </ul>
         <ul class="savanna-game__word-list">
-          <li class="word-list__item word-list__item--sucess">
-            осторожный
-          </li>
-          <li class="word-list__item word-list__item--error">
-            устаревший
-          </li>
-          <li class="word-list__item">
-            беспокойный
-          </li>
-          <li class="word-list__item">
-            счастливый
+          <li
+            v-for="(item, i) in myWordsForGame"
+            :key="i"
+            class="word-list__item"
+            @click="strikeButton(item)"
+          >
+            {{ item.wordTranslate }}
           </li>
         </ul>
+        <div
+          class="start-game-button"
+          @click="startGame"
+        >
+          <p class="start-game-button-info">
+            Start game!
+          </p>
+        </div>
       </div>
     </div>
+    <vModal :words="{ correct: correctWords, wrong: wrongWords }" />
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex';
+import vModal from '../modal/ModalShortStat.vue';
 
 export default {
-	name: 'Savanna',
-	components: {},
+	name: 'AudioVizov',
+	components: {
+		vModal,
+	},
+	filters: {
+	},
 	props: [],
 	data: () => ({
+		topOfWord: 0,
+		correctWords: [],
+		wrongWords: [],
 		isStartGame: false,
 		isNextRound: false,
 		myWords: {},
@@ -87,6 +103,15 @@ export default {
 			isWords: 'audiovizov/getWords',
 			isUrlFiles: 'audiovizov/getUrlFiles',
 			isUrlImage: 'audiovizov/getUrlImage',
+			getShortStatistics: 'showShortStatistics',
+			showStatistics: {
+				get() {
+					return this.getShortStatistics;
+				},
+				set() {
+					this.offStatistics();
+				},
+			},
 		}),
 	},
 	watch: {
@@ -101,15 +126,35 @@ export default {
 		const a = this.wordsForTrain[this.currentGameRound].levelOfDifficulty;
 		const b = this.wordsForTrain[this.currentGameRound].pageNumber;
 		this.getWordsForGame(a, b);
-		this.startGame();
+		this.appHtml([
+			{ one: 'main', key: 'drawer', value: false },
+			{ one: 'main', key: 'breadcrumbs', value: false },
+			{ one: 'app', key: 'background', value: 'pink darken-1' },
+			{ one: 'app', key: 'colorWhite', value: true },
+		]);
+	},
+	beforeDestroy() {
+		this.appHtml([
+			{ one: 'main', key: 'drawer', value: true },
+			{ one: 'main', key: 'breadcrumbs', value: true },
+			{ one: 'app', key: 'background', value: 'grey lighten-5' },
+			{ one: 'app', key: 'colorWhite', value: false },
+		]);
 	},
 	methods: {
 		...mapActions({
 			getWords: 'audiovizov/GET_WORDS',
+			wordProcessing: 'APP_WORD_PROCESSING',
 		}),
 		...mapMutations({
 			setImgAndAudio: 'audiovizov/AUDIOVIZOV_SET_IMAGE_AND_AUDIO',
+			appHtml: 'EDIT_HTML',
+			offStatistics: 'SHOW_SHORT_STATISTICS',
 		}),
+		fallingWord() {
+			this.topOfWord += 100;
+			document.querySelector('#inspire > div > main > div > div > div > div.container > div > h3').style.top = `${this.topOfWord}px`;
+		},
 		pronounceSound() {
 			this.playSound(this.isUrlFiles + this.wordForGuessAudio);
 		},
@@ -138,6 +183,7 @@ export default {
 				result += this.wordsForTrain[i].result;
 			}
 			alert(`End of the game! ${result}`);
+			this.showStatistics = true;
 		},
 		async playRoundOfTheGame() {
 			this.isNextRound = false;
@@ -150,11 +196,11 @@ export default {
 				console.log(e);
 			}
 			if (c < 14) {
-				for (let i = 0; i < 5; i += 1) {
+				for (let i = 0; i < 4; i += 1) {
 					this.myWordsForGame[i] = this.myWords[c + i];
 				}
 			} else {
-				for (let i = 0; i < 5; i += 1) {
+				for (let i = 0; i < 4; i += 1) {
 					this.myWordsForGame[i] = this.myWords[c - i];
 				}
 			}
@@ -185,6 +231,7 @@ export default {
 			}
 		},
 		async startGame() {
+			this.topOfWord = 0;
 			this.isStartGame = true;
 			this.currentGameRound = 0;
 			this.myWords = {};
@@ -200,6 +247,14 @@ export default {
 			} catch (e) {
 				console.log(e);
 			}
+		},
+		async stat(right, word) {
+			if (right) {
+				this.correctWords.push(word);
+			} else {
+				this.wrongWords.push(word);
+			}
+			await this.wordProcessing({ word, right });
 		},
 	},
 };
@@ -225,7 +280,7 @@ ul {
     position: relative;
     padding-top: 60px;
         &__word {
-        top: 0;
+        top: 1000;
         font-size: 48px;
         line-height: 1;
         font-weight: 300;
