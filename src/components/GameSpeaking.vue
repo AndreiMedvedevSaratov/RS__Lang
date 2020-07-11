@@ -8,7 +8,7 @@
 				id="video"
 			)
 				source(
-					:src="isVideoSrc"
+					:src="myVideosForGame[step]"
 					type="video/mp4"
 				)
 
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex';
+import { mapGetters, mapMutations/* , mapActions */ } from 'vuex';
 
 /**
  * API Vue
@@ -38,39 +38,34 @@ export default {
 	name: 'speaking',
 	components: {},
 	props: [],
-	data: () => ({}),
+	data: () => ({
+		myVideosForGame: ['./assets/video/first.mp4', './assets/video/second.mp4'],
+		step: 0,
+	}),
 	computed: {
 		...mapGetters({
-			isVideoSrc: 'speaking/getSrcVideo',
 			videoIsEnded: 'speaking/getVideoIsEnded',
-			// answer: 'speaking/getAnswer',
 		}),
 	},
 	watch: {
 		videoIsEnded() {
-			console.log('FFFFFFFFFFFFFFFFF');
 			this.answer();
 			this.speak();
+			this.videoIsEnded = false;
+			this.step += 1;
 		},
 	},
 	created() {},
-	mounted() {
-		/** Examples
-		 * this.getWords(); page - 0, group - 0
-		 * this.getWords({ page: 2 });
-		 * this.getWords({ page: 2, group: 3 });
-		 * this.getWords({ group: 3 });
-		 */
-	},
+	mounted() {},
 	methods: {
 		...mapMutations({
 			video: 'speaking/SPEAKING_VIDEO',
 			answer: 'speaking/SPEAKING_ANSWER',
 			speak: 'speaking/SPEAKING_SPEAK',
 		}),
-		...mapActions({
-			game: 'speaking/SPEAKING_GAME',
-		}),
+		// ...mapActions({
+		// 	game: 'speaking/SPEAKING_GAME',
+		// }),
 	},
 };
 </script>
@@ -94,7 +89,6 @@ export default {
 			max-width: 300px;
 			display: block;
 			margin: 0 auto;
-			//   height: 40%;
 			align-items: center;
 		}
 	}

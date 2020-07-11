@@ -3,8 +3,8 @@ import Vuex from 'vuex';
 import app from './app';
 import auth from './auth';
 import user from './user';
-import speakit from './modules/speakit';
-import speaking from './modules/speaking';
+import speakit from './speakit';
+import speaking from './speaking';
 import audiovizov from './modules/audiovizov';
 
 Vue.use(Vuex);

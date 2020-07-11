@@ -4,9 +4,7 @@
  */
 
 const actions = {
-	SPEAKING_GAME({ commit }) {
-		commit('SPEAKING_VIDEO');
-	},
+
 };
 
 /**
