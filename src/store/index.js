@@ -5,7 +5,7 @@ import auth from './auth';
 import user from './user';
 import speakit from './speakit';
 import speaking from './speaking';
-import audiovizov from './modules/audiovizov';
+import audiovizov from './audiovizov';
 
 Vue.use(Vuex);
 
