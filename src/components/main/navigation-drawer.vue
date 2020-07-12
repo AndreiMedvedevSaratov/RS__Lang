@@ -23,6 +23,16 @@
 				v-list-item(
 						link
 						color="warning"
+						@click="show = true"
+					)
+						v-list-item-action
+							v-icon mdi-cog
+
+						v-list-item-content
+							v-list-item-title Setting
+				v-list-item(
+						link
+						color="warning"
 						@click="logout"
 					)
 						v-list-item-action
@@ -60,19 +70,27 @@ export default {
 			// 		{ text: 'Other contacts' },
 			// 	],
 			// },
-			{ icon: 'mdi-cog', text: 'Settings', to: '/setting' },
-			{ icon: 'mdi-message', text: 'Send feedback', to: '/' },
-			{ icon: 'mdi-help-circle', text: 'Help', to: '/' },
 		],
 	}),
 	computed: {
-		...mapGetters(['getHtmlParameters']),
+		...mapGetters({
+			getHtmlParameters: 'getHtmlParameters',
+			getShowSetting: 'showSetting',
+		}),
 		drawer: {
 			get() {
 				return this.getHtmlParameters.main.drawer;
 			},
 			set(value) {
 				this.editHtml([{ one: 'main', key: 'drawer', value }]);
+			},
+		},
+		show: {
+			get() {
+				return this.getShowSetting;
+			},
+			set() {
+				this.setShowSetting();
 			},
 		},
 	},
@@ -85,6 +103,7 @@ export default {
 		}),
 		...mapMutations({
 			editHtml: 'EDIT_HTML',
+			setShowSetting: 'APP_SHOW_SETTING',
 		}),
 
 		logout() {

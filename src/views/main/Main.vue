@@ -8,7 +8,7 @@
 		appbar
 
 		v-main(
-			:style="`background: ${background}`"
+			:class="background"
 		)
 			// Хлебные крошки
 			v-breadcrumbs(
@@ -22,12 +22,14 @@
 				// Тут догружаются компоненты из роута
 				transition( name="scale-transition")
 					router-view
+		setting
 
 </template>
 
 <script>
 import navigationBrawer from '@/components/main/navigation-drawer.vue';
 import appbar from '@/components/main/app-bar.vue';
+import setting from '@/views/main/Setting.vue';
 import { mapGetters } from 'vuex';
 /**
  * API Vue
@@ -37,6 +39,7 @@ export default {
 	components: {
 		navigationBrawer,
 		appbar,
+		setting,
 	},
 	props: {
 	},

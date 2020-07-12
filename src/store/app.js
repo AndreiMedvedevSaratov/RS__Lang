@@ -270,19 +270,22 @@ const actions = {
 		commit('APP_STATUS', 'loading');
 		const words = {
 			group: 0,
+			page: '',
 			wordsPerPage: '',
 			filter: '',
 		};
 
 		if (payload && payload.hasOwnProperty('wordsPerPage')) words.wordsPerPage = payload.wordsPerPage;
 		if (payload && payload.hasOwnProperty('group')) words.group = payload.group;
+		if (payload && payload.hasOwnProperty('page')) words.page = payload.page;
 		if (payload && payload.hasOwnProperty('filter')) words.filter = JSON.stringify(payload.filter);
 
 		await axios.get(
-			`${rootState.app.server}/users/${rootState.user.profile.userId}/aggregatedWords?group=${words.group}&wordsPerPage=${words.wordsPerPage}&filter=${words.filter}`,
+			`${rootState.app.server}/users/${rootState.user.profile.userId}/aggregatedWords?group=${words.group}&page=${words.page}&wordsPerPage=${words.wordsPerPage}&filter=${words.filter}`,
 		).then((wordsData) => {
 			commit('APP_GET_WORDS', wordsData.data[0].paginatedResults);
-			console.log('aggregatedWords', wordsData.data[0].paginatedResults);
+			commit('APP_GET_WORDS_COUNT', wordsData.data[0].totalCount[0].count);
+			console.log('aggregatedWords', wordsData.data[0]);
 
 			commit('APP_STATUS', 'success');
 		}).catch((error) => {
@@ -329,6 +332,7 @@ const actions = {
 	 * @param {object} payload
 	 * @param {object} payload.word
 	 * @param {boolean} payload.right
+	 * @param {boolean} [payload.offDate=false]
 	 * @example dispatch('APP_WORD_PROCESSING', { word, right }, { root: true })
 	 */
 	async APP_WORD_PROCESSING({
@@ -336,7 +340,7 @@ const actions = {
 	}, payload) {
 		commit('STATISTIC_WORD', payload.word);
 		commit('RIGHT_CHOICE_WORD', payload.right);
-		commit('NEXT_TRAIN_TIME');
+		if (!payload.offDate) commit('NEXT_TRAIN_TIME');
 		await dispatch('APP_SET_USER_WORD_STAT', {
 			method: state.wordHasStat ? 'put' : 'post',
 			wordId: payload.word._id,
@@ -357,7 +361,9 @@ const mutations = {
 	},
 	APP_GET_WORDS: (state, words) => {
 		state.words = words;
-		state.countWords = state.words.length;
+	},
+	APP_GET_WORDS_COUNT: (state, count) => {
+		state.countWords = count;
 	},
 	APP_GET_WORD: (state, word) => {
 		state.words = [];
@@ -387,6 +393,9 @@ const mutations = {
 		if (status === 'loading' || status === 'success') {
 			state.status = status;
 		} else state.status = 'error';
+	},
+	APP_SHOW_SETTING: (state) => {
+		state.showSetting = !state.showSetting;
 	},
 	SHOW_SHORT_STATISTICS: (state) => {
 		state.showShortStatistics = !state.showShortStatistics;
@@ -484,13 +493,16 @@ const getters = {
 	},
 	getServerUrl: (state) => state.server,
 	getUrlFiles: (state) => state.urlFiles,
+	getUrlImage: (state) => state.urlImage,
 	showShortStatistics: (state) => state.showShortStatistics,
+	showSetting: (state) => state.showSetting,
 };
 
 const state = {
 	status: 'success',
 	server: 'https://afternoon-falls-25894.herokuapp.com',
 	urlFiles: 'https://raw.githubusercontent.com/Dream-Team-42/rslang-data/master/',
+	urlImage: './assets/default-english.jpg',
 	html: {
 		main: {
 			drawer: true,
@@ -520,6 +532,7 @@ const state = {
 	wordHasStat: false,
 
 	showShortStatistics: false,
+	showSetting: false,
 };
 
 export default {

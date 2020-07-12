@@ -26,5 +26,6 @@ module.exports = {
 		indent: [2, 'tab'],
 		'no-tabs': 0,
 		'no-loop-func': 1,
+		'max-len': [ 1, 200 ],
 	},
 };
