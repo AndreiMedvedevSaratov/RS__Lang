@@ -105,6 +105,7 @@ const mutations = {
  */
 const getters = {
 	getUrlImage: (state) => state.urlImage,
+	getSrcVideo: (state) => state.srcVideo,
 	getWords: (state) => state.words,
 	getUrlFiles: (state) => state.urlFiles,
 	getWordsArray: (state) => state.words.map((item) => item.word.toLowerCase()),
@@ -118,6 +119,7 @@ const state = {
 	words: [],
 	urlFiles: 'https://raw.githubusercontent.com/Dream-Team-42/rslang-data/master/',
 	urlImage: './assets/default-english.jpg',
+	srcVideo: './assets/video/first.mp4',
 	count: [],
 	gameStatus: false,
 	gameLevel: 0,

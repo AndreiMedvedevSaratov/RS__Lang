@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Main from '../views/main/Main.vue';
-// eslint-disable-next-line import/no-cycle
 import store from '../store';
 
 Vue.use(VueRouter);
@@ -52,14 +51,15 @@ const routes = [
 				},
 			},
 			{
-				path: '/speakit',
-				component: () => import(/* webpackChunkName: "speakit" */ '../components/GameSpeakit.vue'),
-				name: 'Game Speakit',
-			},
-			{
 				path: '/AudioVizov',
 				component: () => import(/* webpackChunkName: "gameaudiovizov" */ '../components/GameAudioVizov.vue'),
 				name: 'Game AudioVizov',
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Game AudioVizov' },
+					],
+				},
 			},
 			{
 				path: '/english-puzzle',
@@ -68,18 +68,29 @@ const routes = [
 				meta: {
 					breadcrumb: [
 						{ text: 'Home', to: '/home' },
-						{ text: 'English Puzzle2' },
+						{ text: 'English Puzzle' },
 					],
 				},
 			},
 			{
 				path: '/speakit',
-				name: 'speakit',
-				component: () => import(/* webpackChunkName: "speaking" */ '../components/GameSpeakit.vue'),
+				name: 'Speakit',
+				component: () => import(/* webpackChunkName: "speakit" */ '../components/GameSpeakit.vue'),
 				meta: {
 					breadcrumb: [
 						{ text: 'Home', to: '/home' },
-						{ text: 'speakit' },
+						{ text: 'Speakit' },
+					],
+				},
+			},
+			{
+				path: '/speaking',
+				name: 'Speaking',
+				component: () => import(/* webpackChunkName: "speaking" */ '../components/GameSpeaking.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Speaking' },
 					],
 				},
 			},
@@ -119,7 +130,7 @@ const routes = [
 			{
 				path: '/setting',
 				name: 'Setting',
-				component: () => import(/* webpackChunkName: "statistics" */ '../views/main/Setting.vue'),
+				component: () => import(/* webpackChunkName: "setting" */ '../views/main/Setting.vue'),
 				meta: {
 					breadcrumb: [
 						{ text: 'Home', to: '/home' },
@@ -143,18 +154,36 @@ const routes = [
 			},
 			{
 				path: '/main-game',
-				name: 'Main-game',
+				name: 'Main game',
 				component: () => import(/* webpackChunkName: 'main-game' */ '../components/MainGame/main-game.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Main game' },
+					],
+				},
 			},
 			{
 				path: '/savanna-start',
 				name: 'Savanna',
 				component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-start.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Savanna' },
+					],
+				},
 			},
 			{
 				path: '/savanna-game',
 				name: 'Savanna-game',
 				component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-game.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'Savanna' },
+					],
+				},
 			},
 		],
 	},

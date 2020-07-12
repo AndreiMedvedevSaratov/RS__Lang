@@ -12,7 +12,7 @@
 			v-virtual-scroll(
 				:items="wordsStat"
 				item-height="184"
-				min-height="370"
+				height="370"
 				style="height: calc( 100vh - 234px )"
 				bench="2"
 			)
