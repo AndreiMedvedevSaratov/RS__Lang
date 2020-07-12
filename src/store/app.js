@@ -394,6 +394,9 @@ const mutations = {
 			state.status = status;
 		} else state.status = 'error';
 	},
+	APP_SHOW_SETTING: (state) => {
+		state.showSetting = !state.showSetting;
+	},
 	SHOW_SHORT_STATISTICS: (state) => {
 		state.showShortStatistics = !state.showShortStatistics;
 	},
@@ -492,6 +495,7 @@ const getters = {
 	getUrlFiles: (state) => state.urlFiles,
 	getUrlImage: (state) => state.urlImage,
 	showShortStatistics: (state) => state.showShortStatistics,
+	showSetting: (state) => state.showSetting,
 };
 
 const state = {
@@ -528,6 +532,7 @@ const state = {
 	wordHasStat: false,
 
 	showShortStatistics: false,
+	showSetting: false,
 };
 
 export default {

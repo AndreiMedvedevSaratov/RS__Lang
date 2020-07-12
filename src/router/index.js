@@ -128,17 +128,6 @@ const routes = [
 				},
 			},
 			{
-				path: '/setting',
-				name: 'Setting',
-				component: () => import(/* webpackChunkName: "setting" */ '../views/main/Setting.vue'),
-				meta: {
-					breadcrumb: [
-						{ text: 'Home', to: '/home' },
-						{ text: 'Setting' },
-					],
-				},
-			},
-			{
 				path: '/about',
 				name: 'About',
 				// route level code-splitting
