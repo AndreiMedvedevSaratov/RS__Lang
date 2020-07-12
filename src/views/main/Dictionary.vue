@@ -95,10 +95,10 @@ export default {
 		this.appHtml([
 			// Уберем хлебные крошки
 			{ one: 'main', key: 'breadcrumbs', value: false },
-			{ one: 'main', key: 'background', value: '#FFFBE6' },
+			{ one: 'main', key: 'background', value: 'amber lighten-5' },
 			// Изменим цвет header по таблице цветов
 			// https://vuetifyjs.com/en/styles/colors/#sass-color-pack
-			{ one: 'app', key: 'background', value: '#FFFBE6' },
+			{ one: 'app', key: 'background', value: 'amber lighten-4' },
 
 		]);
 		this.getAggregatedWords({

@@ -8,7 +8,7 @@
 		appbar
 
 		v-main(
-			:style="`background: ${background}`"
+			:class="background"
 		)
 			// Хлебные крошки
 			v-breadcrumbs(

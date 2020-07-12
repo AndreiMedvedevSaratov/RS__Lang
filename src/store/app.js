@@ -490,6 +490,7 @@ const getters = {
 	},
 	getServerUrl: (state) => state.server,
 	getUrlFiles: (state) => state.urlFiles,
+	getUrlImage: (state) => state.urlImage,
 	showShortStatistics: (state) => state.showShortStatistics,
 };
 
@@ -497,6 +498,7 @@ const state = {
 	status: 'success',
 	server: 'https://afternoon-falls-25894.herokuapp.com',
 	urlFiles: 'https://raw.githubusercontent.com/Dream-Team-42/rslang-data/master/',
+	urlImage: './assets/default-english.jpg',
 	html: {
 		main: {
 			drawer: true,

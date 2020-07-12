@@ -4,7 +4,6 @@ import app from './app';
 import auth from './auth';
 import user from './user';
 import speaking from './speaking';
-import audiovizov from './audiovizov';
 
 Vue.use(Vuex);
 
@@ -16,6 +15,5 @@ export default new Vuex.Store({
 		app,
 		user,
 		speaking,
-		audiovizov,
 	},
 });

@@ -57,7 +57,6 @@ export default {
 	props: [],
 	data: () => ({
 		status: '',
-		UrlImage: './assets/default-english.jpg',
 		count: [],
 		gameStatus: false,
 		gameLevel: 0,
@@ -67,6 +66,7 @@ export default {
 		...mapGetters({
 			isWords: 'getWords',
 			isUrlFiles: 'getUrlFiles',
+			UrlImage: 'getUrlImage',
 		}),
 		getWordsArray() {
 			return this.isWords.map((item) => item.word.toLowerCase());
@@ -104,7 +104,7 @@ export default {
 			{ one: 'main', key: 'breadcrumbs', value: false },
 			// Изменим цвет header по таблице цветов
 			// https://vuetifyjs.com/en/styles/colors/#sass-color-pack
-			{ one: 'main', key: 'background', value: '#f3e5f5' },
+			{ one: 'main', key: 'background', value: 'purple lighten-5' },
 			{ one: 'app', key: 'background', value: 'purple lighten-5' },
 		]);
 	},
@@ -131,7 +131,6 @@ export default {
 		},
 		speak() {
 			this.gameStatus = true;
-			console.log('Началась игра');
 			const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 			this.recognition = new SpeechRecognition();
 			this.recognition.lang = 'en-US';
@@ -148,7 +147,6 @@ export default {
 				const sayWord = event.results[last][0].transcript.toLowerCase();
 				const p = document.querySelector('.speech');
 				p.textContent = sayWord;
-				console.log(sayWord);
 
 				if (this.getWordsArray.includes(sayWord)) {
 					document.querySelector('.main__image').src = `${this.isUrlFiles}${this.getImageArray[this.getWordsArray.indexOf(sayWord)]}`;
