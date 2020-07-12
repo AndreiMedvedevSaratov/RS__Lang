@@ -277,7 +277,14 @@ export default {
 				group: this.group,
 				wordsPerPage: this.countWords * this.countСhoices,
 				filter: {
-					userWord: null,
+					$or: [
+						{
+							userWord: { $ne: null },
+						},
+						{
+							userWord: null,
+						},
+					],
 				},
 			});
 			await this.builderArray();
@@ -322,8 +329,7 @@ export default {
 
 			if (++this.currentPosition > this.countWords - 1) this.gameOver();
 			else {
-				const next = Object.values(this.modifiedArray[this.currentPosition]);
-				this.nextWords = next;
+				this.nextWords = Object.values(this.modifiedArray[this.currentPosition]);
 				const random = this.randomWord(0, this.nextWords.length - 1);
 				// Рандомное слово
 				this.nextCorrectWord = this.nextWords[random];
@@ -450,6 +456,8 @@ export default {
 			this.currentPosition = 0;
 		},
 		replay() {
+			this.correctWords = [];
+			this.wrongWords = [];
 			this.nextWords = this.modifiedArray[this.currentPosition];
 			const len = Object.keys(this.nextWords).length - 1;
 			const random = this.randomWord(0, len);

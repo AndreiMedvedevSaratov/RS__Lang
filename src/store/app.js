@@ -282,7 +282,8 @@ const actions = {
 			`${rootState.app.server}/users/${rootState.user.profile.userId}/aggregatedWords?group=${words.group}&wordsPerPage=${words.wordsPerPage}&filter=${words.filter}`,
 		).then((wordsData) => {
 			commit('APP_GET_WORDS', wordsData.data[0].paginatedResults);
-			console.log('aggregatedWords', wordsData.data[0].paginatedResults);
+			commit('APP_GET_WORDS_COUNT', wordsData.data[0].totalCount[0].count);
+			console.log('aggregatedWords', wordsData.data[0]);
 
 			commit('APP_STATUS', 'success');
 		}).catch((error) => {
@@ -357,7 +358,9 @@ const mutations = {
 	},
 	APP_GET_WORDS: (state, words) => {
 		state.words = words;
-		state.countWords = state.words.length;
+	},
+	APP_GET_WORDS_COUNT: (state, count) => {
+		state.countWords = count;
 	},
 	APP_GET_WORD: (state, word) => {
 		state.words = [];
