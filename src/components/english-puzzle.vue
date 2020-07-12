@@ -1,25 +1,25 @@
 <template lang='pug'>
-	div
-		.modal-wrapper
+	div.body-puzzle
+		.modal-wrapper-puzzle
 			p.text Извините, но для этой игры необходимо разрешение экрана не менее 900х640
-		.main-wrapper
-			.header
-				.select_wrapper
-					label.level
-						select(v-model="selected_level")
-							option(
+		.main-wrapper-puzzle
+			.header-puzzle
+				.select_wrapper-puzzle
+					label.level-puzzle
+						select.select-puzzle-777(v-model="selected_level")
+							option.option-puzzle(
 								v-for="(item,i) in 6"
 								:key="i"
 								:value="item-1"
 							) Level {{item}}
-					label.page
-						select.select-two(v-model="selected_page")
-							option(
+					label.page-puzzle
+						select.select-puzzle-777.select-two-puzzle(v-model="selected_page")
+							option.option-puzzle(
 								v-for="(item_page,i) in 30"
 								:key="i"
 								:value="item_page-1"
 							) Page {{item_page}}
-				.button_wrapper
+				.button_wrapper-puzzle
 					button#button_1(
 						@click="audiohint"
 					)
@@ -32,36 +32,36 @@
 					button#button_4(
 						@click="img"
 					)
-			.hunt
+			.hunt-puzzle
 				p#textExampleTranslate
-			.result-word(
+			.result-word-puzzle(
 				ref="resultWord"
 			)
-				.word-container(
+				.word-container-puzzle(
 					v-for="(item, i) in 10"
 					:key="i"
 					ref="wordContainer"
 				)
-			.begin-word(
+			.begin-word-puzzle(
 				ref="beginWord"
 			)
-			.button
+			.button-puzzle
 				div(
 					v-if="gameStatus"
 				)
-					button.button__not-know.button_style(
+					button.button__not-know-puzzle.button_style-puzzle(
 						@click="dontKnow"
 					) I don't know
-					button.button__check.button_style(
+					button.button__check-puzzle.button_style-puzzle(
 						@click="check"
 					) Check
-					button.button__continue.button_style(
+					button.button__continue-puzzle.button_style-puzzle(
 						@click="continueWord"
 					) Continue
-					button.button__result.button_style(
+					button.button__result-puzzle.button_style-puzzle(
 						@click="results"
 					) Result
-					button.button__check.button_style(
+					button.button__check-puzzle.button_style-puzzle(
 					v-if="!gameStatus"
 				) Next level
 			vModal( :words="{ correct: correctWords, wrong: wrongWords }"
@@ -117,32 +117,42 @@ export default {
 	watch: {
 		selected_level(number1) {
 			this.selected_level = number1;
-			document.querySelectorAll('.word-container').forEach((item) => {
+			document.querySelectorAll('.word-container-puzzle').forEach((item) => {
 				const a = item;
 				a.innerHTML = '';
 			});
-			document.querySelector('#button_1').classList.remove('btn-opacity');
-			document.querySelector('#button_2').classList.remove('btn-opacity');
-			document.querySelector('#button_3').classList.remove('btn-opacity');
-			document.querySelector('#button_4').classList.remove('btn-opacity');
+			document.querySelector('.button__continue-puzzle').classList.remove('visibble-btn-puzzle');
+			document.querySelector('.button__check-puzzle').classList.remove('visibble-btn-puzzle');
+			document.querySelector('.button__not-know-puzzle').classList.remove('visibble-btn-puzzle');
+			document.querySelector('.button__result-puzzle').classList.remove('visibble-btn-puzzle');
+			document.querySelector('#button_1').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_2').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_3').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_4').classList.remove('btn-opacity-puzzle');
 			this.num = 0;
 			this.moveY = 0;
+			this.booleanForCheck = false;
 			this.continueCount = 0;
 			this.game();
 			this.deletehint();
 		},
 		selected_page(number2) {
 			this.selected_page = number2;
-			document.querySelectorAll('.word-container').forEach((item) => {
+			document.querySelectorAll('.word-container-puzzle').forEach((item) => {
 				const a = item;
 				a.innerHTML = '';
 			});
-			document.querySelector('#button_1').classList.remove('btn-opacity');
-			document.querySelector('#button_2').classList.remove('btn-opacity');
-			document.querySelector('#button_3').classList.remove('btn-opacity');
-			document.querySelector('#button_4').classList.remove('btn-opacity');
+			document.querySelector('.button__continue-puzzle').classList.remove('visibble-btn-puzzle');
+			document.querySelector('.button__check-puzzle').classList.remove('visibble-btn-puzzle');
+			document.querySelector('.button__not-know-puzzle').classList.remove('visibble-btn-puzzle');
+			document.querySelector('.button__result-puzzle').classList.remove('visibble-btn-puzzle');
+			document.querySelector('#button_1').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_2').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_3').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_4').classList.remove('btn-opacity-puzzle');
 			this.num = 0;
 			this.moveY = 0;
+			this.booleanForCheck = false;
 			this.continueCount = 0;
 			this.game();
 			this.deletehint();
@@ -218,24 +228,24 @@ export default {
 			wordContainer[this.num].innerHTML = '';
 			for (let i = 0; i < countWords; i += 1) {
 				const div = document.createElement('div');
-				div.className = `gig gig_end${this.num}`;
+				div.className = `gig-puzzle gig_end-puzzle${this.num}`;
 				wordContainer[this.num].append(div);
 			}
 			beginWord.innerHTML = '';
 			for (let i = 0; i < countWords; i += 1) {
 				const div = document.createElement('div');
-				div.className = `gig gig_begin${this.num}`;
+				div.className = `gig-puzzle gig_begin-puzzle${this.num}`;
 				beginWord.append(div);
 			}
 			for (let i = 0; i < countWords; i += 1) {
 				const div = document.createElement('div');
 				div.innerHTML = `${this.arr[i]}`;
-				div.className = `word word${this.num}`;
+				div.className = `word-puzzle word-puzzle${this.num}`;
 				div.setAttribute('draggable', true);
-				document.querySelectorAll(`.gig_begin${this.num}`)[i].append(div);
+				document.querySelectorAll(`.gig_begin-puzzle${this.num}`)[i].append(div);
 			}
 			// Array div word
-			const wordAll = document.querySelectorAll(`.word${this.num}`);
+			const wordAll = document.querySelectorAll(`.word-puzzle${this.num}`);
 			this.wordRight = wordAll;
 			let sumWidth = 0;
 			const map = new Map();
@@ -298,7 +308,7 @@ export default {
 				}
 			}
 
-			const y = Array.from(document.querySelectorAll(`.gig_begin${this.num}`));
+			const y = Array.from(document.querySelectorAll(`.gig_begin-puzzle${this.num}`));
 			const sortY = sortArr(y);
 			let strR = '';
 
@@ -313,29 +323,29 @@ export default {
 				newArr.push(0);
 			}
 
-			const gigEnd = document.querySelectorAll(`.gig_end${this.num}`);
-			const newWordAll = document.querySelectorAll(`.word${this.num}`);
+			const gigEnd = document.querySelectorAll(`.gig_end-puzzle${this.num}`);
+			const newWordAll = document.querySelectorAll(`.word-puzzle${this.num}`);
 			for (let i = 0; i < newWordAll.length; i += 1) {
-				newWordAll[i].classList.add('img-none');
+				newWordAll[i].classList.add('img-none-puzzle');
 			}
 			for (let i = 0; i < newWordAll.length; i += 1) {
 				newWordAll[i].addEventListener('click', (e) => {
 					if (this.booleanForCheck) {
 						return 1;
 					}
-					if (e.target.closest(`.gig_begin${this.num}`)) {
+					if (e.target.closest(`.gig_begin-puzzle${this.num}`)) {
 						for (let p = 0; p < newArr.length; p += 1) {
 							if (newArr[p] === 0) {
-								document.querySelectorAll(`.gig_end${this.num}`)[p].append(newWordAll[i]);
+								document.querySelectorAll(`.gig_end-puzzle${this.num}`)[p].append(newWordAll[i]);
 								newArr.splice([p], 1, 1);
 								if (!newArr.includes(0)) {
-									document.querySelector('.button__check').classList.add('visibble-btn');
+									document.querySelector('.button__check-puzzle').classList.add('visibble-btn-puzzle');
 								}
 								break;
 							}
 						}
-					} else if (e.target.closest(`.gig_end${this.num}`)) {
-						document.querySelectorAll(`.gig_begin${this.num}`)[i].append(newWordAll[i]);
+					} else if (e.target.closest(`.gig_end-puzzle${this.num}`)) {
+						document.querySelectorAll(`.gig_begin-puzzle${this.num}`)[i].append(newWordAll[i]);
 					}
 					return 1;
 				});
@@ -349,21 +359,21 @@ export default {
 
 			function dragStart() {
 				setTimeout(() => {
-					this.classList.add('hide');
+					this.classList.add('hide-puzzle');
 				}, 0);
 			}
 			function dragEnd() {
-				this.classList.remove('hide');
+				this.classList.remove('hide-puzzle');
 			}
 
 			function dragOver(event) {
 				event.preventDefault();
 			}
 			function dragEnter() {
-				this.classList.add('hovered');
+				this.classList.add('hovered-puzzle');
 			}
 			function dragLeave() {
-				this.classList.remove('hovered');
+				this.classList.remove('hovered-puzzle');
 			}
 			let target = null;
 			let runRight = false;
@@ -452,14 +462,14 @@ export default {
 											gigEnd[p].append(a);
 											newArr.splice([p], 1, 1);
 											if (!newArr.includes(0)) {
-												document.querySelector('.button__check').classList.add('visibble-btn');
+												document.querySelector('.button__check-puzzle').classList.add('visibble-btn-puzzle');
 											}
 											a = c;
 										} else {
 											gigEnd[p].append(a);
 											newArr.splice([p], 1, 1);
 											if (!newArr.includes(0)) {
-												document.querySelector('.button__check').classList.add('visibble-btn');
+												document.querySelector('.button__check-puzzle').classList.add('visibble-btn-puzzle');
 											}
 											return 1;
 										}
@@ -476,14 +486,14 @@ export default {
 											gigEnd[p].innerHTML = '';
 											gigEnd[p].append(a);
 											if (!newArr.includes(0)) {
-												document.querySelector('.button__check').classList.add('visibble-btn');
+												document.querySelector('.button__check-puzzle').classList.add('visibble-btn-puzzle');
 											}
 											a = c;
 										} else {
 											gigEnd[p].append(a);
 											newArr.splice([p], 1, 1);
 											if (!newArr.includes(0)) {
-												document.querySelector('.button__check').classList.add('visibble-btn');
+												document.querySelector('.button__check-puzzle').classList.add('visibble-btn-puzzle');
 											}
 											console.log(newArr);
 											return 1;
@@ -503,11 +513,11 @@ export default {
 						newArr.splice([i], 1, 0);
 					}
 					if (!newArr.includes(0)) {
-						document.querySelector('.button__check').classList.add('visibble-btn');
+						document.querySelector('.button__check-puzzle').classList.add('visibble-btn-puzzle');
 					}
 				}
 				// this.append(target)
-				this.classList.remove('hovered');
+				this.classList.remove('hovered-puzzle');
 				return 1;
 			}
 
@@ -525,43 +535,43 @@ export default {
 
 		dontKnow() {
 			this.deletehint();
-			const wordBefore = document.querySelectorAll(`.word${this.num}`);
-			document.querySelector('.button__check').classList.remove('visibble-btn');
-			document.querySelector('#button_1').classList.remove('btn-opacity');
-			document.querySelector('#button_2').classList.remove('btn-opacity');
-			document.querySelector('#button_3').classList.remove('btn-opacity');
-			document.querySelector('#button_4').classList.remove('btn-opacity');
+			const wordBefore = document.querySelectorAll(`.word-puzzle${this.num}`);
+			document.querySelector('.button__check-puzzle').classList.remove('visibble-btn-puzzle');
+			document.querySelector('#button_1').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_2').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_3').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_4').classList.remove('btn-opacity-puzzle');
 			for (let i = 0; i < wordBefore.length; i += 1) {
 				this.$refs.beginWord.innerHTML = '';
-				document.querySelectorAll(`.gig_end${this.num}`)[i].innerHTML = '';
+				document.querySelectorAll(`.gig_end-puzzle${this.num}`)[i].innerHTML = '';
 			}
 			for (let i = 0; i < wordBefore.length; i += 1) {
-				document.querySelectorAll(`.gig_end${this.num}`)[i].innerHTML = this.wordRight[i].outerHTML;
+				document.querySelectorAll(`.gig_end-puzzle${this.num}`)[i].innerHTML = this.wordRight[i].outerHTML;
 			}
-			const wordAfter = document.querySelectorAll(`.word${this.num}`);
+			const wordAfter = document.querySelectorAll(`.word-puzzle${this.num}`);
 			for (let i = 0; i < wordBefore.length; i += 1) {
 				wordAfter[i].setAttribute('draggable', 'false');
-				wordAfter[i].classList.remove('img-none');
+				wordAfter[i].classList.remove('img-none-puzzle');
 			}
-			document.querySelector('.button__continue').classList.add('visibble-btn');
-			document.querySelector('.button__check').classList.remove('visibble-btn');
-			document.querySelector('.button__not-know').classList.remove('visibble-btn');
+			document.querySelector('.button__continue-puzzle').classList.add('visibble-btn-puzzle');
+			document.querySelector('.button__check-puzzle').classList.remove('visibble-btn-puzzle');
+			document.querySelector('.button__not-know-puzzle').classList.remove('visibble-btn-puzzle');
 			this.audiohint();
 			this.texthint();
-			document.querySelector('#button_1').classList.remove('btn-opacity');
-			document.querySelector('#button_2').classList.remove('btn-opacity');
-			document.querySelector('#button_3').classList.remove('btn-opacity');
-			document.querySelector('#button_4').classList.remove('btn-opacity');
+			document.querySelector('#button_1').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_2').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_3').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_4').classList.remove('btn-opacity-puzzle');
 			this.booleanForCheck = false;
 		},
 
 		check() {
-			const wordBefore = document.querySelectorAll(`.word${this.num}`);
-			const wordAll = document.querySelectorAll(`.word${this.num}`);
-			document.querySelector('#button_1').classList.remove('btn-opacity');
-			document.querySelector('#button_2').classList.remove('btn-opacity');
-			document.querySelector('#button_3').classList.remove('btn-opacity');
-			document.querySelector('#button_4').classList.remove('btn-opacity');
+			const wordBefore = document.querySelectorAll(`.word-puzzle${this.num}`);
+			const wordAll = document.querySelectorAll(`.word-puzzle${this.num}`);
+			document.querySelector('#button_1').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_2').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_3').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_4').classList.remove('btn-opacity-puzzle');
 			let count = 0;
 			if (this.booleanForCheck) {
 				return 1;
@@ -570,38 +580,36 @@ export default {
 				wordBefore[i].setAttribute('draggable', 'false');
 			}
 			for (let i = 0; i < wordAll.length; i += 1) {
-				wordAll[i].classList.remove('right');
-				wordAll[i].classList.remove('wrong');
+				wordAll[i].classList.remove('right-puzzle');
+				wordAll[i].classList.remove('wrong-puzzle');
 			}
 			for (let i = 0; i < wordAll.length; i += 1) {
-				if (wordAll[i].closest(`.gig_end${this.num}`)) {
+				if (wordAll[i].closest(`.gig_end-puzzle${this.num}`)) {
 					if (wordAll[i].innerHTML === this.arr[i]) {
-						wordAll[i].classList.add('right');
+						wordAll[i].classList.add('right-puzzle');
 						count += 1;
 					} else {
-						wordAll[i].classList.add('wrong');
-						document.querySelector('.button__not-know').classList.add('visibble-btn');
+						wordAll[i].classList.add('wrong-puzzle');
+						document.querySelector('.button__not-know-puzzle').classList.add('visibble-btn-puzzle');
 					}
 				} else {
-					wordAll[i].classList.add('wrong');
+					wordAll[i].classList.add('wrong-puzzle');
 				}
 				if (count === wordAll.length) {
-					document.querySelector('.button__continue').classList.add('visibble-btn');
-					// предложение собрано 100% правильно
+					document.querySelector('.button__continue-puzzle').classList.add('visibble-btn-puzzle');
 					this.stat(true, this.words[this.num]);
 					for (let j = 0; j < wordBefore.length; j += 1) {
-						wordBefore[j].classList.remove('img-none');
+						wordBefore[j].classList.remove('img-none-puzzle');
 					}
 					this.audiohint();
 					this.texthint();
-					document.querySelector('#button_1').classList.remove('btn-opacity');
-					document.querySelector('#button_2').classList.remove('btn-opacity');
-					document.querySelector('#button_3').classList.remove('btn-opacity');
-					document.querySelector('#button_4').classList.remove('btn-opacity');
+					document.querySelector('#button_1').classList.remove('btn-opacity-puzzle');
+					document.querySelector('#button_2').classList.remove('btn-opacity-puzzle');
+					document.querySelector('#button_3').classList.remove('btn-opacity-puzzle');
+					document.querySelector('#button_4').classList.remove('btn-opacity-puzzle');
 				}
 			}
 			if (count !== wordAll.length) {
-				// предложение собрано не правильно
 				this.stat(false, this.words[this.num]);
 			}
 			this.booleanForCheck = true;
@@ -612,13 +620,14 @@ export default {
 			this.deletehint();
 			this.continueCount += 1;
 			if (this.continueCount === 10) {
-				const wordAll = document.querySelectorAll('.word');
+				const wordAll = document.querySelectorAll('.word-puzzle');
 				for (let i = 0; i < wordAll.length; i += 1) {
 					wordAll[i].innerHTML = '';
-					wordAll[i].classList.add('border-none');
+					wordAll[i].classList.add('border-none-puzzle');
 				}
-				document.querySelector('.button__result').classList.add('visibble-btn');
-				document.querySelector('.begin-word').innerHTML = this.nameGallery[this.imgSrc];
+				document.querySelector('.button__check-puzzle').classList.remove('visibble-btn-puzzle');
+				document.querySelector('.button__result-puzzle').classList.add('visibble-btn-puzzle');
+				document.querySelector('.begin-word-puzzle').innerHTML = this.nameGallery[this.imgSrc];
 				return 1;
 			}
 			if (this.continueCount === 11) {
@@ -639,21 +648,21 @@ export default {
 				} else {
 					this.selected_page += 1;
 				}
-				document.querySelector('.button__result').classList.remove('visibble-btn');
-				document.querySelector('.button__continue').classList.remove('visibble-btn');
+				document.querySelector('.button__result-puzzle').classList.remove('visibble-btn-puzzle');
+				document.querySelector('.button__continue-puzzle').classList.remove('visibble-btn-puzzle');
 				return 1;
 			}
 
 			this.booleanForCheck = false;
-			const wordBefore = document.querySelectorAll(`.word${this.num}`);
+			const wordBefore = document.querySelectorAll(`.word-puzzle${this.num}`);
 			for (let i = 0; i < wordBefore.length; i += 1) {
 				this.$refs.beginWord.innerHTML = '';
-				document.querySelectorAll(`.gig_end${this.num}`)[i].innerHTML = '';
+				document.querySelectorAll(`.gig_end-puzzle${this.num}`)[i].innerHTML = '';
 			}
 			for (let i = 0; i < wordBefore.length; i += 1) {
-				document.querySelectorAll(`.gig_end${this.num}`)[i].innerHTML = this.wordRight[i].outerHTML;
+				document.querySelectorAll(`.gig_end-puzzle${this.num}`)[i].innerHTML = this.wordRight[i].outerHTML;
 			}
-			const wordAfter = document.querySelectorAll(`.word${this.num}`);
+			const wordAfter = document.querySelectorAll(`.word-puzzle${this.num}`);
 			for (let i = 0; i < wordBefore.length; i += 1) {
 				wordAfter[i].setAttribute('draggable', 'false');
 			}
@@ -664,24 +673,24 @@ export default {
 				this.gameStatus = false;
 				this.alertAction({ status: 'success', data: 'Game over' });
 			}
-			document.querySelector('.button__continue').classList.remove('visibble-btn');
-			document.querySelector('.button__check').classList.remove('visibble-btn');
-			document.querySelector('#button_1').classList.remove('btn-opacity');
-			document.querySelector('#button_2').classList.remove('btn-opacity');
-			document.querySelector('#button_3').classList.remove('btn-opacity');
-			document.querySelector('#button_4').classList.remove('btn-opacity');
+			document.querySelector('.button__continue-puzzle').classList.remove('visibble-btn-puzzle');
+			document.querySelector('.button__check-puzzle').classList.remove('visibble-btn-puzzle');
+			document.querySelector('#button_1').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_2').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_3').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_4').classList.remove('btn-opacity-puzzle');
 			return 1;
 		},
 
 		img() {
-			if (document.querySelector('#button_4').classList.contains('btn-opacity')) {
+			if (document.querySelector('#button_4').classList.contains('btn-opacity-puzzle')) {
 				return 1;
 			}
-			const wordAllImg = document.querySelectorAll(`.word${this.num}`);
+			const wordAllImg = document.querySelectorAll(`.word-puzzle${this.num}`);
 			for (let i = 0; i < wordAllImg.length; i += 1) {
-				wordAllImg[i].classList.remove('img-none');
+				wordAllImg[i].classList.remove('img-none-puzzle');
 			}
-			document.querySelector('#button_4').classList.add('btn-opacity');
+			document.querySelector('#button_4').classList.add('btn-opacity-puzzle');
 			return 1;
 		},
 		stat(correct, word) {
@@ -701,29 +710,29 @@ export default {
 			// const audio = new Audio(this.isUrlFiles + this.words[this.num].audioExample);
 			// await audio.play();
 			// console.log(this.isUrlFiles);
-			if (document.querySelector('#button_1').classList.contains('btn-opacity')) {
+			if (document.querySelector('#button_1').classList.contains('btn-opacity-puzzle')) {
 				return 1;
 			}
 			const audio = new Audio(this.urlFiles + this.words[this.num].audioExample);
 			audio.play();
-			document.querySelector('#button_1').classList.add('btn-opacity');
+			document.querySelector('#button_1').classList.add('btn-opacity-puzzle');
 			return 1;
 		},
 		texthint() {
-			if (document.querySelector('#button_2').classList.contains('btn-opacity')) {
+			if (document.querySelector('#button_2').classList.contains('btn-opacity-puzzle')) {
 				return 1;
 			}
 			document.getElementById('textExampleTranslate').innerText = this.words[this.num].textExampleTranslate;
-			document.querySelector('#button_2').classList.add('btn-opacity');
+			document.querySelector('#button_2').classList.add('btn-opacity-puzzle');
 			return 1;
 		},
 		audiomeaning() {
-			if (document.querySelector('#button_3').classList.contains('btn-opacity')) {
+			if (document.querySelector('#button_3').classList.contains('btn-opacity-puzzle')) {
 				return 1;
 			}
 			const audio = new Audio(this.urlFiles + this.words[this.num].audioMeaning);
 			audio.play();
-			document.querySelector('#button_3').classList.add('btn-opacity');
+			document.querySelector('#button_3').classList.add('btn-opacity-puzzle');
 			return 1;
 		},
 		deletehint() {
@@ -765,14 +774,14 @@ url('../assets/fonts/montserrat-v14-latin_cyrillic-regular.woff2') format('woff2
 		url('../assets/fonts/montserrat-v14-latin_cyrillic-700.ttf') format('truetype'),
   }
 
-body {
+.body-puzzle {
 	font-family: 'Montserrat';
 	font-style: normal;
 	color: #33691E;
 	user-select: none;
 }
 
-.header {
+.header-puzzle {
 	width: 900px;
     margin: 0 auto;
     display: flex;
@@ -782,12 +791,12 @@ body {
 	margin-top: 20px;
 }
 
-.img-none {
+.img-none-puzzle {
 	background-image: unset !important;
 	background-color: #C2B4A2;
 }
 
-.title {
+.title-puzzle {
 	padding-top: 167px;
 	font-size: 4rem;
 	font-weight: 700;
@@ -795,52 +804,26 @@ body {
 	justify-content: center;
 }
 
-.description {
+.description-puzzle {
 	font-weight: 400;
 	padding-top: 20px;
 	display: flex;
 	justify-content: center;
 }
 
-form {
-	display: flex;
-	justify-content: center;
-	margin-top: 10px;
-}
-
-.form-wrapper {
+.form-wrapper-puzzle {
 	width: 369px;
 	display: flex;
 	flex-direction: column;
 }
 
-.input-email {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-}
-
-.input-password {
-	margin-top: 11px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-input {
-	width: 220px;
-	height: 30px;
-	border: 1px solid #33691E;
-	border-radius: 5px;
-}
-
-.button {
+.button-puzzle {
 	display: flex;
 	justify-content: center;
 	margin-top: 12px;
 }
 
-.btn {
+.btn-puzzle {
 	width: 90px;
 	height: 27px;
 	margin-right: 19px;
@@ -851,28 +834,21 @@ input {
 	cursor: pointer;
 }
 
-.btn__register:hover {
+.btn__register-puzzle:hover {
 	color: #a8d06f;
 }
 
-.btn__sign-in:hover {
+.btn__sign-in-puzzle:hover {
 	color: #a8d06f;
 }
 
-.start {
+.start-puzzle {
 	display: flex;
 	justify-content: center;
 	margin-top: 20px;
 }
 
-.info {
-	display: flex;
-	justify-content: center;
-	height: 20px;
-	margin-top: 10px;
-}
-
-.result-word {
+.result-word-puzzle {
 	width: 900px;
 	height: 450px;
 	background: #33691E;
@@ -881,7 +857,7 @@ input {
 	border: 1px solid;
 }
 
-.begin-word {
+.begin-word-puzzle {
 	display: flex;
     justify-content: center;
     width: 900px;
@@ -890,7 +866,7 @@ input {
     align-items: center;
 }
 
-.word-container {
+.word-container-puzzle {
 	display: flex;
 	justify-content: center;
 	width: 100%;
@@ -899,11 +875,11 @@ input {
 	align-items: center;
 }
 
-.word-container:last-child {
+.word-container-puzzle:last-child {
 	border-bottom: 1px solid;
 }
 
-.gig {
+.gig-puzzle {
 	flex-grow: 1;
 	width: auto;
 	min-width: 40px;
@@ -916,7 +892,7 @@ input {
 	font-weight: bold;
 }
 
-.word {
+.word-puzzle {
 	width: -webkit-fill-available;
 	height: 45px;
 	border: 1px solid blanchedalmond;
@@ -929,20 +905,11 @@ input {
 	font-size: 20px;
 }
 
-.border-none {
+.border-none-puzzle {
 	border: none
 }
 
-/*.fuck {*/
-/*    display: flex;*/
-/*    width: 900px;*/
-/*    font-size: 2px;*/
-/*    background: #476622;*/
-/*    margin: 0 auto;*/
-/*    opacity: 1;*/
-/*}*/
-
-.button_style {
+.button_style-puzzle {
 	padding: 10px 30px 10px 30px;
 	cursor: pointer;
 	border: 1px solid;
@@ -957,37 +924,37 @@ input {
     font-weight: bold;
 }
 
-.button__check {
+.button__check-puzzle {
 	display: none;
 	margin-left: 10px;
 }
 
-.button__result {
+.button__result-puzzle {
 	display: none;
 	margin-left: 10px;
 }
 
-.button__continue {
+.button__continue-puzzle {
 	display: none;
 }
 
-.button__not-know {
+.button__not-know-puzzle {
 	display: none;
 }
 
-.visibble-btn {
+.visibble-btn-puzzle {
 	display: inline-block;
 }
 
-.right {
+.right-puzzle {
 	box-shadow: 0 0 5px #33691E;
 }
 
-.wrong {
+.wrong-puzzle {
 	box-shadow: 0 0 5px red;
 }
 
-.hide {
+.hide-puzzle {
 	display: none;
 }
 
@@ -1027,7 +994,7 @@ input {
 	background: url("../assets/img/444.jpg") no-repeat;
 }
 
-.hunt {
+.hunt-puzzle {
 	width: 900px;
     color: #757D72;
     font-size: 15px;
@@ -1039,7 +1006,7 @@ input {
 	height: 25px;
 }
 
-select {
+.select-puzzle-777 {
 	border: solid 2px #33691E;
 	border-radius: 5px;
 	color: #33691E;
@@ -1051,11 +1018,11 @@ select {
 	cursor: pointer;
 }
 
-.select-two {
+.select-two-puzzle {
 	margin-left: 20px;
 }
 
-option {
+.option-puzzle {
 	text-align: center;
 }
 
@@ -1063,11 +1030,11 @@ option {
 	margin-bottom: 0px;
 }
 
-.btn-opacity {
+.btn-opacity-puzzle {
 	opacity: 0.5;
 }
 
-.modal-wrapper {
+.modal-wrapper-puzzle {
 	display: none;
     width: 230px;
     height: 100px;
@@ -1079,16 +1046,16 @@ option {
     padding: 17px;
 }
 
-.text {
+.text-puzzle {
 	margin-bottom: 0px !important;
 }
 
 @media (max-width: 990px) {
-	.main-wrapper {
+	.main-wrapper-puzzle {
 		display: none;
 	}
 
-	.modal-wrapper {
+	.modal-wrapper-puzzle {
 		display: block;
 	}
 }
