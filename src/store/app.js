@@ -270,16 +270,18 @@ const actions = {
 		commit('APP_STATUS', 'loading');
 		const words = {
 			group: 0,
+			page: '',
 			wordsPerPage: '',
 			filter: '',
 		};
 
 		if (payload && payload.hasOwnProperty('wordsPerPage')) words.wordsPerPage = payload.wordsPerPage;
 		if (payload && payload.hasOwnProperty('group')) words.group = payload.group;
+		if (payload && payload.hasOwnProperty('page')) words.page = payload.page;
 		if (payload && payload.hasOwnProperty('filter')) words.filter = JSON.stringify(payload.filter);
 
 		await axios.get(
-			`${rootState.app.server}/users/${rootState.user.profile.userId}/aggregatedWords?group=${words.group}&wordsPerPage=${words.wordsPerPage}&filter=${words.filter}`,
+			`${rootState.app.server}/users/${rootState.user.profile.userId}/aggregatedWords?group=${words.group}&page=${words.page}&wordsPerPage=${words.wordsPerPage}&filter=${words.filter}`,
 		).then((wordsData) => {
 			commit('APP_GET_WORDS', wordsData.data[0].paginatedResults);
 			commit('APP_GET_WORDS_COUNT', wordsData.data[0].totalCount[0].count);
