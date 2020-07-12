@@ -31,7 +31,7 @@
 										style="word-break: break-word;"
 									) Main game
 										p( class="text-right text-caption" ) Test your knowledge of English
-								v-btn( to="/" class="mt-4" absolute right small outlined ) Запустить
+								v-btn( to="/main-game" class="mt-4" absolute right small outlined ) Запустить
 
 		v-row(
 			align="center"
@@ -139,7 +139,7 @@ export default {
 				color: 'green',
 			},
 			{
-				title: 'speaking',
+				title: 'Speaking',
 				subtitle: 'textextexetxte',
 				link: '/speaking',
 				img: 'assets/img/speaking.png',

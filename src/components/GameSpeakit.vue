@@ -1,24 +1,36 @@
 <template lang="pug">
-	div( class="game" )
+	div( class="game purple lighten-5" )
 
 		div( class="main" )
-			img(
+			v-img(
 				class="main__image"
-				:src="isUrlImage"
+				:src="UrlImage"
+				contain
 			)
+			v-row
+				v-col
+					v-btn(
+						@click="speak"
+						id="btn"
+						raised
+						block
+						:disabled="gameStatus"
+					) Start Game
+				v-col
+					v-btn(
+						@click="stop_speak"
+						id="btn"
+						raised
+						block
+						:disabled="!gameStatus"
+					) Stop Game
 
-			input(
-				type="button"
-				value="undefined"
-				@click="speak()"
-				id="btn"
-			)
+			div( v-show="gameStatus" ) You said:
+				span( class='speech' )
 
-			p( class='speech' )
-
-			div( class="card-pannel" )
+			div( class="card-pannel purple lighten-5" )
 				div(
-					class="card"
+					class="card ma-1 purple darken-1 white--text"
 					v-for="(item, i) in isWords"
 					:key="i"
 					@click="gameAction({ image: isUrlFiles+item.image, audio: isUrlFiles+item.audio })"
@@ -43,14 +55,25 @@ export default {
 	name: 'SpeakIt',
 	components: {},
 	props: [],
-	data: () => ({}),
+	data: () => ({
+		status: '',
+		count: [],
+		gameStatus: false,
+		gameLevel: 0,
+		recognition: '',
+	}),
 	computed: {
 		...mapGetters({
-			isWords: 'speakit/getWords',
-			isUrlFiles: 'speakit/getUrlFiles',
-			isUrlImage: 'speakit/getUrlImage',
-			gameStatus: 'speakit/gameStatus',
+			isWords: 'getWords',
+			isUrlFiles: 'getUrlFiles',
+			UrlImage: 'getUrlImage',
 		}),
+		getWordsArray() {
+			return this.isWords.map((item) => item.word.toLowerCase());
+		},
+		getImageArray() {
+			return this.isWords.map((item) => item.image);
+		},
 	},
 	watch: {},
 	created() {},
@@ -61,18 +84,120 @@ export default {
      * this.getWords({ page: 2, group: 3 });
      * this.getWords({ group: 3 });
      */
-		this.getWords();
+		this.getWords({
+			page: 0,
+			filter: {
+				$or: [
+					{
+						userWord: { $ne: null },
+					},
+					{
+						userWord: null,
+					},
+				],
+			},
+		});
+		this.appHtml([
+			// свернем меню
+			{ one: 'main', key: 'drawer', value: false },
+			// Уберем хлебные крошки
+			{ one: 'main', key: 'breadcrumbs', value: false },
+			// Изменим цвет header по таблице цветов
+			// https://vuetifyjs.com/en/styles/colors/#sass-color-pack
+			{ one: 'main', key: 'background', value: 'purple lighten-5' },
+			{ one: 'app', key: 'background', value: 'purple lighten-5' },
+		]);
+	},
+	beforeDestroy() {
+		// Перед закрытием страницы возращаем настройки обратно
+		this.appHtml([
+			{ one: 'main', key: 'drawer', value: true },
+			{ one: 'main', key: 'breadcrumbs', value: true },
+			{ one: 'main', key: 'background', value: '' },
+			{ one: 'app', key: 'background', value: 'grey lighten-5' },
+		]);
 	},
 	methods: {
-		...mapActions({
-			getWords: 'speakit/GET_WORDS',
-			speak: 'speakit/SPEAKIT_SPEAK',
-		}),
 		...mapMutations({
-			setImgAndAudio: 'speakit/SPEAKIT_SET_IMAGE_AND_AUDIO',
+			appHtml: 'EDIT_HTML',
+		}),
+		...mapActions({
+			getWords: 'APP_GET_USER_WORDS_AGGREGATED',
+			alert: 'ALERT',
+			wordProcessing: 'APP_WORD_PROCESSING',
 		}),
 		gameAction(data) {
 			if (!this.gameStatus) this.setImgAndAudio({ image: data.image, audio: data.audio });
+		},
+		speak() {
+			this.gameStatus = true;
+			const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+			this.recognition = new SpeechRecognition();
+			this.recognition.lang = 'en-US';
+			this.recognition.continuos = false;
+			this.recognition.interimResults = false;
+			this.recognition.maxAlternatives = 1;
+			this.recognition.onerror = (event) => {
+				console.log(`It's error! ${event.error}`);
+			};
+			this.recognition.onend = () => this.recognition.start();
+
+			this.recognition.addEventListener('result', (event) => {
+				const last = event.results.length - 1;
+				const sayWord = event.results[last][0].transcript.toLowerCase();
+				const p = document.querySelector('.speech');
+				p.textContent = sayWord;
+
+				if (this.getWordsArray.includes(sayWord)) {
+					document.querySelector('.main__image').src = `${this.isUrlFiles}${this.getImageArray[this.getWordsArray.indexOf(sayWord)]}`;
+					document.getElementById(sayWord).style.opacity = '0.5';
+					if (!this.count.includes(sayWord)) {
+						this.count.push(sayWord);
+						const getCorrectWord = this.getWordsArray.find((item) => item.word === sayWord);
+						if (getCorrectWord !== undefined) this.wordProcessing({ word: getCorrectWord, right: true, offDate: true });
+					}
+
+					if (this.count.length === 20) {
+						const cards = document.querySelectorAll('.card');
+						for (let i = 0; i < cards.length; i += 1) {
+							cards[i].style.opacity = '';
+						}
+						// document.querySelectorAll('.card').forEach((item) => {
+						// 	// eslint-disable-next-line no-param-reassign
+						// 	item.style.opacity = '1';
+						// 	return item;
+						// });
+						this.alert({ data: 'Youre win, good job! Your skill is pretty high' });
+						this.gameLevel += 1;
+						this.getWords({
+							page: this.gameLevel,
+							filter: {
+								$or: [
+									{
+										userWord: { $ne: null },
+									},
+									{
+										userWord: null,
+									},
+								],
+							},
+						}, { root: true });
+						this.recognition.onend = () => this.recognition.stop();
+						this.count.length = 0;
+					}
+				}
+			});
+			this.recognition.start();
+		},
+		stop_speak() {
+			this.gameStatus = false;
+			this.recognition.onend = () => this.recognition.stop();
+			this.count.length = 0;
+		},
+		setImgAndAudio(payload) {
+			this.UrlImage = payload.image;
+			const audio = new Audio(payload.audio);
+			audio.play();
 		},
 	},
 };
@@ -114,7 +239,7 @@ export default {
       // height: calc(30% - 10px);
       .card {
         width: 150px;
-        height: 60px;
+        height: 72px;
         display: flex;
         justify-content: space-between;
         align-items: center;

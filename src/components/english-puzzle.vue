@@ -51,15 +51,19 @@
 				)
 					button.button__not-know-puzzle.button_style-puzzle(
 						@click="dontKnow"
+						ref="dontKnow"
 					) I don't know
 					button.button__check-puzzle.button_style-puzzle(
 						@click="check"
+						ref="check"
 					) Check
 					button.button__continue-puzzle.button_style-puzzle(
 						@click="continueWord"
+						ref="continueWord"
 					) Continue
 					button.button__result-puzzle.button_style-puzzle(
 						@click="results"
+						ref="results"
 					) Result
 					button.button__check-puzzle.button_style-puzzle(
 					v-if="!gameStatus"
@@ -115,47 +119,11 @@ export default {
 		},
 	},
 	watch: {
-		selected_level(number1) {
-			this.selected_level = number1;
-			document.querySelectorAll('.word-container-puzzle').forEach((item) => {
-				const a = item;
-				a.innerHTML = '';
-			});
-			document.querySelector('.button__continue-puzzle').classList.remove('visibble-btn-puzzle');
-			document.querySelector('.button__check-puzzle').classList.remove('visibble-btn-puzzle');
-			document.querySelector('.button__not-know-puzzle').classList.remove('visibble-btn-puzzle');
-			document.querySelector('.button__result-puzzle').classList.remove('visibble-btn-puzzle');
-			document.querySelector('#button_1').classList.remove('btn-opacity-puzzle');
-			document.querySelector('#button_2').classList.remove('btn-opacity-puzzle');
-			document.querySelector('#button_3').classList.remove('btn-opacity-puzzle');
-			document.querySelector('#button_4').classList.remove('btn-opacity-puzzle');
-			this.num = 0;
-			this.moveY = 0;
-			this.booleanForCheck = false;
-			this.continueCount = 0;
-			this.game();
-			this.deletehint();
+		selected_level() {
+			this.watch_load_game();
 		},
-		selected_page(number2) {
-			this.selected_page = number2;
-			document.querySelectorAll('.word-container-puzzle').forEach((item) => {
-				const a = item;
-				a.innerHTML = '';
-			});
-			document.querySelector('.button__continue-puzzle').classList.remove('visibble-btn-puzzle');
-			document.querySelector('.button__check-puzzle').classList.remove('visibble-btn-puzzle');
-			document.querySelector('.button__not-know-puzzle').classList.remove('visibble-btn-puzzle');
-			document.querySelector('.button__result-puzzle').classList.remove('visibble-btn-puzzle');
-			document.querySelector('#button_1').classList.remove('btn-opacity-puzzle');
-			document.querySelector('#button_2').classList.remove('btn-opacity-puzzle');
-			document.querySelector('#button_3').classList.remove('btn-opacity-puzzle');
-			document.querySelector('#button_4').classList.remove('btn-opacity-puzzle');
-			this.num = 0;
-			this.moveY = 0;
-			this.booleanForCheck = false;
-			this.continueCount = 0;
-			this.game();
-			this.deletehint();
+		selected_page() {
+			this.watch_load_game();
 		},
 	},
 	created() {
@@ -184,17 +152,27 @@ export default {
 			offStatistics: 'SHOW_SHORT_STATISTICS',
 		}),
 		...mapActions({
-			wordsAction: 'APP_GET_WORDS',
+			wordsAction: 'APP_GET_USER_WORDS_AGGREGATED',
 			alertAction: 'ALERT',
+			wordProcessing: 'APP_WORD_PROCESSING',
 		}),
 		async game() {
 			localStorage.setItem('level', this.selected_level);
 			localStorage.setItem('page', this.selected_page);
-			this.loading = true;
-			await setTimeout(() => {
-				this.loading = false;
-			}, 3000);
-			await this.wordsAction({ group: this.selected_level, page: this.selected_page });
+			await this.wordsAction({
+				group: this.selected_level,
+				page: this.selected_page,
+				filter: {
+					$or: [
+						{
+							userWord: { $ne: null },
+						},
+						{
+							userWord: null,
+						},
+					],
+				},
+			});
 			this.gameStatus = true;
 			const widthPx = (str) => +str.match(/[0-9]/g).join('');
 			const sortArr = (arr) => arr.sort(() => Math.random() - 0.5);
@@ -693,14 +671,14 @@ export default {
 			document.querySelector('#button_4').classList.add('btn-opacity-puzzle');
 			return 1;
 		},
-		stat(correct, word) {
+		async stat(correct, word) {
 			if (correct) {
 				this.correctWords.push(word);
-				// TODO: добавить вставки элементов, которые показывали что пользователь угадал
+
 				return;
 			}
 			this.wrongWords.push(word);
-			// TODO: добавить вставки элементов, которые показывали что пользователь не угадал
+			await this.wordProcessing({ word, right: correct, offDate: false });
 		},
 
 		results() {
@@ -743,6 +721,30 @@ export default {
 				this.selected_level = +localStorage.getItem('level');
 				this.selected_page = +localStorage.getItem('page');
 			}
+		},
+		watch_load_game() {
+			document.querySelectorAll('.word-container-puzzle').forEach((item) => {
+				const a = item;
+				a.innerHTML = '';
+			});
+			const {
+				continueWord, check, dontKnow, results,
+			} = this.$refs;
+			if (continueWord) continueWord.classList.remove('visibble-btn-puzzle');
+			if (check) check.classList.remove('visibble-btn-puzzle');
+			if (dontKnow) dontKnow.classList.remove('visibble-btn-puzzle');
+			if (results) results.classList.remove('visibble-btn-puzzle');
+
+			document.querySelector('#button_1').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_2').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_3').classList.remove('btn-opacity-puzzle');
+			document.querySelector('#button_4').classList.remove('btn-opacity-puzzle');
+			this.num = 0;
+			this.moveY = 0;
+			this.booleanForCheck = false;
+			this.continueCount = 0;
+			this.game();
+			this.deletehint();
 		},
 	},
 };

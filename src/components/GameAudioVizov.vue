@@ -1,42 +1,89 @@
 <template lang="pug">
-	div( class="game" )
+	div( class="game pink lighten-5" )
 
-		div( class="main" )
-			div( class="start-game-button" @click="startGame")
-				p( class="start-game-button-info" ) Start game!
+		div( class="main " )
+			v-row
+				v-col( cols="6" )
+					v-img(
+						class=""
+						:src="getImg"
+						@click="gameStatus ? playAudio(`${isUrlFiles}${nextCorrectWord.audio}`) : ''"
+					)
+				v-col( cols="6" )
+					ul
+						li( class="text-h4" ) Опции уровня
+						li
+							b Количество слов:
+							=' '
+							| {{ countWords }}
+						li
+							b Количество слов на выбор:
+							=' '
+							| {{ countСhoices }}
+						li
+							b Подсказка картинкой:
+							=' '
+							| {{ !withImg ? 'На таком уровне отсутсвует': 'Присутсвует'}}
+			v-row
+				v-col
+					v-select(
+						v-model="level"
+						:items="levels"
+						label="Your English level"
+					)
+				v-col
+					v-select(
+						v-model="complexity"
+						:items="levelСomplexity"
+						label="Complexity of game"
+					)
+				v-col
+					v-btn(
+						class="mt-3"
+						@click="showWordsGame()"
+						block
+					) Применить
 
-			img(
-				class="main__image"
-				:src="isUrlImage"
-				@click="pronounceSound"
+			div(
+				class="card-pannel"
+				ref="words"
+				v-if="showWords"
 			)
-
-			div( class="card-pannel"
-					ref="words" )
-				div(
-					class="card"
-					v-for="(item, i) in myWordsForGame"
+				v-btn(
+					outlined
+					v-for="(item, i) in nextWords"
 					:key="i"
-					v-if="i < 5"
-					@click="strikeButton(item)"
-				)
+					@click="!gameStatus ? playAudio(`${isUrlFiles}${item.audio}`) : nextWord(item._id)"
+					x-large
+					color="pink darken-1"
+					class="ma-1"
+					:ref="item._id"
+				) {{ item.wordTranslate }}
 
-					div( class="card__info" )
-						p( class="card__info__translation"
-							:ref="item.word" ) {{ item.wordTranslate }}
-
-			v-col( )
+			v-row
+				v-col
 					v-btn(
 						@click="showStatistics = true"
 						color="primary"
+						block
+						:disabled="correctWords.length === 0 || wrongWords.length === 0"
 					)
 						v-icon(left) mdi-information-outline
 						| Statistics
+				v-col
+					v-btn(
+						block
+						@click="game()"
+						color="success"
+						:disabled="!showWords || gameStatus"
+					) Start Game
 
 		vModal( :words="{ correct: correctWords, wrong: wrongWords }" )
 </template>
 
 <script>
+/* eslint-disable no-prototype-builtins */
+/* eslint-disable no-underscore-dangle */
 import { mapActions, mapGetters, mapMutations } from 'vuex';
 import vModal from './modal/ModalShortStat.vue';
 
@@ -49,68 +96,71 @@ export default {
 	},
 	props: [],
 	data: () => ({
+		showWords: false,
+		gameStatus: false,
+		nextCorrectWord: null,
+		nextWords: [],
+		modifiedArray: [],
+		currentPosition: 0,
 		correctWords: [],
 		wrongWords: [],
-		isStartGame: false,
-		isNextRound: false,
-		myWords: {},
-		myWordsForGame: [],
-		wordForGuessTranslate: '',
-		wordForGuessAudio: '',
-		wordForGuessImage: '',
-		currentGameRound: 0, // from 0 to 9
-		wordsForTrain: [
+
+		countWords: 15,
+		countСhoices: 4,
+		group: 0,
+		withImg: true,
+
+		level: 1,
+		levels: [
 			{
-				levelOfDifficulty: 0, pageNumber: 4, wordNumberOnPage: 2, result: 0,
+				text: 'Elementary',
+				value: 1,
 			},
 			{
-				levelOfDifficulty: 0, pageNumber: 8, wordNumberOnPage: 3, result: 0,
+				text: 'Intermediate',
+				value: 2,
 			},
 			{
-				levelOfDifficulty: 0, pageNumber: 7, wordNumberOnPage: 4, result: 0,
-			},
-			{
-				levelOfDifficulty: 0, pageNumber: 3, wordNumberOnPage: 2, result: 0,
-			},
-			{
-				levelOfDifficulty: 0, pageNumber: 5, wordNumberOnPage: 1, result: 0,
-			},
-			{
-				levelOfDifficulty: 1, pageNumber: 4, wordNumberOnPage: 3, result: 0,
-			},
-			{
-				levelOfDifficulty: 2, pageNumber: 4, wordNumberOnPage: 2, result: 0,
-			},
-			{
-				levelOfDifficulty: 3, pageNumber: 4, wordNumberOnPage: 4, result: 0,
-			},
-			{
-				levelOfDifficulty: 4, pageNumber: 4, wordNumberOnPage: 0, result: 0,
-			},
-			{
-				levelOfDifficulty: 5, pageNumber: 4, wordNumberOnPage: 1, result: 0,
+				text: 'Advanced',
+				value: 3,
 			},
 		],
-		card: '',
-		pressedWord: '',
+		complexity: 1,
+		levelСomplexity: [
+			{
+				text: 'Easy',
+				value: 1,
+			},
+			{
+				text: 'Medium',
+				value: 2,
+			},
+			{
+				text: 'Hard',
+				value: 3,
+			},
+		],
 	}),
 	computed: {
 		...mapGetters({
-			isWords: 'audiovizov/getWords',
-			isUrlFiles: 'audiovizov/getUrlFiles',
-			isUrlImage: 'audiovizov/getUrlImage',
+			isWords: 'getWords',
+			isUrlFiles: 'getUrlFiles',
+			isUrlImage: 'getUrlImage',
 			getShortStatistics: 'showShortStatistics',
-
-			// Открыть/Закрыть краткосрочную статистику
-			showStatistics: {
-				get() {
-					return this.getShortStatistics;
-				},
-				set() {
-					this.offStatistics();
-				},
-			},
 		}),
+		// Открыть/Закрыть краткосрочную статистику
+		showStatistics: {
+			get() {
+				return this.getShortStatistics;
+			},
+			set() {
+				this.offStatistics();
+			},
+		},
+		// Если выбрано играть без картинок то зарузить по умолчанию
+		getImg() {
+			return this.withImg && this.nextCorrectWord != null ? `${this.isUrlFiles}${this.nextCorrectWord.image}` : this.isUrlImage;
+		},
 	},
 	watch: {
 		isNextRound() {
@@ -121,9 +171,6 @@ export default {
 	},
 	created() {},
 	mounted() {
-		const a = this.wordsForTrain[this.currentGameRound].levelOfDifficulty;
-		const b = this.wordsForTrain[this.currentGameRound].pageNumber;
-		this.getWordsForGame(a, b);
 		// Перед началом игры изменим стиль страницы
 		this.appHtml([
 			// свернем меню
@@ -150,106 +197,168 @@ export default {
 	},
 	methods: {
 		...mapActions({
-			getWords: 'audiovizov/GET_WORDS',
+			getWords: 'APP_GET_USER_WORDS_AGGREGATED',
 			wordProcessing: 'APP_WORD_PROCESSING',
+			alert: 'ALERT',
 		}),
 		...mapMutations({
-			setImgAndAudio: 'audiovizov/AUDIOVIZOV_SET_IMAGE_AND_AUDIO',
 			appHtml: 'EDIT_HTML',
 			offStatistics: 'SHOW_SHORT_STATISTICS',
 		}),
-		pronounceSound() {
-			this.playSound(this.isUrlFiles + this.wordForGuessAudio);
+
+		async game() {
+			this.gameStatus = true;
+
+			const len = Object.keys(this.nextWords).length - 1;
+			const random = this.randomWord(0, len);
+
+			// Рандомное слово
+			this.nextCorrectWord = this.nextWords[random];
+
+			this.playAudio(`${this.isUrlFiles}${this.nextCorrectWord.audio}`);
+
+			this.correctWords = [];
+			this.wrongWords = [];
 		},
-		shuffle(array) {
-			for (let i = array.length - 1; i > 0; i -= 1) {
-				const j = Math.floor(Math.random() * (i + 1));
+		// Создает новый массив из обьектов с n колличеством внутренних обьектов
+		builderArray() {
+			this.modifiedArray = this.isWords.reduce((p, c, i) => {
+				if (i % this.countСhoices === 0) p.push({});
 				// eslint-disable-next-line no-param-reassign
-				[array[i], array[j]] = [array[j], array[i]];
+				p[p.length - 1][i] = c;
+				return p;
+			}, []);
+		},
+
+		// Настройка игры под выбранные параметры уровня и сложности
+		gameMode() {
+			switch (this.level) {
+			case 1:
+				if (this.complexity === 1) {
+					this.countWords = 15;
+					this.group = 0;
+					this.withImg = true;
+					this.countСhoices = 4;
+				} else if (this.complexity === 2) {
+					this.countWords = 20;
+					this.group = 0;
+					this.withImg = true;
+					this.countСhoices = 4;
+				} else if (this.complexity === 3) {
+					this.countWords = 20;
+					this.group = 1;
+					this.withImg = true;
+					this.countСhoices = 4;
+				}
+				break;
+			case 2:
+				if (this.complexity === 1) {
+					this.countWords = 20;
+					this.group = 2;
+					this.withImg = true;
+					this.countСhoices = 4;
+				} else if (this.complexity === 2) {
+					this.countWords = 25;
+					this.group = 2;
+					this.withImg = false;
+					this.countСhoices = 4;
+				} else if (this.complexity === 3) {
+					this.countWords = 20;
+					this.group = 3;
+					this.withImg = false;
+					this.countСhoices = 5;
+				}
+				break;
+			case 3:
+				if (this.complexity === 1) {
+					this.countWords = 20;
+					this.group = 4;
+					this.withImg = true;
+					this.countСhoices = 5;
+				} else if (this.complexity === 2) {
+					this.countWords = 25;
+					this.group = 4;
+					this.withImg = false;
+					this.countСhoices = 5;
+				} else if (this.complexity === 3) {
+					this.countWords = 30;
+					this.group = 5;
+					this.withImg = false;
+					this.countСhoices = 5;
+				}
+				break;
+			default:
+				this.countWords = 15;
+				this.group = 0;
+				this.withImg = true;
+				this.countСhoices = 4;
 			}
 		},
-		strikeButton(word) {
-			if (word.wordTranslate === this.wordForGuessTranslate) {
-				this.currentGameRound += 1;
-				this.isNextRound = true;
-				for (let i = 1; i < 6; i += 1) {
-					document.querySelector(`#inspire > div > main > div > div > div > div.main > div.card-pannel > div:nth-child(${i}) > div > p`).classList.remove('notActive');
+
+		async showWordsGame() {
+			await this.gameMode();
+			await this.getWords({
+				group: this.group,
+				wordsPerPage: this.countWords * this.countСhoices,
+				filter: {
+					$or: [
+						{
+							userWord: { $ne: null },
+						},
+						{
+							userWord: null,
+						},
+					],
+				},
+			});
+			await this.builderArray();
+
+			this.nextWords = this.modifiedArray[this.currentPosition];
+			this.showWords = true;
+			this.gameStatus = false;
+		},
+
+		// Метод для выбора рандомного слова из пула ( для угадывания )
+		randomWord(min, max) {
+			// случайное число от min до (max+1)
+			const rand = min + Math.random() * (max + 1 - min);
+			return Math.floor(rand);
+		},
+
+		playAudio(dataAudio) {
+			const audio = new Audio(dataAudio);
+			audio.play();
+		},
+
+		// Метод для получения следующего слова ( после угадывания )
+		// Срабатывает при нажатие на любое слово
+		nextWord(wordId) {
+			console.log(this.$refs);
+			// eslint-disable-next-line no-underscore-dangle
+			if	(wordId === this.nextCorrectWord._id) {
+				this.stat(true, this.nextCorrectWord);
+				// eslint-disable-next-line no-plusplus
+				if (++this.currentPosition > this.countWords - 1) this.gameOver();
+				else {
+					this.nextWords = Object.values(this.modifiedArray[this.currentPosition]);
+					const random = this.randomWord(0, this.nextWords.length - 1);
+					// Рандомное слово
+					this.nextCorrectWord = this.nextWords[random];
+					this.playAudio(`${this.isUrlFiles}${this.nextCorrectWord.audio}`);
+					this.$refs.words.childNodes.forEach((item) => {
+						item.classList.remove('v-btn--disabled');
+					});
 				}
 			} else {
-				this.wordsForTrain[this.currentGameRound].result += 1;
-				this.$refs[word.word][0].classList.add('notActive');
+				this.stat(false, this.nextCorrectWord);
+				this.$refs[wordId][0].$el.classList.add('v-btn--disabled');
 			}
 		},
-		endOfTheGame() {
-			let result = '';
-			for (let i = 0; i < 10; i += 1) {
-				result += this.wordsForTrain[i].result;
-			}
-			alert(`End of the game! ${result}`);
+		gameOver() {
+			this.alert({ data: 'Игра закончена, Ваша статистика!' });
 			this.showStatistics = true;
 		},
-		async playRoundOfTheGame() {
-			this.isNextRound = false;
-			const a = this.wordsForTrain[this.currentGameRound].levelOfDifficulty;
-			const b = this.wordsForTrain[this.currentGameRound].pageNumber;
-			const c = this.wordsForTrain[this.currentGameRound].wordNumberOnPage;
-			try {
-				await this.getWordsForGame(a, b);
-			} catch (e) {
-				console.log(e);
-			}
-			if (c < 14) {
-				for (let i = 0; i < 5; i += 1) {
-					this.myWordsForGame[i] = this.myWords[c + i];
-				}
-			} else {
-				for (let i = 0; i < 5; i += 1) {
-					this.myWordsForGame[i] = this.myWords[c - i];
-				}
-			}
-			this.wordForGuessTranslate = this.myWordsForGame[0].wordTranslate;
-			this.wordForGuessAudio = this.myWordsForGame[0].audio;
-			this.wordForGuessImage = this.myWordsForGame[0].image;
-			this.shuffle(this.myWordsForGame);
-			this.playSound(this.isUrlFiles + this.wordForGuessAudio);
-			this.setImgAndAudio({
-				image: this.isUrlFiles + this.wordForGuessImage,
-				// image: './assets/img/speaker.jpg',
-			});
-		},
-		async getWordsForGame(levelOfDifficulty, currentPageNumber) {
-			try {
-				this.getWords({ page: currentPageNumber, group: levelOfDifficulty });
-			} catch (e) {
-				console.log(e);
-			}
-			this.myWords = this.isWords;
-		},
-		playSound(soundfileMp) {
-			if ('Audio' in window) {
-				const a = new Audio();
-				if (a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/,
-					'')) a.src = soundfileMp;
-				a.autoplay = true;
-			}
-		},
-		async startGame() {
-			this.isStartGame = true;
-			this.currentGameRound = 0;
-			this.myWords = {};
-			this.myWordsForGame = [];
-			this.wordForGuessTranslate = '';
-			this.wordForGuessAudio = '';
-			this.wordForGuessImage = '';
-			for (let i = 0; i < 10; i += 1) {
-				this.wordsForTrain[i].result = 0;
-			}
-			try {
-				await this.playRoundOfTheGame();
-			} catch (e) {
-				console.log(e);
-			}
-		},
+
 		async stat(right, word) {
 			if (right) {
 				this.correctWords.push(word);
@@ -307,7 +416,6 @@ export default {
 			display: flex;
 			flex-wrap: wrap;
 			justify-content: space-around;
-			background-color: #a4aea2;
 			padding: 5px;
 			box-sizing: border-box;
 			cursor: pointer;
