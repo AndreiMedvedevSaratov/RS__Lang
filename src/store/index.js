@@ -3,7 +3,6 @@ import Vuex from 'vuex';
 import app from './app';
 import auth from './auth';
 import user from './user';
-import speakit from './speakit';
 import speaking from './speaking';
 import audiovizov from './audiovizov';
 
@@ -16,7 +15,6 @@ export default new Vuex.Store({
 		auth,
 		app,
 		user,
-		speakit,
 		speaking,
 		audiovizov,
 	},
