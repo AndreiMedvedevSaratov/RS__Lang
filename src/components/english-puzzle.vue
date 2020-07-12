@@ -678,7 +678,7 @@ export default {
 				return;
 			}
 			this.wrongWords.push(word);
-			await this.wordProcessing({ word, right: correct });
+			await this.wordProcessing({ word, right: correct, offDate: false });
 		},
 
 		results() {

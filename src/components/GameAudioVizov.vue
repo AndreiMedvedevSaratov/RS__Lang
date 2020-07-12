@@ -53,7 +53,7 @@
 					outlined
 					v-for="(item, i) in nextWords"
 					:key="i"
-					@click="nextWord(item._id)"
+					@click="!gameStatus ? playAudio(`${isUrlFiles}${item.audio}`) : nextWord(item._id)"
 					x-large
 					color="pink darken-1"
 					class="ma-1"
@@ -105,7 +105,7 @@ export default {
 		correctWords: [],
 		wrongWords: [],
 
-		countWords: 20,
+		countWords: 15,
 		countСhoices: 4,
 		group: 0,
 		withImg: true,
