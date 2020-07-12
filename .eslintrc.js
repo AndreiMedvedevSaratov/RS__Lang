@@ -25,5 +25,7 @@ module.exports = {
 		'linebreak-style': 0,
 		indent: [2, 'tab'],
 		'no-tabs': 0,
+		'no-loop-func': 1,
+		'max-len': [ 1, 200 ],
 	},
 };

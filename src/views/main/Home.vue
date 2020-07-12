@@ -155,7 +155,7 @@ export default {
 			{
 				title: 'Саванна',
 				subtitle: 'textextexetxte',
-				link: '/',
+				link: '/savanna-game',
 				img: 'assets/img/саванна.png',
 				color: 'blue',
 			},

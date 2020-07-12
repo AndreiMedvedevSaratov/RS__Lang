@@ -68,7 +68,7 @@ const routes = [
 				meta: {
 					breadcrumb: [
 						{ text: 'Home', to: '/home' },
-						{ text: 'English Puzzle' },
+						{ text: 'English Puzzle2' },
 					],
 				},
 			},
@@ -97,7 +97,7 @@ const routes = [
 			{
 				path: '/dictionary',
 				name: 'Dictionary',
-				component: () => import(/* webpackChunkName: "dictionary" */ '../components/dictionary.vue'),
+				component: () => import(/* webpackChunkName: "dictionary" */ '../views/main/Dictionary.vue'),
 				meta: {
 					breadcrumb: [
 						{ text: 'Home', to: '/home' },
@@ -108,7 +108,7 @@ const routes = [
 			{
 				path: '/sprint',
 				name: 'Sprint',
-				component: () => import(/* webpackChunkName: "sprint" */ '../components/sprint/SprintGame.vue'),
+				component: () => import(/* webpackChunkName: "sprint" */ '../components/GameSprint.vue'),
 				meta: {
 					breadcrumb: [
 						{ text: 'Home', to: '/home' },
@@ -152,6 +152,21 @@ const routes = [
 					],
 				},
 			},
+			{
+				path: '/main-game',
+				name: 'Main-game',
+				component: () => import(/* webpackChunkName: 'main-game' */ '../components/MainGame/main-game.vue'),
+			},
+			{
+				path: '/savanna-start',
+				name: 'Savanna',
+				component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-start.vue'),
+			},
+			{
+				path: '/savanna-game',
+				name: 'Savanna-game',
+				component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-game.vue'),
+			},
 		],
 	},
 	{
@@ -170,21 +185,6 @@ const routes = [
 		path: '*',
 		name: 'Other',
 		redirect: '/home',
-	},
-	{
-		path: '/main-game',
-		name: 'Main-game',
-		component: () => import(/* webpackChunkName: 'main-game' */ '../components/MainGame/main-game.vue'),
-	},
-	{
-		path: '/savanna-start',
-		name: 'Savanna',
-		component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-start.vue'),
-	},
-	{
-		path: '/savanna-game',
-		name: 'Savanna-game',
-		component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-game.vue'),
 	},
 ];
 

@@ -4,7 +4,8 @@
 			v-model="showStatistics"
 			v-if="words"
 			scrollable
-			max-width="500px"
+			persistent
+			:max-width="textExample ? 700 : 500"
 		)
 			v-card
 				v-card-title
@@ -28,6 +29,13 @@
 						small
 						label
 					) {{words.correct.length + words.wrong.length}}
+					v-spacer
+					v-btn(
+						@click="showStatistics = false"
+						icon
+						tile
+					)
+						v-icon( color="warning" ) mdi-close-circle-outline
 				v-divider
 				v-card-text
 					v-list(
@@ -44,12 +52,12 @@
 						v-list-item-group
 							v-virtual-scroll(
 								:items="words.wrong"
-								:item-height="50"
-								height="150"
+								:item-height="textExample ? 100 : 50"
+								:height="textExample ? 200 : 150"
 							)
 								template( v-slot="{ item }" )
 									v-list-item(
-										@click="playAudio(`${urlFiles}${item.audio}`)"
+										@click="playAudio(`${urlFiles}${textExample ? item.audioExample : item.audio}`)"
 									)
 										v-list-item-icon
 											v-icon mdi-volume-high
@@ -57,6 +65,16 @@
 											v-list-item-title {{ item.word }}
 												=' - '
 												span( class="font-weight-light" ) {{ item.wordTranslate }}
+											span(
+												v-if="textExample"
+												class="text-wrap"
+												v-html="`<b>en</b>:  ${item.textExample}`"
+											)
+											span(
+												v-if="textExample"
+												class="text-wrap"
+												v-html="`<b>ru</b>:  ${item.textExampleTranslate}`"
+											)
 						span( class="font-weight-medium" ) Правильных
 							=' '
 							v-chip(
@@ -67,12 +85,12 @@
 						v-list-item-group
 							v-virtual-scroll(
 								:items="words.correct"
-								:item-height="50"
-								height="150"
+								:item-height="textExample ? 100 : 50"
+								:height="textExample ? 200 : 150"
 							)
 								template( v-slot="{ item }" )
 									v-list-item(
-										@click="playAudio(`${urlFiles}${item.audio}`)"
+										@click="playAudio(`${urlFiles}${textExample ? item.audioExample : item.audio}`)"
 									)
 										v-list-item-icon
 											v-icon mdi-volume-high
@@ -80,8 +98,17 @@
 											v-list-item-title {{ item.word }}
 												=' - '
 												span( class="font-weight-light" ) {{ item.wordTranslate }}
+											span(
+												v-if="textExample"
+												class="text-wrap"
+												v-html="`<b>en</b>:  ${item.textExample}`"
+											)
+											span(
+												v-if="textExample"
+												class="text-wrap"
+												v-html="`<b>ru</b>:  ${item.textExampleTranslate}`"
+											)
 				v-divider
-
 </template>
 
 <script>
@@ -101,6 +128,10 @@ export default {
 		words: {
 			type: Object,
 			required: true,
+		},
+		textExample: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	data: () => ({

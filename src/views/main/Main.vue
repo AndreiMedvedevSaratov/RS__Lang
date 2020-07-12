@@ -7,7 +7,9 @@
 		// Компонент AppBar
 		appbar
 
-		v-main
+		v-main(
+			:style="`background: ${background}`"
+		)
 			// Хлебные крошки
 			v-breadcrumbs(
 				v-if="breadcrumbs"
@@ -49,6 +51,9 @@ export default {
 		}),
 		breadcrumbs() {
 			return this.appHtml.main.breadcrumbs;
+		},
+		background() {
+			return this.appHtml.main.background;
 		},
 	},
 	watch: {

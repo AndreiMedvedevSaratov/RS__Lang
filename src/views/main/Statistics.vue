@@ -57,10 +57,10 @@
 						v-col(cols="12")
 							v-chip-group(
 								column
-								v-if="wordStat.length > 0"
+								v-if="wordsStat.length > 0"
 							)
 								v-chip(
-									v-for="word in wordStat"
+									v-for="word in wordsStat"
 									:key="word.id"
 									close
 									:color="word.wordId == wordId?'success': ''"
@@ -97,22 +97,36 @@
 							)
 						v-col( cols="6" )
 							v-text-field(
-								v-model="consoleData.difficulty"
-								label="Difficulty"
-								hint="For example, easy or hard"
+								v-model="consoleData.optional.learnGroup"
+								label="learnGroup"
 								outlined
 							)
+						v-col( cols="6" )
+							v-text-field(
+								v-model="consoleData.optional.allRepeats"
+								label="allRepeats"
+								outlined
+							)
+						v-col( cols="6" )
+							v-text-field(
+								v-model="consoleData.optional.successRepeats"
+								label="successRepeats"
+								outlined
+								required
+							)
 					v-text-field(
-						v-model="consoleData.optional.testFieldString"
-						label="testFieldString"
-						hint="For example, 'To learn and to teach...'"
+						v-model="consoleData.optional.previousTrain"
+						label="previousTrain"
 						outlined
 					)
-					v-switch( v-model="consoleData.optional.testFieldBoolean"
-					class="ma-2" label="testFieldBoolean")
-				v-card-actions(
-				v-if="consoleData.difficulty.length > 0||consoleData.optional.testFieldString.length > 0"
+					v-text-field(
+						v-model="consoleData.optional.nextTrain"
+						label="nextTrain"
+						outlined
 					)
+					v-switch( v-model="consoleData.optional.isDelete"
+					class="ma-2" label="isDelete")
+				v-card-actions()
 					v-spacer
 					v-btn( @click="saveStatWord()") {{ !updateWord ? 'Create' : 'Update' }}
 		v-dialog(
@@ -151,15 +165,12 @@ export default {
 			difficulty: '',
 			optional: {
 				name: '',
-				testFieldString: '',
-				testFieldBoolean: false,
-
 				learnGroup: 1,
-				dictionaryGroup: 1,
+				isDelete: false,
 				allRepeats: 0,
 				successRepeats: 0,
-				previousTrain: new Date(),
-				nextTrain: new Date(),
+				previousTrain: '',
+				nextTrain: '',
 			},
 		},
 		updateWord: false,
@@ -167,12 +178,12 @@ export default {
 	computed: {
 		...mapGetters({
 			words: 'getWords',
-			wordStat: 'getWordStat',
+			wordsStat: 'getWordsStat',
 		}),
 	},
 	watch: {
 		wordId() {
-			this.updateWord = this.wordStat.some((word) => word.wordId === this.wordId);
+			this.updateWord = this.wordsStat.some((word) => word.wordId === this.wordId);
 		},
 	},
 	created() {},
@@ -183,6 +194,7 @@ export default {
 	methods: {
 		...mapActions({
 			getWord: 'APP_GET_WORD',
+			getWords: 'APP_GET_WORDS',
 			getWordStats: 'APP_GET_USER_WORD_STAT',
 			setWordStat: 'APP_SET_USER_WORD_STAT',
 			delWordStat: 'APP_DELETE_USER_WORD_STAT',
@@ -207,8 +219,12 @@ export default {
 				difficulty: wordData.difficulty,
 				optional: {
 					name: wordData.optional.name,
-					testFieldString: wordData.optional.testFieldString,
-					testFieldBoolean: wordData.optional.testFieldBoolean,
+					learnGroup: wordData.optional.learnGroup || 1,
+					isDelete: wordData.optional.isDelete || false,
+					allRepeats: wordData.optional.allRepeats || 0,
+					successRepeats: wordData.optional.successRepeats || 0,
+					previousTrain: wordData.optional.previousTrain || new Date(),
+					nextTrain: wordData.optional.nextTrain || new Date(),
 				},
 			};
 		},

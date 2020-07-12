@@ -95,8 +95,13 @@ export default {
 			setProfile: 'user/USER_FORM',
 		}),
 		...mapActions({
-			signup: 'user/USER_SIGNUP',
+			signupAction: 'user/USER_SIGNUP',
 		}),
+		signup() {
+			this.signupAction().then(() => {
+				this.$router.push('/').catch(() => {});
+			});
+		},
 		isSignup() {
 			return this.valid ? this.signup() : '';
 		},
