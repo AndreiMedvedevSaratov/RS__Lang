@@ -82,6 +82,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 export default {
 	name: 'ProfilePage',
 	data() {
@@ -101,9 +103,9 @@ export default {
 					emailAddress: 'andreiok@gmail.com',
 					githubAccount: 'https://github.com/andreimedvedevsaratov',
 					telephone: '+7-917-215-19-68',
-					about: `He is fulltime working in Import-Export Company now. Currently he is interesting in development of his 
-            skills in Web programming. Computer programming was his dream from school years. But life happens 
-            that he worked in other type of jobs. Now he is going to follow his earlier dreams and start to move toward it.`,
+					about: `He is fulltime working in Import-Export Company now. Currently he is interesting in development of his
+            		skills in Web programming. Computer programming was his dream from school years. But life happens
+            		that he worked in other type of jobs. Now he is going to follow his earlier dreams and start to move toward it.`,
 				},
 				{
 					name: 'Nurlan Kurbandurdyev',
@@ -120,7 +122,7 @@ export default {
 					emailAddress: 'alex.zhumaev@mail.ru',
 					githubAccount: 'https://github.com/alexey221284',
 					telephone: '+7-904-244-04-62',
-					about: `His goal is to gain experience and skills in the JavaScript programming language for further employment. 
+					about: `His goal is to gain experience and skills in the JavaScript programming language for further employment.
 					His skills are HTML, CSS, the basics of JavaScript, and he also have some experience with the Webix and 1C Bitrix frameworks.`,
 				},
 				{
@@ -146,11 +148,32 @@ export default {
 					emailAddress: 'palanevich.aleksey@gmail.com',
 					githubAccount: 'https://github.com/goldoragon',
 					telephone: '+375299069001',
-					about: `He likes: solve anything task (physics, logic, mathematical etc.); read and explore other people's solutions; 
+					about: `He likes: solve anything task (physics, logic, mathematical etc.); read and explore other people's solutions;
 					to build his day as how he wants; work on an interesting project in a friendly team. So he’d like to find interesting things and good people.`,
 				},
 			],
 		};
+	},
+	mounted() {
+		// Перед началом игры изменим стиль страницы
+		this.appHtml([
+			// свернем меню
+			{ one: 'main', key: 'drawer', value: false },
+			// Уберем хлебные крошки
+			{ one: 'main', key: 'breadcrumbs', value: false },
+		]);
+	},
+	beforeDestroy() {
+		// Перед закрытием страницы возращаем настройки обратно
+		this.appHtml([
+			{ one: 'main', key: 'drawer', value: true },
+			{ one: 'main', key: 'breadcrumbs', value: true },
+		]);
+	},
+	methods: {
+		...mapMutations({
+			appHtml: 'EDIT_HTML',
+		}),
 	},
 };
 </script>
@@ -159,7 +182,7 @@ export default {
 .about-team {
 	&__wrapper {
 		width: 100%;
-		height: 100vh;
+		height: calc(100vh - 88px);
 		background-image: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
 		display: flex;
 		justify-content: center;
