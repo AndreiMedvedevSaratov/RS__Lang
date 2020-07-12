@@ -84,6 +84,17 @@ const routes = [
 				},
 			},
 			{
+				path: '/speaking',
+				name: 'speaking',
+				component: () => import(/* webpackChunkName: "speaking" */ '../components/GameSpeaking.vue'),
+				meta: {
+					breadcrumb: [
+						{ text: 'Home', to: '/home' },
+						{ text: 'speaking' },
+					],
+				},
+			},
+			{
 				path: '/dictionary',
 				name: 'Dictionary',
 				component: () => import(/* webpackChunkName: "dictionary" */ '../views/main/Dictionary.vue'),

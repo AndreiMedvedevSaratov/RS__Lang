@@ -3,8 +3,9 @@ import Vuex from 'vuex';
 import app from './app';
 import auth from './auth';
 import user from './user';
-import speakit from './modules/speakit';
-import audiovizov from './audiovizov';
+import speakit from './speakit';
+import speaking from './speaking';
+import audiovizov from './modules/audiovizov';
 
 Vue.use(Vuex);
 
@@ -16,6 +17,7 @@ export default new Vuex.Store({
 		app,
 		user,
 		speakit,
+		speaking,
 		audiovizov,
 	},
 });
