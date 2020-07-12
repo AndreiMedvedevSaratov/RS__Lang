@@ -1,35 +1,9 @@
 /* eslint-disable no-prototype-builtins */
-import axios from 'axios';
 /** Instructions for working with actions
  * link https://vuex.vuejs.org/api/#actions
  */
 
 const actions = {
-	async GET_WORDS({
-		rootState, commit, dispatch,
-	}, payload) {
-		const words = {
-			page: 0,
-			group: 0,
-		};
-		if (payload && payload.hasOwnProperty('page')) words.page = payload.page;
-		if (payload && payload.hasOwnProperty('group')) words.group = payload.group;
-
-		commit('SPEAKIT_REQUEST');
-
-		await axios.get(`${rootState.app.server}/words?page=${words.page}&group=${words.group}`)
-			.then((response) => {
-				commit('SPEAKIT_GET_WORDS_SUCCESS', response.data);
-			})
-			.catch((error) => {
-				commit('SPEAKIT_ERROR');
-				dispatch('ALERT', {
-					alert: true,
-					status: 'error',
-					message: `${error.response.statusText}: ${error.response.data}`,
-				}, { root: true });
-			});
-	},
 	SPEAKIT_SPEAK: ({ state, getters, dispatch }) => {
 		state.gameStatus = true;
 		const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -52,7 +26,11 @@ const actions = {
 			if (getters.getWordsArray.includes(sayWord)) {
 				document.querySelector('.main__image').src = `${state.urlFiles}${getters.getImageArray[getters.getWordsArray.indexOf(sayWord)]}`;
 				document.getElementById(sayWord).style.opacity = '0.5';
-				if (!state.count.includes(sayWord)) { state.count.push(sayWord); }
+				if (!state.count.includes(sayWord)) {
+					state.count.push(sayWord);
+					const getCorrectWord = getters.getWordsArray.find((item) => item.word === sayWord);
+					if (getCorrectWord !== undefined) dispatch('APP_WORD_PROCESSING', { word: getCorrectWord, right: true, offDate: true });
+				}
 
 				if (state.count.length === 20) {
 					const cards = document.querySelectorAll('.card');
@@ -64,9 +42,21 @@ const actions = {
 					// 	item.style.opacity = '1';
 					// 	return item;
 					// });
-					alert('youre win, good job! Your skill is pretty high');
+					dispatch('ALERT', { data: 'Youre win, good job! Your skill is pretty high' });
 					state.gameLevel += 1;
-					dispatch('speakit/GET_WORDS', { page: state.gameLevel }, { root: true });
+					dispatch('APP_GET_USER_WORDS_AGGREGATED', {
+						page: state.gameLevel,
+						filter: {
+							$or: [
+								{
+									userWord: { $ne: null },
+								},
+								{
+									userWord: null,
+								},
+							],
+						},
+					}, { root: true });
 					recognition.onend = () => recognition.stop();
 					state.count.length = 0;
 				}
@@ -83,10 +73,6 @@ const actions = {
 const mutations = {
 	SPEAKIT_REQUEST: (state) => {
 		state.status = 'loading';
-	},
-	SPEAKIT_GET_WORDS_SUCCESS: (state, words) => {
-		state.status = 'success';
-		state.words = words;
 	},
 	SPEAKIT_SET_IMAGE_AND_AUDIO: (state, payload) => {
 		console.log('Выбрали', payload);
@@ -106,8 +92,6 @@ const mutations = {
 const getters = {
 	getUrlImage: (state) => state.urlImage,
 	getSrcVideo: (state) => state.srcVideo,
-	getWords: (state) => state.words,
-	getUrlFiles: (state) => state.urlFiles,
 	getWordsArray: (state) => state.words.map((item) => item.word.toLowerCase()),
 	getImageArray: (state) => state.words.map((item) => item.image),
 	gameStatus: (state) => state.gameStatus,
@@ -116,8 +100,6 @@ const getters = {
 
 const state = {
 	status: '',
-	words: [],
-	urlFiles: 'https://raw.githubusercontent.com/Dream-Team-42/rslang-data/master/',
 	urlImage: './assets/default-english.jpg',
 	srcVideo: './assets/video/first.mp4',
 	count: [],

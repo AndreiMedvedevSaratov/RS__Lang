@@ -7,12 +7,12 @@
 				:src="isUrlImage"
 			)
 
-			input(
-				type="button"
-				value="undefined"
+			v-btn(
 				@click="speak()"
 				id="btn"
-			)
+				raised
+				block
+			) Start Game
 
 			p( class='speech' )
 
@@ -46,8 +46,8 @@ export default {
 	data: () => ({}),
 	computed: {
 		...mapGetters({
-			isWords: 'speakit/getWords',
-			isUrlFiles: 'speakit/getUrlFiles',
+			isWords: 'getWords',
+			isUrlFiles: 'getUrlFiles',
 			isUrlImage: 'speakit/getUrlImage',
 			gameStatus: 'speakit/gameStatus',
 		}),
@@ -61,11 +61,23 @@ export default {
      * this.getWords({ page: 2, group: 3 });
      * this.getWords({ group: 3 });
      */
-		this.getWords();
+		this.getWords({
+			page: 0,
+			filter: {
+				$or: [
+					{
+						userWord: { $ne: null },
+					},
+					{
+						userWord: null,
+					},
+				],
+			},
+		});
 	},
 	methods: {
 		...mapActions({
-			getWords: 'speakit/GET_WORDS',
+			getWords: 'APP_GET_USER_WORDS_AGGREGATED',
 			speak: 'speakit/SPEAKIT_SPEAK',
 		}),
 		...mapMutations({

@@ -332,6 +332,7 @@ const actions = {
 	 * @param {object} payload
 	 * @param {object} payload.word
 	 * @param {boolean} payload.right
+	 * @param {boolean} [payload.offDate=false]
 	 * @example dispatch('APP_WORD_PROCESSING', { word, right }, { root: true })
 	 */
 	async APP_WORD_PROCESSING({
@@ -339,7 +340,7 @@ const actions = {
 	}, payload) {
 		commit('STATISTIC_WORD', payload.word);
 		commit('RIGHT_CHOICE_WORD', payload.right);
-		commit('NEXT_TRAIN_TIME');
+		if (!payload.offDate) commit('NEXT_TRAIN_TIME');
 		await dispatch('APP_SET_USER_WORD_STAT', {
 			method: state.wordHasStat ? 'put' : 'post',
 			wordId: payload.word._id,
