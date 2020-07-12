@@ -19,6 +19,11 @@
 								:key="i"
 								:value="item_page-1"
 							) Page {{item_page}}
+				.smile
+					.circle-puzzle
+						.eyes-puzzle
+					.circle-puzzle-one
+						.eyes-puzzle-one
 				.button_wrapper-puzzle
 					button#button_1(
 						@click="audiohint"
@@ -161,6 +166,7 @@ export default {
 	created() {
 	},
 	mounted() {
+		this.eyes();
 		this.local();
 		this.game();
 		this.appHtml([
@@ -187,6 +193,33 @@ export default {
 			wordsAction: 'APP_GET_WORDS',
 			alertAction: 'ALERT',
 		}),
+
+		eyes() {
+			window.addEventListener('mousemove', (event) => {
+				const arctg = (x, y) => {
+					let a = null;
+					if (x > 0 && y > 0) {
+						a = Math.PI / 2 - Math.atan(x / y);
+					}
+					if (x < 0 && y > 0) {
+						a = Math.PI / 2 - Math.atan(x / y);
+					}
+					if (x < 0 && y < 0) {
+						a = Math.PI + Math.atan(y / x);
+					}
+					if (x > 0 && y < 0) {
+						a = 3 * (Math.PI / 2) + Math.abs(Math.atan(x / y));
+					}
+					return a * 57.2958;
+				};
+				const { x, y } = { x: event.x, y: event.y };
+				const left = +document.querySelector('.circle-puzzle').getBoundingClientRect().left;
+				const top = +document.querySelector('.circle-puzzle').getBoundingClientRect().top;
+				document.querySelector('.circle-puzzle').style.transform = `rotate(${arctg(x - left - 20, y - top - 20)}deg)`;
+				document.querySelector('.circle-puzzle-one').style.transform = `rotate(${arctg(x - left - 20, y - top - 20)}deg)`;
+			});
+		},
+
 		async game() {
 			localStorage.setItem('level', this.selected_level);
 			localStorage.setItem('page', this.selected_page);
@@ -991,6 +1024,7 @@ url('../assets/fonts/montserrat-v14-latin_cyrillic-regular.woff2') format('woff2
 }
 
 #button_4 {
+	position: relative;
 	background: url("../assets/img/444.jpg") no-repeat;
 }
 
@@ -1048,6 +1082,45 @@ url('../assets/fonts/montserrat-v14-latin_cyrillic-regular.woff2') format('woff2
 
 .text-puzzle {
 	margin-bottom: 0px !important;
+}
+
+.circle-puzzle {
+	position: relative;
+	width: 40px;
+	height: 40px;
+	border: 1px solid green;
+	border-radius: 100%;
+}
+
+.eyes-puzzle {
+	position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: green;
+    border-radius: 100%;
+    left: 23px;
+    top: 15px;
+}
+.circle-puzzle-one {
+	position: relative;
+	width: 40px;
+	height: 40px;
+	border: 1px solid green;
+	border-radius: 100%;
+}
+
+.eyes-puzzle-one {
+	position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: green;
+    border-radius: 100%;
+    left: 23px;
+    top: 15px;
+}
+
+.smile {
+	display: flex;
 }
 
 @media (max-width: 990px) {
