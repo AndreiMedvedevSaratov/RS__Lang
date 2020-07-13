@@ -2,13 +2,18 @@
 	v-card( color="basil" )
 		v-card-title( class="text-center justify-center py-6" )
 			h1( class="font-weight-bold display-3 basil--text" ) Мой словарь
-		v-card-subtitle Всего слов: {{wordsStat.length}}/{{countWords}}
+		v-card-subtitle(
+			v-if="countWords > 0"
+		) Всего слов: {{wordsStat.length}}/{{countWords}}
 			v-btn(
 				@click="getAggregatedWords({group: '',wordsPerPage: countWords,filter: {userWord: { $ne: null }}})"
 				x-small
 				tile
+				v-if="countWords > 10"
 			) Загрузить все
-		v-list-item-group
+		v-list-item-group(
+			v-if="wordsStat.length > 0"
+		)
 			v-virtual-scroll(
 				:items="wordsStat"
 				item-height="184"
@@ -61,6 +66,9 @@
 										width="120"
 										:src="`${urlFiles}${item.image}`"
 									)
+		v-card-text(
+			v-else
+		) Ваш словарь пуст, начните играть ...
 </template>
 
 <script>

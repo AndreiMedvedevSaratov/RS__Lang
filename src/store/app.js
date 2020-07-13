@@ -284,7 +284,7 @@ const actions = {
 			`${rootState.app.server}/users/${rootState.user.profile.userId}/aggregatedWords?group=${words.group}&page=${words.page}&wordsPerPage=${words.wordsPerPage}&filter=${words.filter}`,
 		).then((wordsData) => {
 			commit('APP_GET_WORDS', wordsData.data[0].paginatedResults);
-			commit('APP_GET_WORDS_COUNT', wordsData.data[0].totalCount[0].count);
+			if (wordsData.data[0].paginatedResults.length > 0) commit('APP_GET_WORDS_COUNT', wordsData.data[0].totalCount[0].count);
 			console.log('aggregatedWords', wordsData.data[0]);
 
 			commit('APP_STATUS', 'success');
@@ -516,7 +516,7 @@ const state = {
 	},
 
 	words: [],
-	countWords: [],
+	countWords: 0,
 	wordsStat: [],
 	wordStat: {
 		optional: {
