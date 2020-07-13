@@ -1,6 +1,11 @@
-<template lang='pug'>
+<template lang="pug">
 
 	v-row
+		stat-graph(
+			:statistics='statistics'
+			:graphWidth='500'
+			:graphHeight='300'
+		)
 		v-col(
 			cols="12"
 			md="6"
@@ -147,15 +152,33 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import StatGraph from '@/components/statGraph.vue';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
 	name: 'Statistics',
-	components: {},
+	components: {
+		StatGraph,
+	},
 	props: [],
 	data: () => ({
+		statistics: [
+			{ date: '2020-07-01', words: 50 },
+			{ date: '2020-07-02', words: 49 },
+			{ date: '2020-07-03', words: 48 },
+			{ date: '2020-07-04', words: 49 },
+			{ date: '2020-07-05', words: 51 },
+			{ date: '2020-07-06', words: 52 },
+			{ date: '2020-07-07', words: 100 },
+			{ date: '2020-07-08', words: 88 },
+			{ date: '2020-07-09', words: 87 },
+			{ date: '2020-07-10', words: 88 },
+			{ date: '2020-07-11', words: 85 },
+			{ date: '2020-07-12', words: 79 },
+			{ date: '2020-07-13', words: 85 },
+		],
 		page: 0,
 		group: 0,
 		wordId: '',
@@ -229,10 +252,7 @@ export default {
 			};
 		},
 	},
-
 };
 </script>
 
-<style lang='scss' scoped>
-
-</style>
+<style lang="scss" scoped></style>
