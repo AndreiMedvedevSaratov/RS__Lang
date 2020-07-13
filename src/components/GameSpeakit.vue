@@ -4,7 +4,7 @@
 		div( class="main" )
 			v-img(
 				class="main__image"
-				:src="UrlImage"
+				:src="getImg"
 				contain
 			)
 			v-row
@@ -61,6 +61,7 @@ export default {
 		gameStatus: false,
 		gameLevel: 0,
 		recognition: '',
+		img: null,
 	}),
 	computed: {
 		...mapGetters({
@@ -73,6 +74,9 @@ export default {
 		},
 		getImageArray() {
 			return this.isWords.map((item) => item.image);
+		},
+		getImg() {
+			return this.img ? this.img : this.UrlImage;
 		},
 	},
 	watch: {},
@@ -195,7 +199,7 @@ export default {
 			this.count.length = 0;
 		},
 		setImgAndAudio(payload) {
-			this.UrlImage = payload.image;
+			this.img = payload.image;
 			const audio = new Audio(payload.audio);
 			audio.play();
 		},

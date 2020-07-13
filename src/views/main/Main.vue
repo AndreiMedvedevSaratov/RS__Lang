@@ -30,7 +30,7 @@
 import navigationBrawer from '@/components/main/navigation-drawer.vue';
 import appbar from '@/components/main/app-bar.vue';
 import setting from '@/views/main/Setting.vue';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
@@ -66,8 +66,12 @@ export default {
 	},
 	mounted() {
 		this.updateList();
+		this.checkSetting();
 	},
 	methods: {
+		...mapActions({
+			checkSetting: 'user/USER_CHECK_SETTINGS',
+		}),
 		routeTo(pRouteTo) {
 			if (this.breadcrumbList[pRouteTo].link) this.$router.push(this.breadcrumbList[pRouteTo].link);
 		},

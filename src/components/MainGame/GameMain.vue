@@ -1,12 +1,15 @@
 <template lang="pug">
 div
 	h1 Text
-	div(class='card-container')
+	div(
+		class='card-container'
+		v-if="Object.keys(nextWord).length != 0"
+	)
 
 		div(class='card-header')
 			div(class='card-header_repeat-progress')
-				div(v-for='dot of wordLearnProgress.success' class="dot dot-success")
-				div(v-for='dot of wordLearnProgress.failure' class='dot dot-failure')
+				//- div(v-for='dot of wordLearnProgress.success' class="dot dot-success")
+				//- div(v-for='dot of wordLearnProgress.failure' class='dot dot-failure')
 			div(class='card-header_delete-button')
 				v-btn(@click='addWordInDeleteCategory()'
 					x-small
@@ -18,9 +21,9 @@ div
 
 				div(class='learn-content_image-word')
 					div(class='learn-content_image'
-						v-if='userSettings.showImage'
+						v-if='showImage'
 						)
-						img(:src='config.image' width="250" height="170")
+						img(:src="`${this.urlFiles}${this.nextWord.image}`" width="250" height="170")
 
 					div(class='learn-content_word')
 						form(class='word_origin'
@@ -28,7 +31,7 @@ div
 							)
 							span(class='origin_container')
 								span(:class='[{hidden: isHideWord}, classForSymbols[i]]'
-									v-for='(symbol, i) of config.word'
+									v-for='(symbol, i) of nextWord.word'
 								) {{ symbol }}
 							input(:class="[{hidden: !isHideWord}, 'origin_input']"
 								v-focus
@@ -36,43 +39,53 @@ div
 								v-model='userInput'
 							)
 							span(:class="[{hidden: isHideFadeAnswer}, 'origin_fade-answer']"
-								) {{ config.word }}
+								) {{ nextWord.word }}
 						p(class='word_translation'
-							v-if='userSettings.showWordTranslate'
-						) {{ config.wordTranslate }}
+							v-if='showWordTranslate'
+							v-html="nextWord.wordTranslate"
+						)
 						p(class='word_transcription'
-							v-if='userSettings.showTranscription && !isHideSentences'
-						) {{ config.transcription }}
+							v-if='showTranscription && !isHideSentences'
+							v-html="nextWord.transcription"
+						)
 				div(class='learn-content_text-example'
-					v-if='userSettings.showTextExample'
+					v-if='showTextExample'
 					)
 					div(class='text-example_origin')
 							p(class='origin_all-sentence')
-								| {{ example.before }}
+								span( v-html="example.before" )
 								span(v-if='isHideSentences' class='origin_cap') [...]
-								span(v-else class='origin_word' ) {{ example.wordInText }}
-								| {{ example.after }}
+								span(
+									v-else class='origin_word'
+									v-html="example.wordInText"
+								)
+								span( v-html="example.after" )
 					div(class='text-example_translate'
-						v-if='userSettings.showTextExampleTranslate'
+						v-if='showTextExampleTranslate'
 					)
 						p(class='translate_all-sentence'
 							v-if='!isHideSentences'
-						) {{ config.textExampleTranslate }}
+							v-html="nextWord.textExampleTranslate"
+						)
 				div(class='learn-content_text-meaning'
-					v-if='userSettings.showTextMeaning'
+					v-if='showTextMeaning'
 				)
 					div(class='text-meaning_origin')
 						p(class='origin_all-sentence')
-							| {{ meaning.before }}
+							span( v-html="meaning.before" )
 							span(v-if='isHideSentences' class='origin_cap') [...]
-							span(v-else class='origin_word' ) {{ meaning.wordInText }}
-							| {{ meaning.after }}
+							span(
+								v-else class='origin_word'
+								v-html="meaning.wordInText"
+							)
+							span( v-html="meaning.after" )
 					div(class='text-meaning_translate'
-						v-if='userSettings.showTextMeaningTranslate'
+						v-if='showTextMeaningTranslate'
 					)
 						p(class='translate_all-sentence'
-						v-if='!isHideSentences'
-						) {{ config.textMeaningTranslate }}
+							v-if='!isHideSentences'
+							v-html="nextWord.textMeaningTranslate"
+						)
 		div(class='card-footer')
 			v-progress-linear(:value='progressLinear')
 
@@ -82,6 +95,8 @@ div
 /**
  * watch (old, )
  */
+import { mapGetters, mapMutations, mapActions } from 'vuex';
+
 import { forGame } from './forGame';
 import { correctAnswer } from './correctAnswer';
 import { wrongAnswer } from './wrongAnswer';
@@ -98,31 +113,10 @@ export default {
 		},
 	},
 	mixins: [forGame, mainGame, correctAnswer, wrongAnswer],
-	props: {
-		config: {
-			type: Object,
-			required: true,
-		},
-		userSettings: {
-			type: Object,
-			default() {
-				return {
-					wordsLimit: 50,
-					showWordTranslate: true,
-					showTranscription: true,
-					showImage: true,
-					showTextMeaning: true,
-					showTextMeaningTranslate: true,
-					showAudioMeaning: true,
-					showTextExample: true,
-					showTextExampleTranslate: true,
-					showAudioExample: true,
-				};
-			},
-		},
-	},
 	data() {
 		return {
+			nextWord: {},
+
 			isHideWord: true,
 			isHideFadeAnswer: true,
 			isHideSentences: true,
@@ -134,25 +128,119 @@ export default {
 		};
 	},
 	computed: {
-		wordLearnProgress() {
-			const maxLearnLevel = 5;
-			const { learnGroup } = this.config.userWord;
-			return {
-				success: learnGroup,
-				failure: maxLearnLevel - learnGroup,
-			};
-		},
+		...mapGetters({
+			getSetting: 'user/getSetting',
+			words: 'getWords',
+			urlFiles: 'getUrlFiles',
+			getShortStatistics: 'showShortStatistics',
+		}),
+		// wordLearnProgress() {
+		// 	const maxLearnLevel = 5;
+		// 	const { learnGroup } = this.config.userWord;
+		// 	return {
+		// 		success: learnGroup,
+		// 		failure: maxLearnLevel - learnGroup,
+		// 	};
+		// },
 		example() {
-			const { textExample, word } = this.config;
+			const { textExample, word } = this.nextWord;
 			return this.getSentenceParts(textExample, word);
 		},
 		meaning() {
-			const { textMeaning, word } = this.config;
+			const { textMeaning, word } = this.nextWord;
 			return this.getSentenceParts(textMeaning, word);
 		},
 		progressLinear() {
-			const proportion = this.wordsCount / this.userSettings.wordsLimit;
+			const proportion = this.wordsCount / this.wordsPerDay;
 			return Math.floor(proportion * 100);
+		},
+		choiceWords: {
+			get() {
+				return this.getSetting.optional.choiceWords;
+			},
+			set(value) {
+				this.setSetting({ key: 'choiceWords', value });
+			},
+		},
+		wordsPerDay: {
+			get() {
+				return this.getSetting.wordsPerDay;
+			},
+			set(value) {
+				this.setSetting({ value });
+			},
+		},
+		showWordTranslate: {
+			get() {
+				return this.getSetting.optional.showWordTranslate;
+			},
+			set(value) {
+				this.setSetting({ key: 'showWordTranslate', value });
+			},
+		},
+		showTranscription: {
+			get() {
+				return this.getSetting.optional.showTranscription;
+			},
+			set(value) {
+				this.setSetting({ key: 'showTranscription', value });
+			},
+		},
+		showImage: {
+			get() {
+				return this.getSetting.optional.showImage;
+			},
+			set(value) {
+				this.setSetting({ key: 'showImage', value });
+			},
+		},
+		showTextMeaning: {
+			get() {
+				return this.getSetting.optional.showTextMeaning;
+			},
+			set(value) {
+				this.setSetting({ key: 'showTextMeaning', value });
+			},
+		},
+		showTextMeaningTranslate: {
+			get() {
+				return this.getSetting.optional.showTextMeaningTranslate;
+			},
+			set(value) {
+				this.setSetting({ key: 'showTextMeaningTranslate', value });
+			},
+		},
+		showAudioMeaning: {
+			get() {
+				return this.getSetting.optional.showAudioMeaning;
+			},
+			set(value) {
+				this.setSetting({ key: 'showAudioMeaning', value });
+			},
+		},
+		showTextExample: {
+			get() {
+				return this.getSetting.optional.showTextExample;
+			},
+			set(value) {
+				this.setSetting({ key: 'showTextExample', value });
+			},
+		},
+		showTextExampleTranslate: {
+			get() {
+				return this.getSetting.optional.showTextExampleTranslate;
+			},
+			set(value) {
+				this.setSetting({ key: 'showTextExampleTranslate', value });
+			},
+		},
+		showAudioExample: {
+			get() {
+				return this.getSetting.optional.showAudioExample;
+			},
+			set(value) {
+				this.setSetting({ key: 'showAudioExample', value });
+			},
 		},
 	},
 	watch: {
@@ -178,16 +266,45 @@ export default {
 			}
 		},
 	},
-	created() {},
+	created() {
+		this.game();
+	},
 	mounted() {},
 	beforeUpdate() {
-		this.markWord('config');
+		this.markWord('nextWord');
 	},
 	updated() {},
 	methods: {
+		...mapMutations({
+			appHtml: 'EDIT_HTML',
+			offStatistics: 'SHOW_SHORT_STATISTICS',
+			setSetting: 'user/USER_SETTINGS',
+		}),
+		...mapActions({
+			getWords: 'APP_GET_USER_WORDS_AGGREGATED',
+			alert: 'ALERT',
+			wordProcessing: 'APP_WORD_PROCESSING',
+		}),
+		async game() {
+			await this.getWords({
+				group: 0,
+				wordsPerPage: this.wordsPerDay,
+				filter: {
+					$or: [
+						{
+							userWord: { $ne: null },
+						},
+						{
+							userWord: null,
+						},
+					],
+				},
+			});
+			this.nextWord = this.words[this.wordsCount];
+		},
 		changeLettersStatus() {
 			const { userInput } = this;
-			const originWord = this.config.word;
+			const originWord = this.nextWord.word;
 			const borderForBigError = 3;
 
 			let errorCount = 0;
@@ -211,11 +328,14 @@ export default {
 			this.classForSymbols = classesArr;
 		},
 		addWordInDeleteCategory() {
-			this.config.userWord.dictionaryGroup = 5;
+			this.nextWord.userWord.dictionaryGroup = 5;
 			console.log('ok, del');
 		},
 		getSentenceParts(str, word) {
-			const regexp = new RegExp(`(${word})\\w?`);
+			console.log('getSentenceParts', word);
+			console.log('getSentenceParts22', str);
+			const regexp = new RegExp(`[${word[0].toUpperCase()}${word[0].toLowerCase()}]${word.slice(1)}\\w?`);
+			console.log('getSentenceParts44', regexp);
 			const wordInText = str.match(regexp)[0];
 			const [before, after] = str.split(wordInText);
 

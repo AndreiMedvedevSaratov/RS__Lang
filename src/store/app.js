@@ -284,7 +284,9 @@ const actions = {
 			`${rootState.app.server}/users/${rootState.user.profile.userId}/aggregatedWords?group=${words.group}&page=${words.page}&wordsPerPage=${words.wordsPerPage}&filter=${words.filter}`,
 		).then((wordsData) => {
 			commit('APP_GET_WORDS', wordsData.data[0].paginatedResults);
-			commit('APP_GET_WORDS_COUNT', wordsData.data[0].totalCount[0].count);
+			if (wordsData.data[0].paginatedResults.length > 0) {
+				commit('APP_GET_WORDS_COUNT', wordsData.data[0].totalCount[0].count);
+			} else commit('APP_GET_WORDS_COUNT', 0);
 			console.log('aggregatedWords', wordsData.data[0]);
 
 			commit('APP_STATUS', 'success');
@@ -501,6 +503,7 @@ const getters = {
 const state = {
 	status: 'success',
 	server: 'https://afternoon-falls-25894.herokuapp.com',
+	// urlFiles: 'https://kagafon-rslang-data.netlify.app/',
 	urlFiles: 'https://raw.githubusercontent.com/Dream-Team-42/rslang-data/master/',
 	urlImage: './assets/default-english.jpg',
 	html: {
@@ -516,7 +519,7 @@ const state = {
 	},
 
 	words: [],
-	countWords: [],
+	countWords: 0,
 	wordsStat: [],
 	wordStat: {
 		optional: {
