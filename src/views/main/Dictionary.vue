@@ -49,16 +49,16 @@
 										v-icon mdi-volume-high
 									span( v-html="item.textExample" )
 									br
-									b Давность: {{ item.userWord.optional.previousTrain ? item.userWord.optional.previousTrain : 'none' }}
+									b Давность: {{ item.userWord.optional && item.userWord.optional.previousTrain ? item.userWord.optional.previousTrain : 'none' }}
 									=' | '
-									b Повторений: {{ item.userWord.optional.allRepeats ? item.userWord.optional.allRepeats : 'none' }}
+									b Повторений: {{ item.userWord.optional && item.userWord.optional.allRepeats ? item.userWord.optional.allRepeats : 'none' }}
 									br
 									b Уровень запоминания:
 									=' '
 									v-icon(
 										small
 										v-for="learnGroup in 5" :key="learnGroup"
-										:color="(learnGroup <= item.userWord.optional.learnGroup) ? 'green' : ''"
+										:color="(item.userWord.optional && learnGroup <= item.userWord.optional.learnGroup) ? 'green' : ''"
 									) mdi-circle
 								v-col
 									v-img(

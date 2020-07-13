@@ -334,7 +334,7 @@ export default {
 		getSentenceParts(str, word) {
 			console.log('getSentenceParts', word);
 			console.log('getSentenceParts22', str);
-			const regexp = new RegExp(`(${word})\\w?`);
+			const regexp = new RegExp(`[${word[0].toUpperCase()}${word[0].toLowerCase()}]${word.slice(1)}\\w?`);
 			console.log('getSentenceParts44', regexp);
 			const wordInText = str.match(regexp)[0];
 			const [before, after] = str.split(wordInText);
