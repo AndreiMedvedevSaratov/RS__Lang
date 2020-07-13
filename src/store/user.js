@@ -117,8 +117,7 @@ const actions = {
 		await axios[method](
 			`${rootState.app.server}/users/${state.profile.userId}/settings`, (method === 'put' ? state.settings : null),
 		).then((settings) => {
-			console.log(settings.data);
-			commit('USER_SETTINGS', settings.data);
+			commit('USER_SERVER_SETTINGS', settings.data);
 			commit('USER_SUCCESS');
 		}).catch((error) => {
 			commit('USER_ERROR', 'error');
@@ -127,6 +126,23 @@ const actions = {
 				status: 'error',
 				message: `${error.response.statusText}: ${error.response.data}`,
 			}, { root: true });
+		});
+	},
+
+	async USER_CHECK_SETTINGS({
+		state, rootState, commit, dispatch,
+	}) {
+		await axios.get(
+			`${rootState.app.server}/users/${state.profile.userId}/settings`,
+		).then((settings) => {
+			commit('USER_SERVER_SETTINGS', settings.data);
+		}).catch(() => {
+			dispatch('USER_GET_SET_SETTINGS', { method: 'put' });
+			dispatch('ALERT', {
+				status: 'info',
+				data: 'Установлены настройки по умолчанию.',
+			}, { root: true });
+			return {};
 		});
 	},
 };
@@ -163,8 +179,18 @@ const mutations = {
 	USER_STATISTICS: (state, statistics) => {
 		state.statistics = statistics;
 	},
-	USER_SETTINGS: (state, settings) => {
-		state.settings = settings;
+	USER_SERVER_SETTINGS: (state, settings) => {
+		state.settings = {
+			wordsPerDay: settings.wordsPerDay,
+			optional: settings.optional,
+		};
+	},
+	USER_SETTINGS: (state, payload) => {
+		if (payload.key) {
+			state.settings.optional[payload.key] = payload.value;
+		} else {
+			state.settings.wordsPerDay = payload.value;
+		}
 	},
 };
 
@@ -194,7 +220,7 @@ const state = {
 		},
 	},
 	settings: {
-		wordsPerDay: 20,
+		wordsPerDay: 50,
 		optional: {
 			showWordTranslate: true,
 			showTranscription: true,
@@ -205,6 +231,7 @@ const state = {
 			showTextExample: true,
 			showTextExampleTranslate: true,
 			showAudioExample: true,
+			choiceWords: 1,
 		},
 	},
 };
