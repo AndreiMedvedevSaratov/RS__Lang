@@ -6,7 +6,7 @@ const mainGame = {
 		 */
 		checkWord() {
 			const input = this.userInput;
-			const originWord = this.config.word;
+			const originWord = this.nextWord.word;
 
 			if (originWord === input) {
 				this.successInput(this.isGetWrongInput);
@@ -18,11 +18,10 @@ const mainGame = {
 		},
 		getSoundArr(isPlayAllSound) {
 			const soundsArr = [];
-			const { config, userSettings } = this;
-			soundsArr.push(config.audio);
+			soundsArr.push(`${this.urlFiles}${this.nextWord.audio}`);
 			if (isPlayAllSound) {
-				if (userSettings.showAudioMeaning) soundsArr.push(config.audioMeaning);
-				if (userSettings.showAudioExample) soundsArr.push(config.audioExample);
+				if (this.showAudioMeaning) soundsArr.push(`${this.urlFiles}${this.nextWord.audioMeaning}`);
+				if (this.showAudioExample) soundsArr.push(`${this.urlFiles}${this.nextWord.audioExample}`);
 			}
 			return soundsArr;
 		},
