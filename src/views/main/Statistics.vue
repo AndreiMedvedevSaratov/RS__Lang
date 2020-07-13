@@ -1,153 +1,9 @@
 <template lang="pug">
-
-	v-row
-		stat-graph(
-			:statistics='statistics'
-			:graphWidth='500'
-			:graphHeight='300'
-		)
-		v-col(
-			cols="12"
-			md="6"
-		)
-			v-card(
-				class="mx-auto"
-			)
-				v-card-title Получить слова
-
-				v-card-text(class="text--primary")
-				v-row( class="ma-0" )
-					v-col(
-						cols="12"
-						md="4"
-					)
-						v-text-field(
-							v-model="page"
-							label="page"
-						)
-					v-col(
-						cols="12"
-						md="4"
-					)
-						v-text-field(
-							v-model="group"
-							label="group"
-						)
-					v-col(
-						cols="12"
-						md="4"
-					)
-						v-btn( @click="getWords({page, group})" outlined ) Request
-				v-row( class="ma-0" )
-					v-col(cols="12")
-						v-chip-group(
-							column
-							v-if="words.length > 0"
-						)
-							v-chip(
-								v-for="word in words"
-								:key="word.id"
-								@click="clickWord(word)"
-							) {{ word.word }}
-						span(v-else) Request words...
-			v-card(
-				class="mt-3"
-			)
-				v-card-title Все слова где есть статистика
-					v-spacer
-					v-btn(@click="getWordStats()" outlined ) Update
-
-				v-card-text(class="text--primary")
-					v-row( class="ma-0" )
-						v-col(cols="12")
-							v-chip-group(
-								column
-								v-if="wordsStat.length > 0"
-							)
-								v-chip(
-									v-for="word in wordsStat"
-									:key="word.id"
-									close
-									:color="word.wordId == wordId?'success': ''"
-									@click="clickWordStat(word)"
-									@click:close="delWordStat(word.wordId)"
-								) {{ word.optional.name || 'none' }}
-							span(v-else) There are no words with statistics...
-		v-col(
-			cols="12"
-			md="6"
-		)
-			v-card()
-				v-card-title Создать / Обновить статистику по слову
-				v-card-text( class="pb-0" )
-					v-row
-						v-col( cols="9" )
-							v-text-field(
-								v-model="wordId"
-								label="Word ID"
-								outlined
-							)
-						v-col( cols="3" )
-							v-btn(
-								@click="getWordStats(wordId)"
-								:disabled="wordId.length === 0"
-								outlined
-							) Request
-						v-col( cols="6" )
-							v-text-field(
-								v-model="consoleData.optional.name"
-								label="Name"
-								outlined
-								required
-							)
-						v-col( cols="6" )
-							v-text-field(
-								v-model="consoleData.optional.learnGroup"
-								label="learnGroup"
-								outlined
-							)
-						v-col( cols="6" )
-							v-text-field(
-								v-model="consoleData.optional.allRepeats"
-								label="allRepeats"
-								outlined
-							)
-						v-col( cols="6" )
-							v-text-field(
-								v-model="consoleData.optional.successRepeats"
-								label="successRepeats"
-								outlined
-								required
-							)
-					v-text-field(
-						v-model="consoleData.optional.previousTrain"
-						label="previousTrain"
-						outlined
-					)
-					v-text-field(
-						v-model="consoleData.optional.nextTrain"
-						label="nextTrain"
-						outlined
-					)
-					v-switch( v-model="consoleData.optional.isDelete"
-					class="ma-2" label="isDelete")
-				v-card-actions()
-					v-spacer
-					v-btn( @click="saveStatWord()") {{ !updateWord ? 'Create' : 'Update' }}
-		v-dialog(
-			v-model="dialog"
-			max-width="500px"
-		)
-			v-card
-				v-card-title
-					span Data
-					v-spacer
-					span Меню
-				v-card-text
-					span( v-for="(value, key, i) in dialogData" :key="i")
-						b {{ key }} :
-						|  {{ value }}
-						br
+	stat-graph(
+		:statistics='statistics'
+		:graphWidth='500'
+		:graphHeight='300'
+	)
 </template>
 
 <script>
@@ -165,19 +21,19 @@ export default {
 	props: [],
 	data: () => ({
 		statistics: [
-			{ date: '2020-07-01', words: 50 },
-			{ date: '2020-07-02', words: 49 },
-			{ date: '2020-07-03', words: 48 },
-			{ date: '2020-07-04', words: 49 },
-			{ date: '2020-07-05', words: 51 },
-			{ date: '2020-07-06', words: 52 },
-			{ date: '2020-07-07', words: 100 },
-			{ date: '2020-07-08', words: 88 },
-			{ date: '2020-07-09', words: 87 },
-			{ date: '2020-07-10', words: 88 },
-			{ date: '2020-07-11', words: 85 },
-			{ date: '2020-07-12', words: 79 },
-			{ date: '2020-07-13', words: 85 },
+			{ date: '2020-07-01', words: 50, successWord: 50 },
+			{ date: '2020-07-02', words: 49, successWord: 50 },
+			{ date: '2020-07-03', words: 48, successWord: 50 },
+			{ date: '2020-07-04', words: 49, successWord: 50 },
+			{ date: '2020-07-05', words: 51, successWord: 50 },
+			{ date: '2020-07-06', words: 52, successWord: 50 },
+			{ date: '2020-07-07', words: 100, successWord: 50 },
+			{ date: '2020-07-08', words: 88, successWord: 50 },
+			{ date: '2020-07-09', words: 87, successWord: 50 },
+			{ date: '2020-07-10', words: 88, successWord: 50 },
+			{ date: '2020-07-11', words: 85, successWord: 50 },
+			{ date: '2020-07-12', words: 79, successWord: 50 },
+			{ date: '2020-07-13', words: 85, successWord: 50 },
 		],
 		page: 0,
 		group: 0,

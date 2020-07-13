@@ -1,12 +1,14 @@
 <template lang="pug">
 	canvas(
 		id='graph'
-		:width="graphWidth"
-		:height="graphHeight"
+		width="500"
+		height="300"
 	)
 </template>
 
 <script>
+// :width="graphWidth"
+// :height="graphHeight"
 export default {
 	name: 'StatGraph',
 	components: {},
@@ -104,23 +106,59 @@ export default {
 			}
 			c.strokeStyle = '#f00';
 
-			// Draw the line graph
-			c.beginPath();
-			c.moveTo(getXPixel(data, 0), getYPixel(data, data[0].words));
-			for (let i = 1; i < data.length; i += 1) {
-				c.lineTo(getXPixel(data, i), getYPixel(data, data[i].words));
-			}
-			c.stroke();
-
-			// Draw the dots
-			c.fillStyle = '#333';
-
-			for (let i = 0; i < data.length; i += 1) {
+			// eslint-disable-next-line no-use-before-define
+			drawLine('words', '#f00');
+			// eslint-disable-next-line no-use-before-define
+			drawLine('successWord', '#00ffffff');
+			function drawLine(field, color) {
+				// Draw the line graph
 				c.beginPath();
-				c.arc(getXPixel(data, i), getYPixel(data, data[i].words), 4, 0, Math.PI * 2, true);
-				c.fill();
+				c.strokeStyle = color;
+				c.moveTo(getXPixel(data, 0), getYPixel(data, data[0][field]));
+				for (let i = 1; i < data.length; i += 1) {
+					c.lineTo(getXPixel(data, i), getYPixel(data, data[i][field]));
+				}
+				c.stroke();
+
+				// Draw the dots
+				c.fillStyle = '#333';
+
+				for (let i = 0; i < data.length; i += 1) {
+					c.beginPath();
+					c.arc(getXPixel(data, i), getYPixel(data, data[i][field]), 4, 0, Math.PI * 2, true);
+					c.fill();
+				}
 			}
 		},
 	},
 };
 </script>
+
+<style lang="scss" scoped>
+// #graph {
+// 	width: 500px;
+// 	height: 300px;
+// }
+
+// @media (max-width: 1440px) {
+// 	#graph {
+// 		width: 500px;
+// 		height: 300px;
+// 	}
+// }
+// @media (max-width: 1020px) {
+// 	#graph {
+// 		width: 780px;
+// 	}
+// }
+// @media (max-width: 780px) {
+// 	#graph {
+// 		width: 320px;
+// 	}
+// }
+// @media (max-width: 320px) {
+// 	#graph {
+// 		width: 300px;
+// 	}
+// }
+</style>
