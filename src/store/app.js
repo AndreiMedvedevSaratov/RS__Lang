@@ -501,6 +501,7 @@ const getters = {
 const state = {
 	status: 'success',
 	server: 'https://afternoon-falls-25894.herokuapp.com',
+	// urlFiles: 'https://kagafon-rslang-data.netlify.app/',
 	urlFiles: 'https://raw.githubusercontent.com/Dream-Team-42/rslang-data/master/',
 	urlImage: './assets/default-english.jpg',
 	html: {

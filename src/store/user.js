@@ -61,7 +61,7 @@ const actions = {
 		await axios.post(`${rootState.app.server}/users`, user)
 			.then((response) => {
 				commit('USER_DATA', response.data);
-				dispatch('AUTH_REQUEST', user, { root: true });
+				dispatch('ALERT', { status: 'success', data: 'Регистрация успешна, войдите в систему!' }, { root: true });
 				commit('USER_SUCCESS');
 			})
 			.catch((error) => {
@@ -194,8 +194,18 @@ const state = {
 		},
 	},
 	settings: {
-		wordsPerDay: 0,
-		optional: {},
+		wordsPerDay: 20,
+		optional: {
+			showWordTranslate: true,
+			showTranscription: true,
+			showImage: true,
+			showTextMeaning: true,
+			showTextMeaningTranslate: true,
+			showAudioMeaning: true,
+			showTextExample: true,
+			showTextExampleTranslate: true,
+			showAudioExample: true,
+		},
 	},
 };
 
