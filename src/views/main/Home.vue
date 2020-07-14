@@ -123,6 +123,7 @@
 
 <script>
 // @ is an alias to /src
+import { mapActions } from 'vuex';
 
 export default {
 	name: 'Home',
@@ -179,8 +180,13 @@ export default {
 	},
 	watch: {},
 	created() {},
-	mounted() {},
+	mounted() {
+		this.checkSetting();
+	},
 	methods: {
+		...mapActions({
+			checkSetting: 'user/USER_CHECK_SETTINGS',
+		}),
 	},
 };
 </script>
