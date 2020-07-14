@@ -18,7 +18,7 @@
 
 			input(
 				type="button"
-				value="undefined"
+				value="Button"
 				@click="video()"
 				id="btn"
 			)
