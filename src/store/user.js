@@ -135,7 +135,9 @@ const actions = {
 		await axios.get(
 			`${rootState.app.server}/users/${state.profile.userId}/settings`,
 		).then((settings) => {
-			commit('USER_SERVER_SETTINGS', settings.data);
+			if (settings.data.wordsPerDay && settings.data.optional) {
+				commit('USER_SERVER_SETTINGS', settings.data);
+			} else dispatch('USER_GET_SET_SETTINGS', { method: 'put' });
 		}).catch(() => {
 			dispatch('USER_GET_SET_SETTINGS', { method: 'put' });
 			dispatch('ALERT', {
