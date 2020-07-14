@@ -62,6 +62,7 @@ export default {
 		gameLevel: 0,
 		recognition: '',
 		img: null,
+		count_error: 0,
 	}),
 	computed: {
 		...mapGetters({
@@ -143,6 +144,8 @@ export default {
 			this.recognition.maxAlternatives = 1;
 			this.recognition.onerror = (event) => {
 				console.log(`It's error! ${event.error}`);
+				this.count_error += 1;
+				if (this.count_error > 100) this.recognition.onend = () => this.recognition.stop();
 			};
 			this.recognition.onend = () => this.recognition.start();
 

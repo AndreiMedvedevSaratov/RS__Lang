@@ -49,6 +49,7 @@ export default {
 		isAnswer: 'Yes, actually I am lost! How did you know?',
 		videoIsEnded: false,
 		count_error: 0,
+		recognition: '',
 	}),
 	computed: {
 		...mapGetters({
@@ -60,7 +61,6 @@ export default {
 	watch: {
 		videoIsEnded() {
 			this.answer();
-			this.speak();
 			this.videoIsEnded = false;
 			this.step += 1;
 		},
@@ -103,25 +103,26 @@ export default {
 		}),
 		speak() {
 			const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-			const recognition = new SpeechRecognition();
-			recognition.lang = 'en-US';
-			recognition.continuos = false;
-			recognition.interimResults = false;
-			recognition.maxAlternatives = 1;
-			recognition.onerror = (event) => {
+			this.recognition = new SpeechRecognition();
+			this.recognition.lang = 'en-US';
+			this.recognition.continuos = false;
+			this.recognition.interimResults = false;
+			this.recognition.maxAlternatives = 1;
+			this.recognition.onerror = (event) => {
 				console.log(`It's error! ${event.error}`);
 				this.count_error += 1;
-				if (this.count_error > 100) recognition.onend = () => recognition.stop();
+				if (this.count_error > 100) this.recognition.onend = () => this.recognition.stop();
 			};
-			recognition.onend = () => recognition.start();
+			this.recognition.onend = () => this.recognition.start();
 
-			recognition.addEventListener('result', (event) => {
+			this.count_error = 0;
+			this.recognition.addEventListener('result', (event) => {
 				const last = event.results.length - 1;
 				const sayWord = event.results[last][0].transcript.toLowerCase();
 				this.$refs.speech.textContent = sayWord;
-				recognition.onend = () => recognition.stop();
+				this.recognition.onend = () => this.recognition.stop();
 			});
-			recognition.start();
+			this.recognition.start();
 		},
 		video() {
 			this.$refs.video.addEventListener('ended', () => {
