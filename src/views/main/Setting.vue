@@ -21,6 +21,7 @@
 									v-model="wordsPerDay"
 									type="number"
 									shaped
+									outlined
 								)
 						v-divider
 						v-list-item
