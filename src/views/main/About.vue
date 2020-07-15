@@ -1,9 +1,33 @@
 <template>
   <div class="about-team">
     <div class="about-team__wrapper">
-      <h1 class="about-team__title">
-        Dream Team 42
-      </h1>
+      <v-row
+        align="center"
+        justify="center"
+      >
+        <v-col
+          cols="12"
+          md="6"
+          class="aligh-center"
+        >
+          <h1 class="about-team__title">
+            Dream Team 42
+          </h1>
+        </v-col>
+        <v-col
+          cols="12"
+          md="6"
+        >
+          <iframe
+            width="560"
+            height="315"
+            src=""
+            frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          />
+        </v-col>
+      </v-row>
     </div>
     <div class="about-team__questions">
       <h2 class="questions__title">
@@ -28,11 +52,6 @@
             Answer is simple - "Dream Team" - just because we are Dream Team
           </p>
         </li>
-
-        <!-- <p>Here is short information about our team. First question is "Why Dream Team 42?</p>
-		<p>Answer is simple ))) - "Dream Team" - just because we are Dream Team ))))</p>
-		<p>"42" - is just because we are 42 team in the main table</p>
-		<p>So let me introduce participants:</p> -->
       </ul>
     </div>
 
