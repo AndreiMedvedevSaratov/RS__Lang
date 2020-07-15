@@ -4,7 +4,7 @@
 		div( class="main" )
 			v-img(
 				class="main__image"
-				:src="UrlImage"
+				:src="getImg"
 				contain
 			)
 			v-row
@@ -53,14 +53,14 @@ import { mapActions, mapGetters, mapMutations } from 'vuex';
  */
 export default {
 	name: 'SpeakIt',
-	components: {},
-	props: [],
 	data: () => ({
 		status: '',
 		count: [],
 		gameStatus: false,
 		gameLevel: 0,
 		recognition: '',
+		img: null,
+		count_error: 0,
 	}),
 	computed: {
 		...mapGetters({
@@ -74,16 +74,11 @@ export default {
 		getImageArray() {
 			return this.isWords.map((item) => item.image);
 		},
+		getImg() {
+			return this.img ? this.img : this.UrlImage;
+		},
 	},
-	watch: {},
-	created() {},
 	mounted() {
-		/** Examples
-     * this.getWords(); page - 0, group - 0
-     * this.getWords({ page: 2 });
-     * this.getWords({ page: 2, group: 3 });
-     * this.getWords({ group: 3 });
-     */
 		this.getWords({
 			page: 0,
 			filter: {
@@ -139,6 +134,8 @@ export default {
 			this.recognition.maxAlternatives = 1;
 			this.recognition.onerror = (event) => {
 				console.log(`It's error! ${event.error}`);
+				this.count_error += 1;
+				if (this.count_error > 100) this.recognition.onend = () => this.recognition.stop();
 			};
 			this.recognition.onend = () => this.recognition.start();
 
@@ -195,7 +192,7 @@ export default {
 			this.count.length = 0;
 		},
 		setImgAndAudio(payload) {
-			this.UrlImage = payload.image;
+			this.img = payload.image;
 			const audio = new Audio(payload.audio);
 			audio.play();
 		},

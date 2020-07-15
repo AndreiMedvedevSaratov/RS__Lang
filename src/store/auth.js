@@ -13,7 +13,6 @@ const actions = {
 			password: rootState.user.profile.password,
 		}).then((user) => {
 			commit('AUTH_DATA', user.data);
-			dispatch('user/USER_REQUEST', user.data.userId, { root: true });
 			commit('AUTH_SUCCESS');
 			commit('APP_STATUS', 'success');
 		}).catch((err) => {

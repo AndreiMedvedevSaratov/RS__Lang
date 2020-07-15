@@ -27,10 +27,10 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
 import navigationBrawer from '@/components/main/navigation-drawer.vue';
 import appbar from '@/components/main/app-bar.vue';
 import setting from '@/views/main/Setting.vue';
-import { mapGetters } from 'vuex';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
@@ -40,8 +40,6 @@ export default {
 		navigationBrawer,
 		appbar,
 		setting,
-	},
-	props: {
 	},
 	data() {
 		return {
@@ -66,8 +64,12 @@ export default {
 	},
 	mounted() {
 		this.updateList();
+		this.checkSetting();
 	},
 	methods: {
+		...mapActions({
+			checkSetting: 'user/USER_CHECK_SETTINGS',
+		}),
 		routeTo(pRouteTo) {
 			if (this.breadcrumbList[pRouteTo].link) this.$router.push(this.breadcrumbList[pRouteTo].link);
 		},

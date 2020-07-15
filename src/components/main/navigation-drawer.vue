@@ -4,6 +4,7 @@
 			:clipped="$vuetify.breakpoint.lgAndUp"
 			app
 			mini-variant
+			mobile-breakpoint="md"
 			stateless
 			hide-overlay
 			expand-on-hover
@@ -14,6 +15,7 @@
 						v-list-item(
 							:key="item.text"
 							link
+							:class="item.class"
 						)
 							v-list-item-action
 								v-icon {{ item.icon }}
@@ -52,24 +54,32 @@ import { mapGetters, mapMutations, mapActions } from 'vuex';
  */
 export default {
 	name: 'NavigationDrawer',
-	components: {},
-	props: [],
 	data: () => ({
 		items: [
-			{ icon: 'mdi-history', text: 'Statistics', to: '/statistics' },
-			// {
-			// 	icon: 'mdi-chevron-up',
-			// 	'icon-alt': 'mdi-chevron-down',
-			// 	text: 'More',
-			// 	model: false,
-			// 	children: [
-			// 		{ text: 'Import' },
-			// 		{ text: 'Export' },
-			// 		{ text: 'Print' },
-			// 		{ text: 'Undo changes' },
-			// 		{ text: 'Other contacts' },
-			// 	],
-			// },
+			{
+				icon: 'mdi-home',
+				text: 'HOME',
+				class: 'd-flex d-md-none',
+				to: '/home',
+			},
+			{
+				icon: 'mdi-library',
+				text: 'DICTIONERY',
+				class: 'd-flex d-md-none',
+				to: '/dictionary',
+			},
+			{
+				icon: 'mdi-clipboard-account',
+				text: 'ABOUT',
+				class: 'd-flex d-md-none',
+				to: '/about',
+			},
+			{
+				icon: 'mdi-history',
+				text: 'Statistics',
+				class: '',
+				to: '/statistics',
+			},
 		],
 	}),
 	computed: {
@@ -94,9 +104,6 @@ export default {
 			},
 		},
 	},
-	watch: {},
-	created() {},
-	mounted() {},
 	methods: {
 		...mapActions({
 			logoutAction: 'AUTH_LOGOUT',
@@ -115,7 +122,3 @@ export default {
 
 };
 </script>
-
-<style lang='scss' scoped>
-
-</style>

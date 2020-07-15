@@ -93,7 +93,7 @@ const actions = {
 				});
 			});
 		if (wordsData) {
-			console.log('APP_GET_WORDS', wordsData.data);
+			// console.log('APP_GET_WORDS', wordsData.data);
 			commit('APP_GET_WORDS', wordsData.data);
 		}
 
@@ -124,7 +124,7 @@ const actions = {
 		await axios.get(
 			`${rootState.app.server}/words/count?&group=${words.group}&wordsPerExampleSentenceLTE=${words.wordsPerExampleSentenceLTE || ''}&wordsPerPage=${words.wordsPerPage || ''}`,
 		).then((wordsData) => {
-			console.log('Get count words', wordsData.data);
+			// console.log('Get count words', wordsData.data);
 			commit('APP_GET_COUNT_WORDS_IN_GROUP', wordsData.data);
 			commit('APP_STATUS', 'success');
 		})
@@ -154,7 +154,7 @@ const actions = {
 		await axios.get(
 			`${rootState.app.server}/words/${payload.wordId}?noAssets=${payload.noAssets || 'true'}`,
 		).then((wordsData) => {
-			console.log('Get word', wordsData.data);
+			// console.log('Get word', wordsData.data);
 			commit('APP_GET_WORD', wordsData.data);
 			commit('APP_STATUS', 'success');
 		}).catch((error) => {
@@ -178,7 +178,7 @@ const actions = {
 	 *				{ wordId: String, wordStat: {Object} }, { root: true })
 	 */
 	async APP_SET_USER_WORD_STAT({
-		rootState, commit, dispatch,
+		rootState, commit,
 	}, payload) {
 		commit('APP_STATUS', 'loading');
 
@@ -186,17 +186,10 @@ const actions = {
 			`${rootState.app.server}/users/${rootState.user.profile.userId}/words/${payload.wordId}`,
 			payload.wordStat,
 		).then((wordData) => {
-			console.log(`${payload.method === 'put' ? 'Обновил' : 'Создал'} статистику по слову`, wordData.data);
+			// console.log(`${payload.method === 'put' ? 'Обновил' : 'Создал'} статистику по слову`, wordData.data);
 			commit('APP_SET_USER_WORD_STAT', wordData.data);
 			commit('APP_STATUS', 'success');
-		}).catch((error) => {
-			commit('APP_STATUS', 'error');
-			dispatch('ALERT', {
-				alert: true,
-				status: 'error',
-				message: `${error.response.statusText}: ${error.response.data}`,
-			});
-		});
+		}).catch(() => {});
 	},
 
 	/**
@@ -213,7 +206,7 @@ const actions = {
 		await axios.get(
 			`${rootState.app.server}/users/${rootState.user.profile.userId}/words/${wordId || ''}`,
 		).then((wordData) => {
-			console.log('Получил статистику по слову(-ам)', wordData.data);
+			// console.log('Получил статистику по слову(-ам)', wordData.data);
 			commit('APP_GET_USER_WORD_STAT', wordData.data);
 			commit('APP_STATUS', 'success');
 		})
@@ -238,7 +231,7 @@ const actions = {
 	}, wordId) {
 		commit('APP_STATUS', 'loading');
 
-		const res = await axios.delete(
+		await axios.delete(
 			`${rootState.app.server}/users/${rootState.user.profile.userId}/words/${wordId}`,
 		).catch((error) => {
 			commit('APP_STATUS', 'error');
@@ -248,7 +241,7 @@ const actions = {
 				message: `${error.response.statusText}: ${error.response.data}`,
 			});
 		});
-		console.log(`Удалил статистику по слову с ID ${wordId}`, res);
+		// console.log(`Удалил статистику по слову с ID ${wordId}`, res);
 		commit('APP_DELETE_USER_WORD_STAT', wordId);
 
 		commit('APP_STATUS', 'success');
@@ -284,8 +277,10 @@ const actions = {
 			`${rootState.app.server}/users/${rootState.user.profile.userId}/aggregatedWords?group=${words.group}&page=${words.page}&wordsPerPage=${words.wordsPerPage}&filter=${words.filter}`,
 		).then((wordsData) => {
 			commit('APP_GET_WORDS', wordsData.data[0].paginatedResults);
-			commit('APP_GET_WORDS_COUNT', wordsData.data[0].totalCount[0].count);
-			console.log('aggregatedWords', wordsData.data[0]);
+			if (wordsData.data[0].paginatedResults.length > 0) {
+				commit('APP_GET_WORDS_COUNT', wordsData.data[0].totalCount[0].count);
+			} else commit('APP_GET_WORDS_COUNT', 0);
+			// console.log('aggregatedWords', wordsData.data[0]);
 
 			commit('APP_STATUS', 'success');
 		}).catch((error) => {
@@ -313,7 +308,7 @@ const actions = {
 			`${rootState.app.server}/users/${rootState.user.profile.userId}/aggregatedWords/${wordId}`,
 		).then((word) => {
 			commit('APP_GET_WORD', word.data[0]);
-			console.log('aggregatedWord', word.data[0]);
+			// console.log('aggregatedWord', word.data[0]);
 
 			commit('APP_STATUS', 'success');
 		}).catch((error) => {
@@ -400,8 +395,11 @@ const mutations = {
 	SHOW_SHORT_STATISTICS: (state) => {
 		state.showShortStatistics = !state.showShortStatistics;
 	},
+	SHOW_ALERT: (state) => {
+		state.showAlert = !state.showAlert;
+	},
 	STATISTIC_WORD: (state, word) => {
-		if (word.userWord && (word.userWord.optional || word.userWord.difficulty)) {
+		if (word.userWord && word.userWord.optional) {
 			state.wordHasStat = true;
 			const { optional } = word.userWord;
 			state.wordStat.optional = {
@@ -416,6 +414,7 @@ const mutations = {
 		} else {
 			state.wordHasStat = false;
 			state.wordStat = {
+				difficulty: 'none',
 				optional: {
 					name: word.word,
 					learnGroup: 1,
@@ -495,12 +494,14 @@ const getters = {
 	getUrlFiles: (state) => state.urlFiles,
 	getUrlImage: (state) => state.urlImage,
 	showShortStatistics: (state) => state.showShortStatistics,
+	showAlert: (state) => state.showAlert,
 	showSetting: (state) => state.showSetting,
 };
 
 const state = {
 	status: 'success',
 	server: 'https://afternoon-falls-25894.herokuapp.com',
+	// urlFiles: 'https://kagafon-rslang-data.netlify.app/',
 	urlFiles: 'https://raw.githubusercontent.com/Dream-Team-42/rslang-data/master/',
 	urlImage: './assets/default-english.jpg',
 	html: {
@@ -516,7 +517,7 @@ const state = {
 	},
 
 	words: [],
-	countWords: [],
+	countWords: 0,
 	wordsStat: [],
 	wordStat: {
 		optional: {
@@ -532,6 +533,7 @@ const state = {
 	wordHasStat: false,
 
 	showShortStatistics: false,
+	showAlert: false,
 	showSetting: false,
 };
 

@@ -4,7 +4,7 @@ const forGame = {
 		 *
 		 * @param {string} configName - props name for word-object
 		 */
-		markWord(configName = 'config') {
+		markWord(configName = 'nextWord') {
 			if (!this[configName].userWord) {
 				this[configName].userWord = {
 					learnGroup: 1,
@@ -43,7 +43,7 @@ const forGame = {
 		},
 		failureInput(isAfterFailure) {
 			const minLearnLevel = 0;
-			const { userWord } = this.config;
+			const { userWord } = this.nextWord;
 			if (!isAfterFailure) {
 				userWord.learnGroup = userWord.learnGroup > minLearnLevel
 					? userWord.learnGroup -= 1
@@ -56,7 +56,7 @@ const forGame = {
 		},
 		successInput(isAfterFailure) {
 			const maxLearnLevel = 5;
-			const { userWord } = this.config;
+			const { userWord } = this.nextWord;
 			if (!isAfterFailure) {
 				userWord.learnGroup = userWord.learnGroup < maxLearnLevel
 					? userWord.learnGroup += 1

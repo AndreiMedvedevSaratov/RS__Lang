@@ -209,7 +209,6 @@ export default {
 			this.updateWord = this.wordsStat.some((word) => word.wordId === this.wordId);
 		},
 	},
-	created() {},
 	mounted() {
 		// this.getAggregatedWord('5e9f5ee35eb9e72bc21af4a3');
 		this.getWord({ wordId: '5e9f5ee35eb9e72bc21af4a3' });
@@ -254,5 +253,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="scss" scoped></style>

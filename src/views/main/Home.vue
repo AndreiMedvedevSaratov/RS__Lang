@@ -4,39 +4,6 @@
 			align="center"
 			justify="center"
 		)
-				v-col(
-					cols="12"
-					xl="6"
-					lg="8"
-					md="8"
-					sm="12"
-				)
-					v-card(
-						color="red"
-						class="mb-2"
-						dark
-					)
-						div(
-							class="d-flex flex-no-wrap justify-space-between"
-						)
-							div
-								v-badge(
-									color="blue-grey darken-4"
-									overlap
-									left
-									content="1"
-								)
-									v-card-title(
-										class="headline text-wrap"
-										style="word-break: break-word;"
-									) Main game
-										p( class="text-right text-caption" ) Test your knowledge of English
-								v-btn( to="/main-game" class="mt-4" absolute right small outlined ) Запустить
-
-		v-row(
-			align="center"
-			justify="center"
-		)
 			v-col(
 				cols="12"
 				xl="3"
@@ -59,7 +26,7 @@
 								color="blue-grey darken-4"
 								overlap
 								left
-								:content="i+2"
+								:content="i+1"
 							)
 								v-card-title(
 									class="headline text-wrap"
@@ -101,7 +68,7 @@
 								color="blue-grey darken-4"
 								overlap
 								left
-								:content="i+2"
+								:content="i+1"
 							)
 								v-card-title(
 									class="headline text-wrap"
@@ -126,11 +93,15 @@
 
 export default {
 	name: 'Home',
-	components: {},
-	props: {
-	},
 	data: () => ({
 		gameList: [
+			{
+				title: 'Main game',
+				subtitle: 'Test your knowledge of English',
+				link: '/main-game',
+				img: 'assets/img/main.png',
+				color: 'red',
+			},
 			{
 				title: 'English puzzle',
 				subtitle: 'Collect the puzzle to get a picture',
@@ -140,31 +111,10 @@ export default {
 			},
 			{
 				title: 'Speaking',
-				subtitle: 'textextexetxte',
+				subtitle: 'Train your skills in dialogue game',
 				link: '/speaking',
 				img: 'assets/img/speaking.png',
 				color: 'primary',
-			},
-			{
-				title: 'SpeakIt',
-				subtitle: 'textextexetxte',
-				link: '/speakit',
-				img: 'assets/img/speakit.png',
-				color: 'grey',
-			},
-			{
-				title: 'Саванна',
-				subtitle: 'textextexetxte',
-				link: '/savanna-game',
-				img: 'assets/img/саванна.png',
-				color: 'blue',
-			},
-			{
-				title: 'Аудиовызов',
-				subtitle: 'textextexetxte',
-				link: '/AudioVizov',
-				img: 'assets/img/аудиовызов.png',
-				color: 'pink darken-1',
 			},
 			{
 				title: 'Спринт',
@@ -173,14 +123,21 @@ export default {
 				img: 'assets/img/спринт.png',
 				color: 'red darken-4',
 			},
+			{
+				title: 'SpeakIt',
+				subtitle: 'Check your pronunciation skills',
+				link: '/speakit',
+				img: 'assets/img/speakit.png',
+				color: 'purple lighten-1',
+			},
+			{
+				title: 'Аудиовызов',
+				subtitle: 'Train your listening skills',
+				link: '/AudioVizov',
+				img: 'assets/img/аудиовызов.png',
+				color: 'pink darken-1',
+			},
 		],
 	}),
-	computed: {
-	},
-	watch: {},
-	created() {},
-	mounted() {},
-	methods: {
-	},
 };
 </script>

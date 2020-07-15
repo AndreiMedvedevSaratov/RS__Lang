@@ -144,33 +144,11 @@ const routes = [
 			{
 				path: '/main-game',
 				name: 'Main game',
-				component: () => import(/* webpackChunkName: 'main-game' */ '../components/MainGame/main-game.vue'),
+				component: () => import(/* webpackChunkName: 'main-game' */ '../components/MainGame/GameMain.vue'),
 				meta: {
 					breadcrumb: [
 						{ text: 'Home', to: '/home' },
 						{ text: 'Main game' },
-					],
-				},
-			},
-			{
-				path: '/savanna-start',
-				name: 'Savanna',
-				component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-start.vue'),
-				meta: {
-					breadcrumb: [
-						{ text: 'Home', to: '/home' },
-						{ text: 'Savanna' },
-					],
-				},
-			},
-			{
-				path: '/savanna-game',
-				name: 'Savanna-game',
-				component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-game.vue'),
-				meta: {
-					breadcrumb: [
-						{ text: 'Home', to: '/home' },
-						{ text: 'Savanna' },
 					],
 				},
 			},

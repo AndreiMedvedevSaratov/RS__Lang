@@ -2,22 +2,28 @@
 	v-card( color="basil" )
 		v-card-title( class="text-center justify-center py-6" )
 			h1( class="font-weight-bold display-3 basil--text" ) Мой словарь
-		v-card-subtitle Всего слов: {{wordsStat.length}}/{{countWords}}
+		v-card-subtitle(
+			v-if="countWords > 0"
+		) Всего слов: {{wordsStat.length}}/{{countWords}}
 			v-btn(
 				@click="getAggregatedWords({group: '',wordsPerPage: countWords,filter: {userWord: { $ne: null }}})"
 				x-small
 				tile
+				v-if="countWords > 10"
 			) Загрузить все
-		v-list-item-group
+		v-list-item-group(
+			v-if="wordsStat.length > 0"
+		)
 			v-virtual-scroll(
 				:items="wordsStat"
-				item-height="184"
+				item-height="200"
 				height="370"
+				max-height="600"
 				style="height: calc( 100vh - 234px )"
 				bench="2"
 			)
 				template(v-slot="{ item }" )
-					v-card( class="my-2"  )
+					v-card( class="my-2" :class="item.userWord.optional.isDelete ? 'red lighten-4' : ''"  )
 						v-card-text( class="py-0" )
 							v-row
 								v-col
@@ -44,16 +50,16 @@
 										v-icon mdi-volume-high
 									span( v-html="item.textExample" )
 									br
-									b Давность: {{ item.userWord.optional.previousTrain ? item.userWord.optional.previousTrain : 'none' }}
+									b Давность: {{ item.userWord.optional && item.userWord.optional.previousTrain ? item.userWord.optional.previousTrain : 'none' }}
 									=' | '
-									b Повторений: {{ item.userWord.optional.allRepeats ? item.userWord.optional.allRepeats : 'none' }}
+									b Повторений: {{ item.userWord.optional && item.userWord.optional.allRepeats ? item.userWord.optional.allRepeats : 'none' }}
 									br
 									b Уровень запоминания:
 									=' '
 									v-icon(
 										small
 										v-for="learnGroup in 5" :key="learnGroup"
-										:color="(learnGroup <= item.userWord.optional.learnGroup) ? 'green' : ''"
+										:color="(item.userWord.optional && learnGroup <= item.userWord.optional.learnGroup) ? 'green' : ''"
 									) mdi-circle
 								v-col
 									v-img(
@@ -61,6 +67,20 @@
 										width="120"
 										:src="`${urlFiles}${item.image}`"
 									)
+								v-spacer
+									v-btn(
+										v-if="!item.userWord.optional.isDelete"
+										text
+										@click="deleteWord(item)"
+									) Удалить
+									v-btn(
+										v-else
+										text
+										@click="restoreWord(item)"
+									) Вернуть
+		v-card-text(
+			v-else
+		) Ваш словарь пуст, начните играть ...
 </template>
 
 <script>
@@ -72,8 +92,6 @@ import { mapMutations, mapGetters, mapActions } from 'vuex';
  */
 export default {
 	name: 'Dictionary',
-	components: {},
-	props: [],
 	data: () => ({
 		tab: null,
 		items: [
@@ -88,8 +106,6 @@ export default {
 			countWords: 'getCountWords',
 		}),
 	},
-	watch: {},
-	created() {},
 	mounted() {
 		// Перед началом игры изменим стиль страницы
 		this.appHtml([
@@ -123,10 +139,35 @@ export default {
 		}),
 		...mapActions({
 			getAggregatedWords: 'APP_GET_USER_WORDS_AGGREGATED',
+			wordSave: 'APP_SET_USER_WORD_STAT',
 		}),
 		playAudio: (dataAudio) => {
 			const audio = new Audio(dataAudio);
 			audio.play();
+		},
+		async deleteWord(item) {
+			const wordStat = item.userWord;
+			wordStat.optional.isDelete = true;
+			// eslint-disable-next-line no-underscore-dangle
+			await this.wordSave({ wordId: item._id, method: 'put', wordStat });
+			this.getAggregatedWords({
+				group: '',
+				filter: {
+					userWord: { $ne: null },
+				},
+			});
+		},
+		async restoreWord(item) {
+			const wordStat = item.userWord;
+			wordStat.optional.isDelete = false;
+			// eslint-disable-next-line no-underscore-dangle
+			await this.wordSave({ wordId: item._id, method: 'put', wordStat });
+			this.getAggregatedWords({
+				group: '',
+				filter: {
+					userWord: { $ne: null },
+				},
+			});
 		},
 	},
 

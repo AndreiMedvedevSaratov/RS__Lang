@@ -27,7 +27,7 @@
 						label="Complexity of game"
 					)
 			v-btn(
-				@click="game()"
+				@click="checkSetting()"
 				block
 			)
 				span( style="color: #112595" ) St
@@ -109,6 +109,13 @@
 				v-icon(left) mdi-replay
 				| Replay
 		vModal( :words="{ correct: correctWords, wrong: wrongWords }" )
+		vAlert(
+			text=`Для данной игры должны быть изменены следующие пользовательские настройки:<br>
+			<br><b> 1) Дневной лимит не меньше 30 слов </b>
+			<br><b> 2) Показывать перевод слова </b><br>
+			<br> Соглашаясь Вы принимаете условие!`
+			:goYes="consentToTerms"
+		)
 </template>
 
 <script>
@@ -117,7 +124,10 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-plusplus */
 import { mapMutations, mapActions, mapGetters } from 'vuex';
+import setting from '@/assets/js/mixinSetting';
+import alert from '@/assets/js/mixinAlert';
 import vModal from './modal/ModalShortStat.vue';
+import vAlert from './modal/ModalAlert.vue';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
@@ -126,10 +136,9 @@ export default {
 	name: 'GameSprint',
 	components: {
 		vModal,
+		vAlert,
 	},
-	filters: {
-	},
-	props: [],
+	mixins: [setting, alert],
 	data: () => ({
 		gameStatus: false,
 		loading: false,
@@ -197,7 +206,7 @@ export default {
 		}),
 		// Если выбрано играть без картинок то зарузить по умолчанию
 		getImg() {
-			return this.withImg ? `${this.urlFiles}${this.nextCorrectWord.image}` : './assets/img/sprint/fon3.jpg';
+			return this.withImg && this.showImage ? `${this.urlFiles}${this.nextCorrectWord.image}` : './assets/img/sprint/fon3.jpg';
 		},
 		// Открыть/Закрыть краткосрочную статистику
 		showStatistics: {
@@ -208,7 +217,6 @@ export default {
 				this.offStatistics();
 			},
 		},
-
 	},
 	watch: {
 		currentTime(time) {
@@ -222,11 +230,6 @@ export default {
 				this.stopTimerGame();
 			}
 		},
-	},
-	created() {},
-	beforeMount() {
-		// Запускаем прослушиватель, на закрытие вкладки (в beforeDestroy удалить надо)
-		// window.addEventListener('beforeunload', this.preventNav);
 	},
 	mounted() {
 		// Перед началом игры изменим стиль страницы
@@ -250,8 +253,6 @@ export default {
 			{ one: 'app', key: 'background', value: 'grey lighten-5' },
 			{ one: 'app', key: 'colorWhite', value: false },
 		]);
-		// Удаляем прослушиватель, что бы он не распространялся на другие компоненты
-		// window.removeEventListener('beforeunload', this.preventNav);
 	},
 	methods: {
 		...mapMutations({
@@ -263,11 +264,6 @@ export default {
 			alert: 'ALERT',
 			wordProcessing: 'APP_WORD_PROCESSING',
 		}),
-		// preventNav(e) {
-		// 	e.preventDefault();
-		// 	e.returnValue = '';
-		// 	console.log('Вроде сработало!');
-		// },
 		// Главный метод
 		async game() {
 			this.loading = true;
@@ -303,6 +299,22 @@ export default {
 				this.loading = false;
 				this.startTimer();
 			}, 100);
+		},
+
+		// Проверяем пользовательские настройки на требования игры
+		checkSetting() {
+			if (this.countWords <= this.wordsPerDay && this.showWordTranslate) {
+				this.game();
+			} else this.showAlert = true;
+		},
+
+		// Применяем настройки пользователя после согласия
+		consentToTerms() {
+			this.showWordTranslate = true;
+			this.wordsPerDay = 30;
+			this.showAlert = false;
+			this.setGetSetting({ method: 'put' });
+			this.game();
 		},
 		// Создает новый массив из обьектов с n колличеством внутренних обьектов
 		builderArray() {
