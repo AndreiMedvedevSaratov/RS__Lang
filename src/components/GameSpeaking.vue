@@ -42,7 +42,7 @@ export default {
 	components: {},
 	props: [],
 	data: () => ({
-		myVideosForGame: ['./assets/video/first.mp4', './assets/video/second.mp4'],
+		myVideosForGame: ['./assets/video/1.mp4', './assets/video/2.mp4', './assets/video/3.mp4', './assets/video/4.mp4'],
 		step: 0,
 		status: '',
 		srcVideo: './assets/video/first.mp4',
