@@ -9,6 +9,7 @@
 					ref="video"
 				)
 					source(
+						ref="src"
 						:src="myVideosForGame[step]"
 						type="video/mp4"
 					)
@@ -43,7 +44,6 @@ export default {
 	data: () => ({
 		myVideosForGame: ['./assets/video/first.mp4', './assets/video/second.mp4'],
 		step: 0,
-
 		status: '',
 		srcVideo: './assets/video/first.mp4',
 		isAnswer: 'Yes, actually I am lost! How did you know?',
@@ -60,9 +60,11 @@ export default {
 	},
 	watch: {
 		videoIsEnded() {
+			this.speak();
 			this.answer();
 			this.videoIsEnded = false;
-			this.step += 1;
+			this.$refs.src.setAttribute('src', this.myVideosForGame[this.step]);
+			this.$refs.video.load();
 		},
 	},
 	created() {},
@@ -113,7 +115,7 @@ export default {
 				this.count_error += 1;
 				if (this.count_error > 100) this.recognition.onend = () => this.recognition.stop();
 			};
-			this.recognition.onend = () => this.recognition.start();
+			// this.recognition.onend = () => this.recognition.start();
 
 			this.count_error = 0;
 			this.recognition.addEventListener('result', (event) => {
@@ -127,6 +129,7 @@ export default {
 		video() {
 			this.$refs.video.addEventListener('ended', () => {
 				this.videoIsEnded = true;
+				this.step += 1;
 			});
 			this.$refs.video.play();
 		},
