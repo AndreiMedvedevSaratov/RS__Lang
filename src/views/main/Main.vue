@@ -27,10 +27,10 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
 import navigationBrawer from '@/components/main/navigation-drawer.vue';
 import appbar from '@/components/main/app-bar.vue';
 import setting from '@/views/main/Setting.vue';
-import { mapGetters, mapActions } from 'vuex';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html

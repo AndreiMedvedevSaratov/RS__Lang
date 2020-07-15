@@ -1,5 +1,32 @@
 <template lang="pug">
 	div( class="game" )
+
+		v-row( class="main" )
+			v-col
+				video(
+					class="main__image"
+					controls
+					ref="video"
+				)
+					source(
+						:src="myVideosForGame[step]"
+						type="video/mp4"
+					)
+				v-btn(
+					@click="video()"
+					tile
+					block
+				) Начать разговор
+
+			v-col( class="indigo lighten-4" ) Чат
+				div(
+					class="amber darken-4"
+					ref="answer"
+				)
+				p(
+					class=''
+					ref="speech"
+				)
 		div( class="main" )
 			video(
 				class="video"
@@ -32,30 +59,38 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations/* , mapActions */ } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
-	name: 'speaking',
+	name: 'Speaking',
 	components: {},
 	props: [],
 	data: () => ({
 		myVideosForGame: ['./assets/video/first.mp4', './assets/video/second.mp4'],
 		step: 0,
+
+		status: '',
+		srcVideo: './assets/video/first.mp4',
+		isAnswer: 'Yes, actually I am lost! How did you know?',
+		videoIsEnded: false,
+		count_error: 0,
+		recognition: '',
 		loading: false,
 	}),
 	computed: {
 		...mapGetters({
-			videoIsEnded: 'speaking/getVideoIsEnded',
+			words: 'getWords',
+			urlFiles: 'getUrlFiles',
+			getShortStatistics: 'showShortStatistics',
 		}),
 	},
 	watch: {
 		videoIsEnded() {
 			this.answer();
-			this.speak();
 			this.videoIsEnded = false;
 			this.step += 1;
 		},
@@ -87,10 +122,46 @@ export default {
 			video: 'speaking/SPEAKING_VIDEO',
 			answer: 'speaking/SPEAKING_ANSWER',
 			speak: 'speaking/SPEAKING_SPEAK',
+			appHtml: 'EDIT_HTML',
+			offStatistics: 'SHOW_SHORT_STATISTICS',
 		}),
-		// ...mapActions({
-		// 	game: 'speaking/SPEAKING_GAME',
-		// }),
+		...mapActions({
+			getWords: 'APP_GET_USER_WORDS_AGGREGATED',
+			alert: 'ALERT',
+			wordProcessing: 'APP_WORD_PROCESSING',
+		}),
+		speak() {
+			const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+			this.recognition = new SpeechRecognition();
+			this.recognition.lang = 'en-US';
+			this.recognition.continuos = false;
+			this.recognition.interimResults = false;
+			this.recognition.maxAlternatives = 1;
+			this.recognition.onerror = (event) => {
+				console.log(`It's error! ${event.error}`);
+				this.count_error += 1;
+				if (this.count_error > 100) this.recognition.onend = () => this.recognition.stop();
+			};
+			this.recognition.onend = () => this.recognition.start();
+
+			this.count_error = 0;
+			this.recognition.addEventListener('result', (event) => {
+				const last = event.results.length - 1;
+				const sayWord = event.results[last][0].transcript.toLowerCase();
+				this.$refs.speech.textContent = sayWord;
+				this.recognition.onend = () => this.recognition.stop();
+			});
+			this.recognition.start();
+		},
+		video() {
+			this.$refs.video.addEventListener('ended', () => {
+				this.videoIsEnded = true;
+			});
+			this.$refs.video.play();
+		},
+		answer() {
+			this.$refs.answer.textContent = this.isAnswer;
+		},
 	},
 };
 </script>

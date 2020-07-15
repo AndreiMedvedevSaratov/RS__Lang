@@ -402,6 +402,9 @@ const mutations = {
 	SHOW_SHORT_STATISTICS: (state) => {
 		state.showShortStatistics = !state.showShortStatistics;
 	},
+	SHOW_ALERT: (state) => {
+		state.showAlert = !state.showAlert;
+	},
 	STATISTIC_WORD: (state, word) => {
 		if (word.userWord && (word.userWord.optional || word.userWord.difficulty)) {
 			state.wordHasStat = true;
@@ -497,6 +500,7 @@ const getters = {
 	getUrlFiles: (state) => state.urlFiles,
 	getUrlImage: (state) => state.urlImage,
 	showShortStatistics: (state) => state.showShortStatistics,
+	showAlert: (state) => state.showAlert,
 	showSetting: (state) => state.showSetting,
 };
 
@@ -535,6 +539,7 @@ const state = {
 	wordHasStat: false,
 
 	showShortStatistics: false,
+	showAlert: false,
 	showSetting: false,
 };
 

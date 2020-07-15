@@ -3,7 +3,6 @@ import Vuex from 'vuex';
 import app from './app';
 import auth from './auth';
 import user from './user';
-import speaking from './speaking';
 
 Vue.use(Vuex);
 
@@ -14,6 +13,5 @@ export default new Vuex.Store({
 		auth,
 		app,
 		user,
-		speaking,
 	},
 });
