@@ -50,15 +50,15 @@
           </p>
         </li>
         <li class="questions__item ">
-          First question is "Why Dream Team 42?
+          We worked together!
           <p class="questions__anwear">
-            Answer is simple - "Dream Team" - just because we are Dream Team
+            We worked together to produce the best application!
           </p>
         </li>
         <li class="questions__item ">
-          First question is "Why Dream Team 42?
+          Our goal
           <p class="questions__anwear">
-            Answer is simple - "Dream Team" - just because we are Dream Team
+            Our goal was to produce the best application to help you to learn English language!
           </p>
         </li>
       </ul>
