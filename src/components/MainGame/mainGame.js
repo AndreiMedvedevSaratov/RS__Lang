@@ -1,12 +1,11 @@
 const mainGame = {
 	methods: {
-
 		/**
 		 * The main function of the game.
 		 */
 		checkWord() {
-			const input = this.userInput;
-			const originWord = this.nextWord.word;
+			const input = this.userInput.toLowerCase();
+			const originWord = this.nextWord.word.toLowerCase();
 
 			if (originWord === input) {
 				this.successInput(this.isGetWrongInput);
@@ -24,6 +23,11 @@ const mainGame = {
 				if (this.showAudioExample) soundsArr.push(`${this.urlFiles}${this.nextWord.audioExample}`);
 			}
 			return soundsArr;
+		},
+		skipWord() {
+			this.isGetWrongInput = true;
+			this.successInput(this.isGetWrongInput);
+			this.successResult();
 		},
 	},
 };
