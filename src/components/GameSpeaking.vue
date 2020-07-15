@@ -10,7 +10,7 @@
 				)
 					source(
 						ref="src"
-						:src="myVideosForGame[step]"
+						:src="`./assets/video/${this.step}.mp4`"
 						type="video/mp4"
 					)
 				v-btn(
@@ -42,10 +42,8 @@ export default {
 	components: {},
 	props: [],
 	data: () => ({
-		myVideosForGame: ['./assets/video/1.mp4', './assets/video/2.mp4', './assets/video/3.mp4', './assets/video/4.mp4'],
-		step: 0,
+		step: 1,
 		status: '',
-		// srcVideo: './assets/video/first.mp4',
 		isAnswer: 'Yes, actually I am lost! How did you know?',
 		videoIsEnded: false,
 		count_error: 0,
@@ -59,13 +57,15 @@ export default {
 		}),
 	},
 	watch: {
-		videoIsEnded() {
-			this.speak();
-			this.answer();
-			this.videoIsEnded = false;
-			this.$refs.src.setAttribute('src', `./assets/video/${this.step}.mp4`);
-			this.$refs.video.load();
-		},
+		// videoIsEnded() {
+		// 	this.speak();
+		// 	this.answer();
+		// 	this.videoIsEnded = false;
+		// 	this.step += 1;
+		// 	console.log(this.step);
+		// 	this.$refs.src.setAttribute('src', `./assets/video/${this.step}.mp4`);
+		// 	this.$refs.video.load();
+		// },
 	},
 	created() {},
 	mounted() {
@@ -127,12 +127,14 @@ export default {
 			this.recognition.start();
 		},
 		video() {
-			this.$refs.video.addEventListener('ended', (e) => {
-				e.preventDefault();
-				this.videoIsEnded = true;
+			this.$refs.video.onended = () => {
+				this.speak();
+				this.answer();
 				this.step += 1;
 				console.log(this.step);
-			});
+				this.$refs.src.setAttribute('src', `./assets/video/${this.step}.mp4`);
+				this.$refs.video.load();
+			};
 			this.$refs.video.play();
 		},
 		answer() {
