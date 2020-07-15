@@ -75,11 +75,24 @@
 				) Next level
 			vModal( :words="{ correct: correctWords, wrong: wrongWords }"
 				:textExample="true")
+			vAlert(
+			text=`Для данной игры должны быть изменены следующие пользовательские настройки:<br>
+			<br><b> 1) Дневной лимит не меньше 10 слов </b>
+			<br><b> 2) Показать пример текста </b>
+			<br><br><b> Не обязательные опции (Редактируете вручную)
+			<br><b> 1) Дневной лимит не меньше 10 слов </b>
+			<br><b> 2) Показать пример текста </b>
+			<br> Соглашаясь Вы принимаете условие!`
+			:goYes="consentToTerms"
+		)
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex';
+import setting from '@/assets/js/mixinSetting';
+import alert from '@/assets/js/mixinAlert';
 import vModal from './modal/ModalShortStat.vue';
+import vAlert from './modal/ModalAlert.vue';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
@@ -88,7 +101,9 @@ export default {
 	name: 'EnglishPuzzle',
 	components: {
 		vModal,
+		vAlert,
 	},
+	mixins: [setting, alert],
 	props: [],
 	data: () => ({
 		num: 0,
@@ -133,8 +148,11 @@ export default {
 	},
 	created() {
 	},
+	beforeMount() {
+		// Запускаем прослушиватель (в beforeDestroy удалить надо)
+		window.addEventListener('mousemove', this.eyes, { capture: true });
+	},
 	mounted() {
-		this.eyes();
 		this.local();
 		this.game();
 		this.appHtml([
@@ -151,6 +169,8 @@ export default {
 			{ one: 'app', key: 'background', value: 'grey lighten-5' },
 			{ one: 'app', key: 'colorWhite', value: false },
 		]);
+		// Удаляем прослушиватель, что бы он не распространялся на другие компоненты
+		window.removeEventListener('mousemove', this.eyes, { capture: true });
 	},
 	methods: {
 		...mapMutations({
@@ -162,31 +182,44 @@ export default {
 			alertAction: 'ALERT',
 			wordProcessing: 'APP_WORD_PROCESSING',
 		}),
+		// Проверяем пользовательские настройки на требования игры
+		checkSetting() {
+			if (this.wordsPerDay >= 10 && this.showTextExample) {
+				this.game();
+			} else this.showAlert = true;
+		},
 
-		eyes() {
-			window.addEventListener('mousemove', (event) => {
-				const arctg = (x, y) => {
-					let a = null;
-					if (x > 0 && y > 0) {
-						a = Math.PI / 2 - Math.atan(x / y);
-					}
-					if (x < 0 && y > 0) {
-						a = Math.PI / 2 - Math.atan(x / y);
-					}
-					if (x < 0 && y < 0) {
-						a = Math.PI + Math.atan(y / x);
-					}
-					if (x > 0 && y < 0) {
-						a = 3 * (Math.PI / 2) + Math.abs(Math.atan(x / y));
-					}
-					return a * 57.2958;
-				};
-				const { x, y } = { x: event.x, y: event.y };
-				const left = +document.querySelector('.circle-puzzle').getBoundingClientRect().left;
-				const top = +document.querySelector('.circle-puzzle').getBoundingClientRect().top;
-				document.querySelector('.circle-puzzle').style.transform = `rotate(${arctg(x - left - 20, y - top - 20)}deg)`;
-				document.querySelector('.circle-puzzle-one').style.transform = `rotate(${arctg(x - left - 20, y - top - 20)}deg)`;
-			});
+		// Применяем настройки пользователя после согласия
+		consentToTerms() {
+			this.showWordTranslate = true;
+			this.wordsPerDay = 30;
+			this.showAlert = false;
+			this.setGetSetting({ method: 'put' });
+			this.game();
+		},
+
+		eyes(event) {
+			const { x, y } = event;
+			const left = +document.querySelector('.circle-puzzle').getBoundingClientRect().left;
+			const top = +document.querySelector('.circle-puzzle').getBoundingClientRect().top;
+			document.querySelector('.circle-puzzle').style.transform = `rotate(${this.arctg(x - left - 20, y - top - 20)}deg)`;
+			document.querySelector('.circle-puzzle-one').style.transform = `rotate(${this.arctg(x - left - 20, y - top - 20)}deg)`;
+		},
+		arctg(x, y) {
+			let a = null;
+			if (x > 0 && y > 0) {
+				a = Math.PI / 2 - Math.atan(x / y);
+			}
+			if (x < 0 && y > 0) {
+				a = Math.PI / 2 - Math.atan(x / y);
+			}
+			if (x < 0 && y < 0) {
+				a = Math.PI + Math.atan(y / x);
+			}
+			if (x > 0 && y < 0) {
+				a = 3 * (Math.PI / 2) + Math.abs(Math.atan(x / y));
+			}
+			return a * 57.2958;
 		},
 
 		async game() {
