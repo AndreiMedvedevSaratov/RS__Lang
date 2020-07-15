@@ -5,7 +5,6 @@
 			v-col
 				video(
 					class="main__image"
-					controls
 					ref="video"
 				)
 					source(
@@ -19,7 +18,10 @@
 					block
 				) Начать разговор
 
-			v-col( class="indigo lighten-4" ) Чат
+			v-col(
+				class="indigo lighten-4"
+				ref="chat"
+			) Чат
 				div(
 					class="amber darken-4"
 					ref="answer"
@@ -121,12 +123,19 @@ export default {
 			this.recognition.addEventListener('result', (event) => {
 				const last = event.results.length - 1;
 				const sayWord = event.results[last][0].transcript.toLowerCase();
-				this.$refs.speech.textContent = sayWord;
+				const p = document.createElement('p');
+				p.className = 'black white--text';
+				p.ref = `speech${this.step}`;
+				p.textContent = sayWord;
+				this.$refs.chat.append(p);
+				// this.$refs.speech.textContent = sayWord;
 				this.recognition.onend = () => this.recognition.stop();
 			});
 			this.recognition.start();
 		},
 		video() {
+			if (this.step >= 4) return;
+			this.$refs.video.play();
 			this.$refs.video.onended = () => {
 				this.speak();
 				this.answer();
@@ -135,10 +144,13 @@ export default {
 				this.$refs.src.setAttribute('src', `./assets/video/${this.step}.mp4`);
 				this.$refs.video.load();
 			};
-			this.$refs.video.play();
 		},
 		answer() {
-			this.$refs.answer.textContent = this.isAnswer[this.step];
+			const div = document.createElement('div');
+			div.className = 'amber darken-4';
+			div.ref = `answer${this.step}`;
+			div.textContent = this.isAnswer[this.step];
+			this.$refs.chat.append(div);
 		},
 	},
 };
