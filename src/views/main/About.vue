@@ -192,6 +192,13 @@ export default {
 	&__title {
 		color: #FFF;
 		font-size: 100px;
+		@media(max-width: 768px) {
+			font-size: 86px;
+			text-align: center;
+		}
+		@media(max-width: 425px) {
+			font-size: 70px;
+		}
 	}
 	.questions__title {
 		color: #000;
@@ -205,6 +212,9 @@ export default {
 		display: flex;
 		justify-content: space-between;
 		margin-bottom: 200px;
+		@media(max-width: 425px) {
+			flex-direction: column;
+		}
 	}
 	.questions__item {
 		width: 30%;
@@ -214,6 +224,9 @@ export default {
 		cursor: pointer;
 		transition: color .3s;
 		text-align: center;
+		@media(max-width: 425px) {
+			width: 100%;
+		}
 		.questions__anwear {
 			opacity: .6;
 		}
@@ -241,6 +254,9 @@ export default {
 			display: flex;
 			flex-wrap: wrap;
 			justify-content: space-between;
+			@media(max-width: 425px) {
+				flex-direction: column;
+			}
 		}
 		&__item {
 			width: 31%;
@@ -251,6 +267,9 @@ export default {
 				.profile-page__info {
 					display: block;
 				}
+			}
+			@media(max-width: 425px) {
+				width: 100%;
 			}
 		}
 		&__img {
