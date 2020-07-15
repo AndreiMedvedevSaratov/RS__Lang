@@ -5,11 +5,11 @@
 			v-col
 				video(
 					class="main__image"
-					controls
 					ref="video"
 				)
 					source(
-						:src="myVideosForGame[step]"
+						ref="src"
+						:src="`./assets/video/${this.step}.mp4`"
 						type="video/mp4"
 					)
 				v-btn(
@@ -18,7 +18,10 @@
 					block
 				) Начать разговор
 
-			v-col( class="indigo lighten-4" ) Чат
+			v-col(
+				class="indigo lighten-4"
+				ref="chat"
+			) Чат
 				div(
 					class="amber darken-4"
 					ref="answer"
@@ -70,12 +73,9 @@ export default {
 	components: {},
 	props: [],
 	data: () => ({
-		myVideosForGame: ['./assets/video/first.mp4', './assets/video/second.mp4'],
 		step: 0,
-
 		status: '',
-		srcVideo: './assets/video/first.mp4',
-		isAnswer: 'Yes, actually I am lost! How did you know?',
+		isAnswer: ['Yes, actually I am lost! How did you know?', '1', '2', '3'],
 		videoIsEnded: false,
 		count_error: 0,
 		recognition: '',
@@ -89,11 +89,15 @@ export default {
 		}),
 	},
 	watch: {
-		videoIsEnded() {
-			this.answer();
-			this.videoIsEnded = false;
-			this.step += 1;
-		},
+		// videoIsEnded() {
+		// 	this.speak();
+		// 	this.answer();
+		// 	this.videoIsEnded = false;
+		// 	this.step += 1;
+		// 	console.log(this.step);
+		// 	this.$refs.src.setAttribute('src', `./assets/video/${this.step}.mp4`);
+		// 	this.$refs.video.load();
+		// },
 	},
 	created() {},
 	mounted() {
@@ -142,25 +146,40 @@ export default {
 				this.count_error += 1;
 				if (this.count_error > 100) this.recognition.onend = () => this.recognition.stop();
 			};
-			this.recognition.onend = () => this.recognition.start();
+			// this.recognition.onend = () => this.recognition.start();
 
 			this.count_error = 0;
 			this.recognition.addEventListener('result', (event) => {
 				const last = event.results.length - 1;
 				const sayWord = event.results[last][0].transcript.toLowerCase();
-				this.$refs.speech.textContent = sayWord;
+				const p = document.createElement('p');
+				p.className = 'black white--text';
+				p.ref = `speech${this.step}`;
+				p.textContent = sayWord;
+				this.$refs.chat.append(p);
+				// this.$refs.speech.textContent = sayWord;
 				this.recognition.onend = () => this.recognition.stop();
 			});
 			this.recognition.start();
 		},
 		video() {
-			this.$refs.video.addEventListener('ended', () => {
-				this.videoIsEnded = true;
-			});
+			if (this.step >= 4) return;
 			this.$refs.video.play();
+			this.$refs.video.onended = () => {
+				this.speak();
+				this.answer();
+				this.step += 1;
+				console.log(this.step);
+				this.$refs.src.setAttribute('src', `./assets/video/${this.step}.mp4`);
+				this.$refs.video.load();
+			};
 		},
 		answer() {
-			this.$refs.answer.textContent = this.isAnswer;
+			const div = document.createElement('div');
+			div.className = 'amber darken-4';
+			div.ref = `answer${this.step}`;
+			div.textContent = this.isAnswer[this.step];
+			this.$refs.chat.append(div);
 		},
 	},
 };
