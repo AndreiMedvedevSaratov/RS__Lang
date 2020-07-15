@@ -1,64 +1,38 @@
 <template lang="pug">
 	div( class="game" )
-
 		v-row( class="main" )
-			v-col
-				video(
-					class="main__image"
-					ref="video"
-				)
-					source(
-						ref="src"
-						:src="`./assets/video/${this.step}.mp4`"
-						type="video/mp4"
-					)
-				v-btn(
-					@click="video()"
-					tile
-					block
-				) Начать разговор
-
-			v-col(
-				class="indigo lighten-4"
-				ref="chat"
-			) Чат
-				div(
-					class="amber darken-4"
-					ref="answer"
-				)
-				p(
-					class=''
-					ref="speech"
-				)
-		div( class="main" )
 			video(
 				class="video"
+				ref="video"
 				controls
-				id="video"
 				)
 				source(
-					:src="myVideosForGame[step]"
+					ref="src"
+					:src="`./assets/video/${this.step}.mp4`"
 					type="video/mp4"
 					)
-			div(
-				class="answer"
-			)
-			input(
-				type="button"
-				value="Speaking"
+			v-btn(
 				@click="video()"
+				tile
 				id="btn"
+				value="Start a conversation"
+				) Start a conversation
+			div(
+				ref="answer"
 				)
-			p(
-				class='speech'
-				)
-			div( v-if="loading"
-				class="load" ) Loading... please wait...
-				v-progress-linear(
-					indeterminate
-					rounded
-					color="blue darken-2"
+			v-col(
+				class="chat"
+				ref="chat"
+				) Chat:
+			p(class=''
+					ref="speech"
 					)
+			div( v-if="loading" class="load") Loading... please wait...
+				v-progress-linear(
+						indeterminate
+						rounded
+						color="blue darken-2"
+						)
 </template>
 
 <script>
@@ -89,15 +63,6 @@ export default {
 		}),
 	},
 	watch: {
-		// videoIsEnded() {
-		// 	this.speak();
-		// 	this.answer();
-		// 	this.videoIsEnded = false;
-		// 	this.step += 1;
-		// 	console.log(this.step);
-		// 	this.$refs.src.setAttribute('src', `./assets/video/${this.step}.mp4`);
-		// 	this.$refs.video.load();
-		// },
 	},
 	created() {},
 	mounted() {
@@ -126,7 +91,6 @@ export default {
 			video: 'speaking/SPEAKING_VIDEO',
 			answer: 'speaking/SPEAKING_ANSWER',
 			speak: 'speaking/SPEAKING_SPEAK',
-			appHtml: 'EDIT_HTML',
 			offStatistics: 'SHOW_SHORT_STATISTICS',
 		}),
 		...mapActions({
@@ -176,7 +140,7 @@ export default {
 		},
 		answer() {
 			const div = document.createElement('div');
-			div.className = 'amber darken-4';
+			div.className = 'answer';
 			div.ref = `answer${this.step}`;
 			div.textContent = this.isAnswer[this.step];
 			this.$refs.chat.append(div);
@@ -196,7 +160,7 @@ p {
 .main {
 	position: relative;
 	width: 100%;
-	height: 450px;
+	height: auto;
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
@@ -208,22 +172,23 @@ p {
 	display: flex;
 	margin: 0 auto;
 	align-items: center;
-	border-radius: 5px;
+	top: 0px;
 }
 
 .answer {
 	position: relative;
 	display: block;
 	top: 10px;
+	left: 150px;
 	color: #1976D2;
 	text-align: center;
 }
 
 #btn {
 	display: block;
-	width: 150px;
+	width: 200px;
 	height: 60px;
-	top: 20px;
+	top: 10px;
 	border-radius: 5px;
 	color: white;
 	align-items: center;
@@ -234,7 +199,17 @@ p {
 }
 .load {
 	position: relative;
-	top: 20px;
+	top: 40px;
 	color: #1976D2;
+}
+.chat {
+	border: 2px solid #1976D2;
+	border-radius: 5px;
+	position: relative;
+	top: 40px;
+	width: 300px;
+	color: #1976D2;
+	left: 50%;
+	transform: translate(-50%, 0);
 }
 </style>
