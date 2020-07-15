@@ -93,7 +93,6 @@ div(class='background')
 				v-btn(@click='checkWord()') Проверить слово
 			div(class='card-footer_buttons'
 				v-if='!isHideButtons')
-				v-btn Снова
 				v-btn Легко
 				v-btn Хорошо
 				v-btn Трудно
@@ -309,7 +308,7 @@ export default {
 		]);
 	},
 	beforeUpdate() {
-		this.markWord('nextWord');
+		// this.markWord('nextWord');
 	},
 	updated() {},
 	methods: {

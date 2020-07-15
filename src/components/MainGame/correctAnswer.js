@@ -31,6 +31,7 @@ const correctAnswer = {
 			if (this.wordsCount === this.wordsPerDay) {
 				this.endGame();
 			} else {
+				this.wordProcessing({ word: this.nextWord, right: true });
 				this.nextWord = this.words[this.wordsCount];
 			}
 		},

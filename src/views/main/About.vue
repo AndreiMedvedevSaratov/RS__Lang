@@ -8,11 +8,12 @@
         <v-col
           cols="12"
           md="6"
-          class="aligh-center"
+          class="aligh-center text-center"
         >
           <h1 class="about-team__title">
             Dream Team 42
           </h1>
+          <span class="font-weight-black">GitHub <a href="https://github.com/Dream-Team-42/rslang">repository</a></span>
         </v-col>
         <v-col
           cols="12"
@@ -21,7 +22,15 @@
           <iframe
             width="560"
             height="315"
-            src=""
+            src="https://www.youtube.com/embed/Fa1DHrvDfZE"
+            frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          />
+          <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/dnk4ekXcciY"
             frameborder="0"
             allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
