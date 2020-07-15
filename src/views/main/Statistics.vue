@@ -143,17 +143,42 @@
 						b {{ key }} :
 						|  {{ value }}
 						br
+		stat-graph(
+			:statistics='statistics'
+			:graphWidth='500'
+			:graphHeight='300'
+		)
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import StatGraph from '@/components/statGraph.vue';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
 	name: 'Statistics',
+	components: {
+		StatGraph,
+	},
+	props: [],
 	data: () => ({
+		statistics: [
+			{ date: '2020-07-01', words: 50, successWord: 50 },
+			{ date: '2020-07-02', words: 49, successWord: 50 },
+			{ date: '2020-07-03', words: 48, successWord: 50 },
+			{ date: '2020-07-04', words: 49, successWord: 50 },
+			{ date: '2020-07-05', words: 51, successWord: 50 },
+			{ date: '2020-07-06', words: 52, successWord: 50 },
+			{ date: '2020-07-07', words: 100, successWord: 50 },
+			{ date: '2020-07-08', words: 88, successWord: 50 },
+			{ date: '2020-07-09', words: 87, successWord: 50 },
+			{ date: '2020-07-10', words: 88, successWord: 50 },
+			{ date: '2020-07-11', words: 85, successWord: 50 },
+			{ date: '2020-07-12', words: 79, successWord: 50 },
+			{ date: '2020-07-13', words: 85, successWord: 50 },
+		],
 		page: 0,
 		group: 0,
 		wordId: '',
@@ -226,6 +251,5 @@ export default {
 			};
 		},
 	},
-
 };
 </script>
