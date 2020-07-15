@@ -17,7 +17,7 @@ const correctAnswer = {
 				current += 1;
 				if (current === arr.length) {
 					// finish this round, go to next word
-					this.gameStatus = 'finish';
+					this.gameStatus = 'learnGroupReq';
 					audio.removeEventListener('ended', nextAudio);
 				}
 				audio.src = arr[current];
@@ -35,7 +35,8 @@ const correctAnswer = {
 			}
 		},
 		endGame() {
-			alert('end game');
+			this.alert({ data: 'Игра закончена, Ваша статистика!' });
+			this.showStatistics = true;
 		},
 	},
 };

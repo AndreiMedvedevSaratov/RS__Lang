@@ -1,6 +1,5 @@
 <template lang="pug">
-div
-	h1 Text
+div(class='background')
 	div(
 		class='card-container'
 		v-if="Object.keys(nextWord).length != 0"
@@ -34,7 +33,7 @@ div
 									v-for='(symbol, i) of nextWord.word'
 								) {{ symbol }}
 							input(:class="[{hidden: !isHideWord}, 'origin_input']"
-								v-focus
+								id='inputField'
 								type='text'
 								v-model='userInput'
 							)
@@ -87,39 +86,41 @@ div
 							v-html="nextWord.textMeaningTranslate"
 						)
 		div(class='card-footer')
-			v-progress-linear(:value='progressLinear')
+			div(class='card-footer_next-button'
+				v-if='isHideButtons'
+				)
+				v-btn(@click='skipWord()') Показать ответ
+				v-btn(@click='checkWord()') Проверить слово
+			div(class='card-footer_buttons'
+				v-if='!isHideButtons')
+				v-btn Снова
+				v-btn Легко
+				v-btn Хорошо
+				v-btn Трудно
+			div(class='card-footer_progress-linear')
+				v-progress-linear(:value='progressLinear')
 
 </template>
 
 <script>
-/**
- * watch (old, )
- */
+/* eslint-disable indent */
 import { mapGetters, mapMutations, mapActions } from 'vuex';
-
-import { forGame } from './forGame';
 import { correctAnswer } from './correctAnswer';
+import { forGame } from './forGame';
 import { wrongAnswer } from './wrongAnswer';
 import { mainGame } from './mainGame';
 
 export default {
 	name: 'CardItem',
 	components: {},
-	directives: {
-		focus: {
-			inserted(el) {
-				el.focus();
-			},
-		},
-	},
 	mixins: [forGame, mainGame, correctAnswer, wrongAnswer],
 	data() {
 		return {
 			nextWord: {},
-
 			isHideWord: true,
 			isHideFadeAnswer: true,
 			isHideSentences: true,
+			isHideButtons: true,
 			isGetWrongInput: false,
 			wordsCount: 0,
 			userInput: '',
@@ -248,28 +249,65 @@ export default {
 			this.changeLettersStatus();
 			if (this.gameStatus === 'secondAttempt') {
 				this.isHideFadeAnswer = true;
-				setTimeout(() => { this.isHideFadeAnswer = false; }, 1500);
+				setTimeout(() => {
+					this.isHideFadeAnswer = false;
+				}, 1500);
 			}
 		},
 		gameStatus(current) {
 			switch (current) {
-			case 'finish':
-				setTimeout(() => {
+				case 'finish':
 					this.resetRoundVariables();
-					this.nextRound();
-				}, 1500);
-				break;
-			case 'secondAttempt':
-				this.resetAttemptVariables();
-				break;
-			default:
+					if (this.wordsCount === this.wordsPerDay) {
+						this.endGame();
+					} else {
+						this.nextRound();
+					}
+					break;
+				case 'learnGroupReq':
+					this.isHideButtons = false;
+					setTimeout(() => {
+						this.isHideButtons = true;
+						this.gameStatus = 'finish';
+					}, 3000);
+					break;
+				case 'secondAttempt':
+					this.resetAttemptVariables();
+					break;
+				default:
 			}
 		},
 	},
 	created() {
 		this.game();
 	},
-	mounted() {},
+	mounted() {
+		// constant focus on input
+		document.addEventListener('keypress', () => {
+			document.getElementById('inputField').focus();
+		}, false);
+		// Перед началом игры изменим стиль страницы
+		this.appHtml([
+			// свернем меню
+			{ one: 'main', key: 'drawer', value: false },
+			// Уберем хлебные крошки
+			{ one: 'main', key: 'breadcrumbs', value: false },
+			// Изменим цвет header по таблице цветов
+			// https://vuetifyjs.com/en/styles/colors/#sass-color-pack
+			{ one: 'app', key: 'background', value: 'red' },
+			// Изменим цвет текста на белый в header
+			{ one: 'app', key: 'red', value: true },
+		]);
+	},
+	beforeDestroy() {
+		// Перед закрытием страницы возращаем настройки обратно
+		this.appHtml([
+			{ one: 'main', key: 'drawer', value: true },
+			{ one: 'main', key: 'breadcrumbs', value: true },
+			{ one: 'app', key: 'background', value: 'grey lighten-5' },
+			{ one: 'app', key: 'colorWhite', value: false },
+		]);
+	},
 	beforeUpdate() {
 		this.markWord('nextWord');
 	},
@@ -303,18 +341,16 @@ export default {
 			this.nextWord = this.words[this.wordsCount];
 		},
 		changeLettersStatus() {
-			const { userInput } = this;
-			const originWord = this.nextWord.word;
+			const userWord = this.userInput.toLowerCase();
+			const originWord = this.nextWord.word.toLowerCase();
 			const borderForBigError = 3;
 
 			let errorCount = 0;
 			let classesArr = [];
 
-			const arrLen = userInput.length > originWord.length
-				? userInput.length
-				: originWord.length;
+			const arrLen = userWord.length > originWord.length ? userWord.length : originWord.length;
 			for (let i = 0; i < arrLen; i += 1) {
-				if (userInput[i] === originWord[i]) {
+				if (userWord[i] === originWord[i]) {
 					classesArr.push('result-success');
 				} else {
 					classesArr.push('result-failure');
@@ -328,14 +364,10 @@ export default {
 			this.classForSymbols = classesArr;
 		},
 		addWordInDeleteCategory() {
-			this.nextWord.userWord.dictionaryGroup = 5;
-			console.log('ok, del');
+			this.nextWord.userWord.isDelete = true;
 		},
 		getSentenceParts(str, word) {
-			console.log('getSentenceParts', word);
-			console.log('getSentenceParts22', str);
 			const regexp = new RegExp(`[${word[0].toUpperCase()}${word[0].toLowerCase()}]${word.slice(1)}\\w?`);
-			console.log('getSentenceParts44', regexp);
 			const wordInText = str.match(regexp)[0];
 			const [before, after] = str.split(wordInText);
 
@@ -372,7 +404,19 @@ $successColor: hsl(122, 37%, 74%);
 $failureColor: hsl(45, 100%, 75%);
 $failureColorBig: hsl(14, 100%, 78%);
 
+.background {
+	width: 100%;
+	height: calc(100vh - 90px);
+	background: url('../../../public/assets/img/sprint/fon3.jpg') no-repeat;
+	background-size: cover;
+	display: flex;
+	justify-content: center;
+}
+
 .card-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 	margin: auto;
 	padding: 5px;
 	max-width: $cardContainerWidth;
@@ -381,7 +425,7 @@ $failureColorBig: hsl(14, 100%, 78%);
 	border: 1px $borderColor solid;
 	border-radius: 5px;
 	box-shadow: 0 3px 0.5rem hsl(0, 0%, 68%);
-	// height: 100%;
+	background-color: hsl(100, 100%, 100%);
 }
 
 // HEADER
@@ -389,7 +433,7 @@ $failureColorBig: hsl(14, 100%, 78%);
 	display: flex;
 	// width: 100%;
 	height: 15px;
-	margin: 0 5%;
+	margin: 5px 5% 10px;
 	align-items: center;
 	justify-content: space-between;
 
@@ -434,6 +478,9 @@ $failureColorBig: hsl(14, 100%, 78%);
 	&_image {
 		max-width: $imageWidth;
 		max-height: $imageHeight;
+		margin-bottom: 10px;
+		border-radius: 5px;
+		overflow: hidden;
 	}
 
 	&_word {
@@ -498,5 +545,25 @@ $failureColorBig: hsl(14, 100%, 78%);
 
 .hidden {
 	visibility: hidden;
+}
+
+// FOOTER
+.card-footer {
+	& .v-btn {
+		margin-bottom: 10px;
+	}
+	&_next-button {
+		display: flex;
+		justify-content: space-around;
+		flex-wrap: wrap;
+	}
+	&_buttons {
+		display: flex;
+		justify-content: space-around;
+		flex-wrap: wrap;
+	}
+	&_progress-linear {
+		margin-top: 5px;
+	}
 }
 </style>
