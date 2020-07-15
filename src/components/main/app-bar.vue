@@ -62,10 +62,6 @@ import { mapGetters, mapMutations } from 'vuex';
  */
 export default {
 	name: 'AppBar',
-	components: {},
-	props: [],
-	data: () => ({
-	}),
 	computed: {
 		...mapGetters({
 			isHtml: 'getHtmlParameters',
@@ -86,9 +82,6 @@ export default {
 			return this.isHtml.app.colorWhite;
 		},
 	},
-	watch: {},
-	created() {},
-	mounted() {},
 	methods: {
 		...mapMutations({
 			editHtml: 'EDIT_HTML',
@@ -97,7 +90,3 @@ export default {
 
 };
 </script>
-
-<style lang='scss' scoped>
-
-</style>

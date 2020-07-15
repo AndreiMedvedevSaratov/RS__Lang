@@ -24,20 +24,6 @@ import { mapActions } from 'vuex';
 
 export default {
 	name: 'Profile',
-	components: {},
-	props: [],
-	data: () => ({
-
-	}),
-
-	computed: {
-
-	},
-
-	created() {
-	},
-	mounted() {
-	},
 	methods: {
 		...mapActions({
 			refreshToken: 'AUTH_REFRESH_TOKEN',

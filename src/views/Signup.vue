@@ -44,9 +44,6 @@ import { mapGetters, mapMutations, mapActions } from 'vuex';
  */
 export default {
 	name: 'Signup',
-	components: {
-	},
-	props: [],
 	data: () => ({
 		valid: false,
 		passRules: [
@@ -87,9 +84,6 @@ export default {
 			},
 		},
 	},
-	watch: {},
-	created() {},
-	mounted() {},
 	methods: {
 		...mapMutations({
 			setProfile: 'user/USER_FORM',

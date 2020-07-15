@@ -23,7 +23,7 @@
 						li
 							b Подсказка картинкой:
 							=' '
-							| {{ !withImg ? 'На таком уровне отсутсвует': 'Присутсвует'}}
+							| {{ !withImg || !showImage ? 'Отсутсвует': 'Присутсвует'}}
 			v-row
 				v-col
 					v-select(
@@ -73,27 +73,39 @@
 				v-col
 					v-btn(
 						block
-						@click="game()"
+						@click="checkSetting()"
 						color="success"
 						:disabled="!showWords || gameStatus"
 					) Start Game
 
 		vModal( :words="{ correct: correctWords, wrong: wrongWords }" )
+		vAlert(
+			text=`Для данной игры должны быть изменены следующие пользовательские настройки:<br>
+			<br><b> 1) Дневной лимит не меньше 30 слов </b>
+			<br><b> 2) Показывать перевод слова </b><br>
+			<br> Соглашаясь Вы принимаете условие!`
+			:goYes="consentToTerms"
+		)
 </template>
 
 <script>
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable no-underscore-dangle */
 import { mapActions, mapGetters, mapMutations } from 'vuex';
+import setting from '@/assets/js/mixinSetting';
+import alert from '@/assets/js/mixinAlert';
 import vModal from './modal/ModalShortStat.vue';
+import vAlert from './modal/ModalAlert.vue';
 
 export default {
 	name: 'AudioVizov',
 	components: {
 		vModal,
+		vAlert,
 	},
 	filters: {
 	},
+	mixins: [setting, alert],
 	props: [],
 	data: () => ({
 		showWords: false,
@@ -159,7 +171,7 @@ export default {
 		},
 		// Если выбрано играть без картинок то зарузить по умолчанию
 		getImg() {
-			return this.withImg && this.nextCorrectWord != null ? `${this.isUrlFiles}${this.nextCorrectWord.image}` : this.isUrlImage;
+			return this.withImg && this.nextCorrectWord != null && this.showImage ? `${this.isUrlFiles}${this.nextCorrectWord.image}` : this.isUrlImage;
 		},
 	},
 	watch: {
@@ -220,6 +232,23 @@ export default {
 			this.correctWords = [];
 			this.wrongWords = [];
 		},
+
+		// Проверяем пользовательские настройки на требования игры
+		checkSetting() {
+			if (this.wordsPerDay >= 30 && this.showWordTranslate) {
+				this.game();
+			} else this.showAlert = true;
+		},
+
+		// Применяем настройки пользователя после согласия
+		consentToTerms() {
+			this.showWordTranslate = true;
+			this.wordsPerDay = 30;
+			this.showAlert = false;
+			this.setGetSetting({ method: 'put' });
+			this.game();
+		},
+
 		// Создает новый массив из обьектов с n колличеством внутренних обьектов
 		builderArray() {
 			this.modifiedArray = this.isWords.reduce((p, c, i) => {
@@ -333,7 +362,6 @@ export default {
 		// Метод для получения следующего слова ( после угадывания )
 		// Срабатывает при нажатие на любое слово
 		nextWord(wordId) {
-			console.log(this.$refs);
 			// eslint-disable-next-line no-underscore-dangle
 			if	(wordId === this.nextCorrectWord._id) {
 				this.stat(true, this.nextCorrectWord);

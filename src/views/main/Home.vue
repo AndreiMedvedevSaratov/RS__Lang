@@ -126,9 +126,6 @@
 
 export default {
 	name: 'Home',
-	components: {},
-	props: {
-	},
 	data: () => ({
 		gameList: [
 			{
@@ -153,11 +150,11 @@ export default {
 				color: 'grey',
 			},
 			{
-				title: 'Саванна',
-				subtitle: 'textextexetxte',
-				link: '/savanna-game',
-				img: 'assets/img/саванна.png',
-				color: 'blue',
+				title: 'Спринт',
+				subtitle: 'Catch the time to guess the words, the countdown has begun..',
+				link: '/sprint',
+				img: 'assets/img/спринт.png',
+				color: 'red darken-4',
 			},
 			{
 				title: 'Аудиовызов',
@@ -166,22 +163,7 @@ export default {
 				img: 'assets/img/аудиовызов.png',
 				color: 'pink darken-1',
 			},
-			{
-				title: 'Спринт',
-				subtitle: 'Catch the time to guess the words, the countdown has begun..',
-				link: '/sprint',
-				img: 'assets/img/спринт.png',
-				color: 'red darken-4',
-			},
 		],
 	}),
-	computed: {
-	},
-	watch: {},
-	created() {},
-	mounted() {
-	},
-	methods: {
-	},
 };
 </script>

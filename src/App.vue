@@ -9,20 +9,8 @@
 
 export default {
 	name: 'App',
-
 	components: {
 		alert,
-	},
-	data: () => ({
-		//
-	}),
-
-	computed: {
-	},
-
-	mounted() {
-	},
-	methods: {
 	},
 };
 </script>

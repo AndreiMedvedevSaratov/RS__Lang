@@ -80,8 +80,9 @@
 			<br><b> 1) Дневной лимит не меньше 10 слов </b>
 			<br><b> 2) Показать пример текста </b>
 			<br><br><b> Не обязательные опции (Редактируете вручную)
-			<br><b> 1) Дневной лимит не меньше 10 слов </b>
-			<br><b> 2) Показать пример текста </b>
+			<br><b> 1) Аудио - текста</b>
+			<br><b> 2) Показать перевод текста </b>
+			<br><b> 2) Аудио - "смысла" текста </b>
 			<br> Соглашаясь Вы принимаете условие!`
 			:goYes="consentToTerms"
 		)
@@ -154,7 +155,7 @@ export default {
 	},
 	mounted() {
 		this.local();
-		this.game();
+		this.checkSetting();
 		this.appHtml([
 			{ one: 'main', key: 'drawer', value: false },
 			{ one: 'main', key: 'breadcrumbs', value: false },
@@ -191,8 +192,8 @@ export default {
 
 		// Применяем настройки пользователя после согласия
 		consentToTerms() {
-			this.showWordTranslate = true;
-			this.wordsPerDay = 30;
+			this.showTextExample = true;
+			this.wordsPerDay = 10;
 			this.showAlert = false;
 			this.setGetSetting({ method: 'put' });
 			this.game();

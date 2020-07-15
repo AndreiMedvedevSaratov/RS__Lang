@@ -99,7 +99,6 @@ export default {
 		...mapActions({
 			getWords: 'APP_GET_USER_WORDS_AGGREGATED',
 			alert: 'ALERT',
-			wordProcessing: 'APP_WORD_PROCESSING',
 		}),
 		speak() {
 			const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
