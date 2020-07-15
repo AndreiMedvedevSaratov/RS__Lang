@@ -42,9 +42,9 @@ export default {
 	components: {},
 	props: [],
 	data: () => ({
-		step: 1,
+		step: 0,
 		status: '',
-		isAnswer: 'Yes, actually I am lost! How did you know?',
+		isAnswer: ['Yes, actually I am lost! How did you know?', '1', '2', '3'],
 		videoIsEnded: false,
 		count_error: 0,
 		recognition: '',
@@ -138,7 +138,7 @@ export default {
 			this.$refs.video.play();
 		},
 		answer() {
-			this.$refs.answer.textContent = this.isAnswer;
+			this.$refs.answer.textContent = this.isAnswer[this.step];
 		},
 	},
 };
