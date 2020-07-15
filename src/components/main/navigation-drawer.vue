@@ -54,8 +54,6 @@ import { mapGetters, mapMutations, mapActions } from 'vuex';
  */
 export default {
 	name: 'NavigationDrawer',
-	components: {},
-	props: [],
 	data: () => ({
 		items: [
 			{
@@ -106,9 +104,6 @@ export default {
 			},
 		},
 	},
-	watch: {},
-	created() {},
-	mounted() {},
 	methods: {
 		...mapActions({
 			logoutAction: 'AUTH_LOGOUT',
@@ -127,7 +122,3 @@ export default {
 
 };
 </script>
-
-<style lang='scss' scoped>
-
-</style>

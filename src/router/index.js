@@ -152,28 +152,6 @@ const routes = [
 					],
 				},
 			},
-			{
-				path: '/savanna-start',
-				name: 'Savanna',
-				component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-start.vue'),
-				meta: {
-					breadcrumb: [
-						{ text: 'Home', to: '/home' },
-						{ text: 'Savanna' },
-					],
-				},
-			},
-			{
-				path: '/savanna-game',
-				name: 'Savanna-game',
-				component: () => import(/* webpackChunkName: "savanna" */ '../components/savanna/savanna-game.vue'),
-				meta: {
-					breadcrumb: [
-						{ text: 'Home', to: '/home' },
-						{ text: 'Savanna' },
-					],
-				},
-			},
 		],
 	},
 	{

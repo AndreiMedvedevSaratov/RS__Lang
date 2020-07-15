@@ -112,9 +112,7 @@ import setting from '@/assets/js/mixinSetting';
  */
 export default {
 	name: 'Setting',
-	components: {},
 	mixins: [setting],
-	props: [],
 	data: () => ({
 		items: [
 			{
@@ -131,14 +129,11 @@ export default {
 			},
 		],
 	}),
-	computed: {},
 	watch: {
 		wordsPerDay(num) {
 			if (num < 0) this.wordsPerDay = 0;
 		},
 	},
-	created() {},
-	mounted() {},
 	methods: {
 		saveSetting() {
 			this.setGetSetting({ method: 'put' });
@@ -148,7 +143,3 @@ export default {
 
 };
 </script>
-
-<style lang='scss' scoped>
-
-</style>

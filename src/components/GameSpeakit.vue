@@ -53,8 +53,6 @@ import { mapActions, mapGetters, mapMutations } from 'vuex';
  */
 export default {
 	name: 'SpeakIt',
-	components: {},
-	props: [],
 	data: () => ({
 		status: '',
 		count: [],
@@ -80,15 +78,7 @@ export default {
 			return this.img ? this.img : this.UrlImage;
 		},
 	},
-	watch: {},
-	created() {},
 	mounted() {
-		/** Examples
-     * this.getWords(); page - 0, group - 0
-     * this.getWords({ page: 2 });
-     * this.getWords({ page: 2, group: 3 });
-     * this.getWords({ group: 3 });
-     */
 		this.getWords({
 			page: 0,
 			filter: {
