@@ -20,16 +20,19 @@
 
 			v-col(
 				class="indigo lighten-4"
-				ref="chat"
+				ref="chat-wrapper"
 			) Чат
 				div(
-					class="amber darken-4"
-					ref="answer"
+					id="chat"
 				)
-				p(
-					class=''
-					ref="speech"
-				)
+					div(
+						class="amber darken-4"
+						ref="answer"
+					)
+					p(
+						class=''
+						ref="speech"
+					)
 </template>
 
 <script>
@@ -46,7 +49,24 @@ export default {
 	data: () => ({
 		step: 0,
 		status: '',
-		isAnswer: ['Yes, actually I am lost! How did you know?', '1', '2', '3'],
+		isAnswer: [
+			'Yes, actually I am lost! How did you know?',
+			'Am I? Oh, now I understand why I couldnt find anything.',
+			'I want to eat at a restaurant by the beach.',
+			'Yes, I see the restaurants now! Thanks for your help!',
+			'Yes, Im looking for the Wallis Hotel.',
+			'I could use any information you have!',
+			'How do I get on the highway?',
+			'What exit do I get off?',
+			'Where did you go?',
+			'What did you do there?',
+			'Which museums did you go to?',
+			'That sounds great!',
+			'I would like to change money please.',
+			'Its my first day here, so I want to buy money, please.',
+			'I dont know. What are your rates?',
+			'Great! Then Ill change all my money!',
+		],
 		videoIsEnded: false,
 		count_error: 0,
 		recognition: '',
@@ -126,18 +146,23 @@ export default {
 				p.className = 'black white--text';
 				p.ref = `speech${this.step}`;
 				p.textContent = sayWord;
-				this.$refs.chat.append(p);
-				// this.$refs.speech.textContent = sayWord;
+				document.getElementById('chat').append(p);
 				this.recognition.onend = () => this.recognition.stop();
+				if (this.step === 4 || this.step === 9) {
+					setTimeout(() => {
+						this.clear();
+						alert('go on the next round');
+					}, 1500);
+				}
 			});
 			this.recognition.start();
 		},
 		video() {
-			if (this.step >= 4) return;
+			// if (this.step >= 4) return;
 			this.$refs.video.play();
 			this.$refs.video.onended = () => {
-				this.speak();
 				this.answer();
+				this.speak();
 				this.step += 1;
 				console.log(this.step);
 				this.$refs.src.setAttribute('src', `./assets/video/${this.step}.mp4`);
@@ -149,7 +174,12 @@ export default {
 			div.className = 'amber darken-4';
 			div.ref = `answer${this.step}`;
 			div.textContent = this.isAnswer[this.step];
-			this.$refs.chat.append(div);
+			document.getElementById('chat').append(div);
+		},
+		clear() {
+			const div = document.createElement('div');
+			div.id = 'chat';
+			document.getElementById('chat').replaceWith(div);
 		},
 	},
 };
