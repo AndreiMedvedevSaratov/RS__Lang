@@ -47,6 +47,17 @@ import { mapGetters, mapMutations, mapActions } from 'vuex';
  */
 export default {
 	name: 'Login',
+	data: () => ({
+		valid: false,
+		passRules: [
+			(v) => !!v || 'Password is required',
+			(v) => v.length >= 8 || 'The password must contain at least 8 characters',
+		],
+		emailRules: [
+			(v) => !!v || 'E-mail is required',
+			(v) => /.+@.+/.test(v) || 'E-mail must be valid',
+		],
+	}),
 	computed: {
 		...mapGetters(['user/getProfile', 'isLoading']),
 		email: {

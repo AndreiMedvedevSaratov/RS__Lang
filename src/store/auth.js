@@ -12,6 +12,7 @@ const actions = {
 			email: rootState.user.profile.email,
 			password: rootState.user.profile.password,
 		}).then((user) => {
+			commit('user/USER_DATA', { id: user.data.userId });
 			commit('AUTH_DATA', user.data);
 			commit('AUTH_SUCCESS');
 			commit('APP_STATUS', 'success');
@@ -21,7 +22,7 @@ const actions = {
 		});
 	},
 	async AUTH_REFRESH_TOKEN({
-		state, rootState, commit, dispatch,
+		state, rootState, commit,
 	}) {
 		commit('AUTH_REQUEST');
 
@@ -30,12 +31,9 @@ const actions = {
 				Authorization: `Bearer ${state.refreshToken}`,
 			},
 		}).then((user) => {
-			console.log(user.data);
 			commit('AUTH_DATA', user.data);
 			commit('AUTH_SUCCESS');
-		}).catch((err) => {
-			dispatch('ALERT', { status: 'error', data: err.response.data });
-		});
+		}).catch(() => {});
 	},
 	AUTH_LOGOUT({ commit }) {
 		return new Promise(((resolve) => {
