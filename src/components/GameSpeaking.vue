@@ -140,6 +140,9 @@ export default {
 				p.textContent = sayWord;
 				document.getElementById('chatWrap').append(p);
 				this.recognition.onend = () => this.recognition.stop();
+				setTimeout(() => {
+					this.clear();
+				}, 1500);
 				if (this.step === 4 || this.step === 8 || this.step === 12) {
 					setTimeout(() => {
 						this.clear();
@@ -149,7 +152,6 @@ export default {
 				}
 				if (this.step === 15) {
 					setTimeout(() => {
-						this.clear();
 						alert('you win');
 					}, 1500);
 				}
