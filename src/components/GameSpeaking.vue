@@ -4,7 +4,6 @@
 			video(
 				class="video"
 				ref="video"
-				controls
 				)
 				source(
 					ref="src"
@@ -24,9 +23,13 @@
 				class="chat"
 				ref="chat"
 				) Chat:
-			p(class=''
-					ref="speech"
-					)
+				div(
+					ref="chatWrap"
+					id="chatWrap"
+				)
+					p(class=''
+							ref="speech"
+							)
 			div( v-if="loading" class="load") Loading... please wait...
 				v-progress-linear(
 						indeterminate
@@ -71,6 +74,7 @@ export default {
 		count_error: 0,
 		recognition: '',
 		loading: false,
+		round: 1,
 	}),
 	computed: {
 		...mapGetters({
@@ -79,8 +83,7 @@ export default {
 			getShortStatistics: 'showShortStatistics',
 		}),
 	},
-	watch: {
-	},
+	watch: {},
 	created() {},
 	mounted() {
 		this.loading = true;
@@ -127,7 +130,6 @@ export default {
 				this.count_error += 1;
 				if (this.count_error > 100) this.recognition.onend = () => this.recognition.stop();
 			};
-			// this.recognition.onend = () => this.recognition.start();
 
 			this.count_error = 0;
 			this.recognition.addEventListener('result', (event) => {
@@ -137,22 +139,36 @@ export default {
 				p.className = 'black white--text';
 				p.ref = `speech${this.step}`;
 				p.textContent = sayWord;
-				this.$refs.chat.append(p);
-				// this.$refs.speech.textContent = sayWord;
+				document.getElementById('chatWrap').append(p);
 				this.recognition.onend = () => this.recognition.stop();
+				if (this.step === 4 || this.step === 8 || this.step === 12) {
+					setTimeout(() => {
+						this.clear();
+						this.round += 1;
+						alert(`go on the round ${this.round}`);
+					}, 1500);
+				}
+				if (this.step === 15) {
+					setTimeout(() => {
+						this.clear();
+						alert('you win');
+					}, 1500);
+				}
 			});
 			this.recognition.start();
 		},
 		video() {
-			if (this.step >= 4) return;
 			this.$refs.video.play();
 			this.$refs.video.onended = () => {
-				this.speak();
 				this.answer();
+				this.speak();
 				this.step += 1;
-				console.log(this.step);
 				this.$refs.src.setAttribute('src', `./assets/video/${this.step}.mp4`);
+				this.loading = true;
 				this.$refs.video.load();
+				setTimeout(() => {
+					this.loading = false;
+				}, 500);
 			};
 		},
 		answer() {
@@ -160,7 +176,12 @@ export default {
 			div.className = 'answer';
 			div.ref = `answer${this.step}`;
 			div.textContent = this.isAnswer[this.step];
-			this.$refs.chat.append(div);
+			document.getElementById('chatWrap').append(div);
+		},
+		clear() {
+			const div = document.createElement('div');
+			div.id = 'chatWrap';
+			document.getElementById('chatWrap').replaceWith(div);
 		},
 	},
 };
@@ -197,7 +218,7 @@ p {
 	display: block;
 	top: 10px;
 	left: 150px;
-	color: #1976D2;
+	color: #1976d2;
 	text-align: center;
 }
 
@@ -209,7 +230,7 @@ p {
 	border-radius: 5px;
 	color: white;
 	align-items: center;
-	background: #1976D2;
+	background: #1976d2;
 	position: relative;
 	left: 50%;
 	transform: translate(-50%, 0);
@@ -217,15 +238,15 @@ p {
 .load {
 	position: relative;
 	top: 40px;
-	color: #1976D2;
+	color: #1976d2;
 }
 .chat {
-	border: 2px solid #1976D2;
+	border: 2px solid #1976d2;
 	border-radius: 5px;
 	position: relative;
 	top: 40px;
 	width: 300px;
-	color: #1976D2;
+	color: #1976d2;
 	left: 50%;
 	transform: translate(-50%, 0);
 }
