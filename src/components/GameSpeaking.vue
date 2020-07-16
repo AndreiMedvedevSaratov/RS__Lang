@@ -78,17 +78,7 @@ export default {
 			getShortStatistics: 'showShortStatistics',
 		}),
 	},
-	watch: {
-		// videoIsEnded() {
-		// 	this.speak();
-		// 	this.answer();
-		// 	this.videoIsEnded = false;
-		// 	this.step += 1;
-		// 	console.log(this.step);
-		// 	this.$refs.src.setAttribute('src', `./assets/video/${this.step}.mp4`);
-		// 	this.$refs.video.load();
-		// },
-	},
+	watch: {},
 	created() {},
 	mounted() {
 		// Перед началом игры изменим стиль страницы
@@ -136,7 +126,7 @@ export default {
 				this.count_error += 1;
 				if (this.count_error > 100) this.recognition.onend = () => this.recognition.stop();
 			};
-			// this.recognition.onend = () => this.recognition.start();
+			this.recognition.onend = () => this.recognition.start();
 
 			this.count_error = 0;
 			this.recognition.addEventListener('result', (event) => {
@@ -148,17 +138,22 @@ export default {
 				p.textContent = sayWord;
 				document.getElementById('chat').append(p);
 				this.recognition.onend = () => this.recognition.stop();
-				if (this.step === 4 || this.step === 9) {
+				if (this.step === 4 || this.step === 8 || this.step === 12) {
 					setTimeout(() => {
 						this.clear();
 						alert('go on the next round');
+					}, 1500);
+				}
+				if (this.step === 16) {
+					setTimeout(() => {
+						this.clear();
+						alert('you win');
 					}, 1500);
 				}
 			});
 			this.recognition.start();
 		},
 		video() {
-			// if (this.step >= 4) return;
 			this.$refs.video.play();
 			this.$refs.video.onended = () => {
 				this.answer();
