@@ -5,46 +5,11 @@
 			cols="12"
 			md="6"
 		)
-			v-card(
-				class="mx-auto"
-			)
-				v-card-title Получить слова
-
-				v-card-text(class="text--primary")
-				v-row( class="ma-0" )
-					v-col(
-						cols="12"
-						md="4"
-					)
-						v-text-field(
-							v-model="page"
-							label="page"
-						)
-					v-col(
-						cols="12"
-						md="4"
-					)
-						v-text-field(
-							v-model="group"
-							label="group"
-						)
-					v-col(
-						cols="12"
-						md="4"
-					)
-						v-btn( @click="getWords({page, group})" outlined ) Request
-				v-row( class="ma-0" )
-					v-col(cols="12")
-						v-chip-group(
-							column
-							v-if="words.length > 0"
-						)
-							v-chip(
-								v-for="word in words"
-								:key="word.id"
-								@click="clickWord(word)"
-							) {{ word.word }}
-						span(v-else) Request words...
+			//- stat-graph(
+			//- 	:statistics='statistics'
+			//- 	:graphWidth='500'
+			//- 	:graphHeight='300'
+			//- )
 			v-card(
 				class="mt-3"
 			)
@@ -73,13 +38,13 @@
 			md="6"
 		)
 			v-card()
-				v-card-title Создать / Обновить статистику по слову
+				v-card-title Информационный блок
 				v-card-text( class="pb-0" )
 					v-row
 						v-col( cols="9" )
 							v-text-field(
 								v-model="wordId"
-								label="Word ID"
+								label="Найти статистику по word ID"
 								outlined
 							)
 						v-col( cols="3" )
@@ -93,42 +58,46 @@
 								v-model="consoleData.optional.name"
 								label="Name"
 								outlined
-								required
+								disabled
 							)
 						v-col( cols="6" )
 							v-text-field(
 								v-model="consoleData.optional.learnGroup"
 								label="learnGroup"
 								outlined
+								disabled
 							)
 						v-col( cols="6" )
 							v-text-field(
 								v-model="consoleData.optional.allRepeats"
 								label="allRepeats"
 								outlined
+								disabled
 							)
 						v-col( cols="6" )
 							v-text-field(
 								v-model="consoleData.optional.successRepeats"
 								label="successRepeats"
 								outlined
-								required
+								disabled
 							)
 					v-text-field(
 						v-model="consoleData.optional.previousTrain"
 						label="previousTrain"
 						outlined
+						disabled
 					)
 					v-text-field(
 						v-model="consoleData.optional.nextTrain"
 						label="nextTrain"
 						outlined
+						disabled
 					)
 					v-switch( v-model="consoleData.optional.isDelete"
 					class="ma-2" label="isDelete")
 				v-card-actions()
 					v-spacer
-					v-btn( @click="saveStatWord()") {{ !updateWord ? 'Create' : 'Update' }}
+					v-btn( v-if="updateWord"  @click="saveStatWord()") Update
 		v-dialog(
 			v-model="dialog"
 			max-width="500px"
@@ -147,15 +116,33 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import StatGraph from '@/components/statGraph.vue';
 /**
  * API Vue
  * https://ru.vuejs.org/v2/api/index.html
  */
 export default {
 	name: 'Statistics',
-	components: {},
+	components: {
+		StatGraph,
+	},
 	props: [],
 	data: () => ({
+		statistics: [
+			{ date: '2020-07-01', words: 50, successWord: 50 },
+			{ date: '2020-07-02', words: 49, successWord: 50 },
+			{ date: '2020-07-03', words: 48, successWord: 50 },
+			{ date: '2020-07-04', words: 49, successWord: 50 },
+			{ date: '2020-07-05', words: 51, successWord: 50 },
+			{ date: '2020-07-06', words: 52, successWord: 50 },
+			{ date: '2020-07-07', words: 100, successWord: 50 },
+			{ date: '2020-07-08', words: 88, successWord: 50 },
+			{ date: '2020-07-09', words: 87, successWord: 50 },
+			{ date: '2020-07-10', words: 88, successWord: 50 },
+			{ date: '2020-07-11', words: 85, successWord: 50 },
+			{ date: '2020-07-12', words: 79, successWord: 50 },
+			{ date: '2020-07-13', words: 85, successWord: 50 },
+		],
 		page: 0,
 		group: 0,
 		wordId: '',
@@ -186,10 +173,10 @@ export default {
 			this.updateWord = this.wordsStat.some((word) => word.wordId === this.wordId);
 		},
 	},
-	created() {},
+	created() {
+		this.getWordStats();
+	},
 	mounted() {
-		// this.getAggregatedWord('5e9f5ee35eb9e72bc21af4a3');
-		this.getWord({ wordId: '5e9f5ee35eb9e72bc21af4a3' });
 	},
 	methods: {
 		...mapActions({
@@ -201,6 +188,23 @@ export default {
 			getAggregatedWords: 'APP_GET_USER_WORDS_AGGREGATED',
 			getAggregatedWord: 'APP_GET_USER_WORD_AGGREGATED',
 		}),
+		// async arrayWordStat() {
+		// 	await this.getWordStats();
+		// 	const res = [];
+		// 	this.wordsStat.forEach((word) => {
+		// 		const yes = res.some((item) => item.optional.previousTrain === word.optional.previousTrain);
+		// 		if (yes) {
+		// 			// eslint-disable-next-line no-underscore-dangle
+		// 			const ind = res.indexOf(word.id);
+		// 			res[ind].words += 1;
+		// 			res[ind].successWord += word.optional.successRepeats;
+		// 		} else {
+		// 			res.push({ date: word.optional.previousTrain, words: 1, successWord: word.optional.successRepeats });
+		// 		}
+		// 	});
+		// 	console.log(res);
+		// 	return res;
+		// },
 		clickWord(word) {
 			this.dialogData = word;
 			this.dialog = true;
@@ -229,10 +233,5 @@ export default {
 			};
 		},
 	},
-
 };
 </script>
-
-<style lang='scss' scoped>
-
-</style>

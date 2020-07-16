@@ -16,13 +16,14 @@
 		)
 			v-virtual-scroll(
 				:items="wordsStat"
-				item-height="184"
+				item-height="200"
 				height="370"
+				max-height="600"
 				style="height: calc( 100vh - 234px )"
 				bench="2"
 			)
 				template(v-slot="{ item }" )
-					v-card( class="my-2"  )
+					v-card( class="my-2" :class="item.userWord.optional.isDelete ? 'red lighten-4' : ''"  )
 						v-card-text( class="py-0" )
 							v-row
 								v-col
@@ -66,6 +67,17 @@
 										width="120"
 										:src="`${urlFiles}${item.image}`"
 									)
+								v-spacer
+									v-btn(
+										v-if="!item.userWord.optional.isDelete"
+										text
+										@click="deleteWord(item)"
+									) Удалить
+									v-btn(
+										v-else
+										text
+										@click="restoreWord(item)"
+									) Вернуть
 		v-card-text(
 			v-else
 		) Ваш словарь пуст, начните играть ...
@@ -80,8 +92,6 @@ import { mapMutations, mapGetters, mapActions } from 'vuex';
  */
 export default {
 	name: 'Dictionary',
-	components: {},
-	props: [],
 	data: () => ({
 		tab: null,
 		items: [
@@ -96,8 +106,6 @@ export default {
 			countWords: 'getCountWords',
 		}),
 	},
-	watch: {},
-	created() {},
 	mounted() {
 		// Перед началом игры изменим стиль страницы
 		this.appHtml([
@@ -131,10 +139,35 @@ export default {
 		}),
 		...mapActions({
 			getAggregatedWords: 'APP_GET_USER_WORDS_AGGREGATED',
+			wordSave: 'APP_SET_USER_WORD_STAT',
 		}),
 		playAudio: (dataAudio) => {
 			const audio = new Audio(dataAudio);
 			audio.play();
+		},
+		async deleteWord(item) {
+			const wordStat = item.userWord;
+			wordStat.optional.isDelete = true;
+			// eslint-disable-next-line no-underscore-dangle
+			await this.wordSave({ wordId: item._id, method: 'put', wordStat });
+			this.getAggregatedWords({
+				group: '',
+				filter: {
+					userWord: { $ne: null },
+				},
+			});
+		},
+		async restoreWord(item) {
+			const wordStat = item.userWord;
+			wordStat.optional.isDelete = false;
+			// eslint-disable-next-line no-underscore-dangle
+			await this.wordSave({ wordId: item._id, method: 'put', wordStat });
+			this.getAggregatedWords({
+				group: '',
+				filter: {
+					userWord: { $ne: null },
+				},
+			});
 		},
 	},
 

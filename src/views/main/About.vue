@@ -1,9 +1,42 @@
 <template>
   <div class="about-team">
     <div class="about-team__wrapper">
-      <h1 class="about-team__title">
-        Dream Team 42
-      </h1>
+      <v-row
+        align="center"
+        justify="center"
+      >
+        <v-col
+          cols="12"
+          md="6"
+          class="aligh-center text-center"
+        >
+          <h1 class="about-team__title">
+            Dream Team 42
+          </h1>
+          <span class="font-weight-black">GitHub <a href="https://github.com/Dream-Team-42/rslang">repository</a></span>
+        </v-col>
+        <v-col
+          cols="12"
+          md="6"
+        >
+          <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/Fa1DHrvDfZE"
+            frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          />
+          <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/dnk4ekXcciY"
+            frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          />
+        </v-col>
+      </v-row>
     </div>
     <div class="about-team__questions">
       <h2 class="questions__title">
@@ -17,22 +50,17 @@
           </p>
         </li>
         <li class="questions__item ">
-          First question is "Why Dream Team 42?
+          We worked together!
           <p class="questions__anwear">
-            Answer is simple - "Dream Team" - just because we are Dream Team
+            We worked together to produce the best application!
           </p>
         </li>
         <li class="questions__item ">
-          First question is "Why Dream Team 42?
+          Our goal
           <p class="questions__anwear">
-            Answer is simple - "Dream Team" - just because we are Dream Team
+            Our goal was to produce the best application to help you to learn English language!
           </p>
         </li>
-
-        <!-- <p>Here is short information about our team. First question is "Why Dream Team 42?</p>
-		<p>Answer is simple ))) - "Dream Team" - just because we are Dream Team ))))</p>
-		<p>"42" - is just because we are 42 team in the main table</p>
-		<p>So let me introduce participants:</p> -->
       </ul>
     </div>
 
@@ -192,6 +220,13 @@ export default {
 	&__title {
 		color: #FFF;
 		font-size: 100px;
+		@media(max-width: 768px) {
+			font-size: 86px;
+			text-align: center;
+		}
+		@media(max-width: 425px) {
+			font-size: 70px;
+		}
 	}
 	.questions__title {
 		color: #000;
@@ -205,6 +240,9 @@ export default {
 		display: flex;
 		justify-content: space-between;
 		margin-bottom: 200px;
+		@media(max-width: 425px) {
+			flex-direction: column;
+		}
 	}
 	.questions__item {
 		width: 30%;
@@ -214,6 +252,9 @@ export default {
 		cursor: pointer;
 		transition: color .3s;
 		text-align: center;
+		@media(max-width: 425px) {
+			width: 100%;
+		}
 		.questions__anwear {
 			opacity: .6;
 		}
@@ -241,6 +282,9 @@ export default {
 			display: flex;
 			flex-wrap: wrap;
 			justify-content: space-between;
+			@media(max-width: 425px) {
+				flex-direction: column;
+			}
 		}
 		&__item {
 			width: 31%;
@@ -251,6 +295,9 @@ export default {
 				.profile-page__info {
 					display: block;
 				}
+			}
+			@media(max-width: 425px) {
+				width: 100%;
 			}
 		}
 		&__img {

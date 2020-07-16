@@ -138,10 +138,7 @@ export default {
 		vModal,
 		vAlert,
 	},
-	filters: {
-	},
 	mixins: [setting, alert],
-	props: [],
 	data: () => ({
 		gameStatus: false,
 		loading: false,
@@ -234,11 +231,6 @@ export default {
 			}
 		},
 	},
-	created() {},
-	beforeMount() {
-		// Запускаем прослушиватель, на закрытие вкладки (в beforeDestroy удалить надо)
-		// window.addEventListener('beforeunload', this.preventNav);
-	},
 	mounted() {
 		// Перед началом игры изменим стиль страницы
 		this.appHtml([
@@ -261,8 +253,6 @@ export default {
 			{ one: 'app', key: 'background', value: 'grey lighten-5' },
 			{ one: 'app', key: 'colorWhite', value: false },
 		]);
-		// Удаляем прослушиватель, что бы он не распространялся на другие компоненты
-		// window.removeEventListener('beforeunload', this.preventNav);
 	},
 	methods: {
 		...mapMutations({
@@ -274,11 +264,6 @@ export default {
 			alert: 'ALERT',
 			wordProcessing: 'APP_WORD_PROCESSING',
 		}),
-		// preventNav(e) {
-		// 	e.preventDefault();
-		// 	e.returnValue = '';
-		// 	console.log('Вроде сработало!');
-		// },
 		// Главный метод
 		async game() {
 			this.loading = true;

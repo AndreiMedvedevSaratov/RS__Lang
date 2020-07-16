@@ -47,8 +47,6 @@ import { mapGetters, mapMutations, mapActions } from 'vuex';
  */
 export default {
 	name: 'Login',
-	components: {},
-	props: [],
 	data: () => ({
 		valid: false,
 		passRules: [
@@ -84,10 +82,6 @@ export default {
 				});
 			},
 		},
-	},
-	watch: {},
-	created() {},
-	mounted() {
 	},
 	methods: {
 		...mapMutations({

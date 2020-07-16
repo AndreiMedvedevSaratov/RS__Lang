@@ -108,7 +108,7 @@ const actions = {
 	 * @example dispatch('user/USER_GET_SET_STATISTICS', { root: true })
 	 */
 	async USER_GET_SET_SETTINGS({
-		state, rootState, commit, dispatch,
+		state, rootState, commit,
 	}, payload) {
 		commit('USER_REQUEST', 'loading');
 
@@ -119,14 +119,7 @@ const actions = {
 		).then((settings) => {
 			commit('USER_SERVER_SETTINGS', settings.data);
 			commit('USER_SUCCESS');
-		}).catch((error) => {
-			commit('USER_ERROR', 'error');
-			dispatch('ALERT', {
-				alert: true,
-				status: 'error',
-				message: `${error.response.statusText}: ${error.response.data}`,
-			}, { root: true });
-		});
+		}).catch(() => {});
 	},
 
 	async USER_CHECK_SETTINGS({
@@ -163,7 +156,7 @@ const mutations = {
 	},
 	USER_DATA: (state, payload) => {
 		state.profile.userId = payload.id;
-		state.profile.email = payload.email;
+		if (payload.email) state.profile.email = payload.email;
 	},
 	USER_LOGOUT: (state) => {
 		state.profile = {

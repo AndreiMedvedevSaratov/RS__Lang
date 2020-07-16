@@ -41,8 +41,6 @@ export default {
 		appbar,
 		setting,
 	},
-	props: {
-	},
 	data() {
 		return {
 			breadcrumbList: [],
