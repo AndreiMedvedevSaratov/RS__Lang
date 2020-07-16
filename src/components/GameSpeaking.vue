@@ -1,38 +1,41 @@
 <template lang="pug">
 	div( class="game" )
-
 		v-row( class="main" )
-			v-col
-				video(
-					class="main__image"
-					ref="video"
+			video(
+				class="video"
+				ref="video"
 				)
-					source(
-						ref="src"
-						:src="`./assets/video/${this.step}.mp4`"
-						type="video/mp4"
+				source(
+					ref="src"
+					:src="`./assets/video/${this.step}.mp4`"
+					type="video/mp4"
 					)
-				v-btn(
-					@click="video()"
-					tile
-					block
-				) Начать разговор
-
+			v-btn(
+				@click="video()"
+				tile
+				id="btn"
+				value="Start a conversation"
+				) Start a conversation
+			div(
+				ref="answer"
+				)
 			v-col(
-				class="indigo lighten-4"
-				ref="chat-wrapper"
-			) Чат
+				class="chat"
+				ref="chat"
+				) Chat:
 				div(
-					id="chat"
+					ref="chatWrap"
+					id="chatWrap"
 				)
-					div(
-						class="amber darken-4"
-						ref="answer"
-					)
-					p(
-						class=''
-						ref="speech"
-					)
+					p(class=''
+							ref="speech"
+							)
+			div( v-if="loading" class="load") Loading... please wait...
+				v-progress-linear(
+						indeterminate
+						rounded
+						color="blue darken-2"
+						)
 </template>
 
 <script>
@@ -70,6 +73,8 @@ export default {
 		videoIsEnded: false,
 		count_error: 0,
 		recognition: '',
+		loading: false,
+		round: 1,
 	}),
 	computed: {
 		...mapGetters({
@@ -81,26 +86,21 @@ export default {
 	watch: {},
 	created() {},
 	mounted() {
-		// Перед началом игры изменим стиль страницы
+		this.loading = true;
+		setTimeout(() => {
+			this.loading = false;
+		}, 2500);
 		this.appHtml([
-			// свернем меню
 			{ one: 'main', key: 'drawer', value: false },
-			// Уберем хлебные крошки
 			{ one: 'main', key: 'breadcrumbs', value: false },
-			{ one: 'main', key: 'background', value: 'indigo lighten-5' },
-			// Изменим цвет header по таблице цветов
-			// https://vuetifyjs.com/en/styles/colors/#sass-color-pack
-			{ one: 'app', key: 'background', value: 'indigo darken-4' },
-			// Изменим цвет текста на белый в header
+			{ one: 'app', key: 'background', value: 'blue darken-2' },
 			{ one: 'app', key: 'colorWhite', value: true },
 		]);
 	},
 	beforeDestroy() {
-		// Перед закрытием страницы возращаем настройки обратно
 		this.appHtml([
 			{ one: 'main', key: 'drawer', value: true },
 			{ one: 'main', key: 'breadcrumbs', value: true },
-			{ one: 'main', key: 'background', value: '' },
 			{ one: 'app', key: 'background', value: 'grey lighten-5' },
 			{ one: 'app', key: 'colorWhite', value: false },
 		]);
@@ -108,6 +108,9 @@ export default {
 	methods: {
 		...mapMutations({
 			appHtml: 'EDIT_HTML',
+			video: 'speaking/SPEAKING_VIDEO',
+			answer: 'speaking/SPEAKING_ANSWER',
+			speak: 'speaking/SPEAKING_SPEAK',
 			offStatistics: 'SHOW_SHORT_STATISTICS',
 		}),
 		...mapActions({
@@ -126,7 +129,6 @@ export default {
 				this.count_error += 1;
 				if (this.count_error > 100) this.recognition.onend = () => this.recognition.stop();
 			};
-			this.recognition.onend = () => this.recognition.start();
 
 			this.count_error = 0;
 			this.recognition.addEventListener('result', (event) => {
@@ -136,17 +138,20 @@ export default {
 				p.className = 'black white--text';
 				p.ref = `speech${this.step}`;
 				p.textContent = sayWord;
-				document.getElementById('chat').append(p);
+				document.getElementById('chatWrap').append(p);
 				this.recognition.onend = () => this.recognition.stop();
+				setTimeout(() => {
+					this.clear();
+				}, 1500);
 				if (this.step === 4 || this.step === 8 || this.step === 12) {
 					setTimeout(() => {
 						this.clear();
-						alert('go on the next round');
+						this.round += 1;
+						alert(`go on the round ${this.round}`);
 					}, 1500);
 				}
-				if (this.step === 16) {
+				if (this.step === 15) {
 					setTimeout(() => {
-						this.clear();
 						alert('you win');
 					}, 1500);
 				}
@@ -159,22 +164,25 @@ export default {
 				this.answer();
 				this.speak();
 				this.step += 1;
-				console.log(this.step);
 				this.$refs.src.setAttribute('src', `./assets/video/${this.step}.mp4`);
+				this.loading = true;
 				this.$refs.video.load();
+				setTimeout(() => {
+					this.loading = false;
+				}, 500);
 			};
 		},
 		answer() {
 			const div = document.createElement('div');
-			div.className = 'amber darken-4';
+			div.className = 'answer';
 			div.ref = `answer${this.step}`;
 			div.textContent = this.isAnswer[this.step];
-			document.getElementById('chat').append(div);
+			document.getElementById('chatWrap').append(div);
 		},
 		clear() {
 			const div = document.createElement('div');
-			div.id = 'chat';
-			document.getElementById('chat').replaceWith(div);
+			div.id = 'chatWrap';
+			document.getElementById('chatWrap').replaceWith(div);
 		},
 	},
 };
@@ -182,28 +190,65 @@ export default {
 
 <style lang="scss" scoped>
 .game {
-	height: 100%;
-	padding: 0 15%;
+	height: 100vh;
 	box-sizing: border-box;
+}
+p {
+	margin: 0;
+}
+.main {
+	position: relative;
+	width: 100%;
+	height: auto;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+}
+.video {
+	position: relative;
+	width: 300px;
+	height: 300px;
+	display: flex;
+	margin: 0 auto;
+	align-items: center;
+	top: 0px;
+}
 
-	p {
-		margin: 0;
-	}
+.answer {
+	position: relative;
+	display: block;
+	top: 10px;
+	left: 150px;
+	color: #1976d2;
+	text-align: center;
+}
 
-	.main {
-		height: 80%;
-
-		&__image {
-			padding: 2% 0;
-			max-width: 300px;
-			display: block;
-			margin: 0 auto;
-			align-items: center;
-		}
-	}
-
-	.answer {
-		display: block;
-	}
+#btn {
+	display: block;
+	width: 200px;
+	height: 60px;
+	top: 10px;
+	border-radius: 5px;
+	color: white;
+	align-items: center;
+	background: #1976d2;
+	position: relative;
+	left: 50%;
+	transform: translate(-50%, 0);
+}
+.load {
+	position: relative;
+	top: 40px;
+	color: #1976d2;
+}
+.chat {
+	border: 2px solid #1976d2;
+	border-radius: 5px;
+	position: relative;
+	top: 40px;
+	width: 300px;
+	color: #1976d2;
+	left: 50%;
+	transform: translate(-50%, 0);
 }
 </style>
