@@ -229,7 +229,7 @@ p {
 
 #btn {
 	display: block;
-	width: 200px;
+	width: 220px;
 	height: 60px;
 	top: 10px;
 	border-radius: 5px;
