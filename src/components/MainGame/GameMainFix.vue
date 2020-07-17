@@ -308,7 +308,7 @@ export default {
 		]);
 	},
 	beforeUpdate() {
-		// this.markWord('nextWord');
+		this.markWord('nextWord');
 	},
 	updated() {},
 	methods: {
