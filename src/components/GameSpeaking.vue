@@ -1,6 +1,5 @@
 <template lang="pug">
 	div( class="game" )
-		snack( )
 		v-row( class="main" )
 			video(
 				class="video"
@@ -17,6 +16,7 @@
 				id="btn"
 				value="Start a conversation"
 				) Start a conversation
+			snack()
 			div(
 				ref="answer"
 				)
