@@ -1,5 +1,6 @@
 <template lang="pug">
 	div( class="game" )
+		snack( )
 		v-row( class="main" )
 			video(
 				class="video"
@@ -40,6 +41,7 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex';
+import snack from './modal/rulesSpeaking.vue';
 
 /**
  * API Vue
@@ -47,7 +49,9 @@ import { mapGetters, mapMutations, mapActions } from 'vuex';
  */
 export default {
 	name: 'Speaking',
-	components: {},
+	components: {
+		snack,
+	},
 	props: [],
 	data: () => ({
 		step: 0,
