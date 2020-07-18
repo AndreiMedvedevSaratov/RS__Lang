@@ -9,7 +9,6 @@ const correctAnswer = {
 			this.playAllAudio(soundArr);
 		},
 		playAllAudio(arr) {
-			console.log(arr);
 			let current = 0;
 			const audio = new Audio(arr[current]);
 

@@ -144,7 +144,7 @@ const routes = [
 			{
 				path: '/main-game',
 				name: 'Main game',
-				component: () => import(/* webpackChunkName: 'main-game' */ '../components/mainGame/GameMain.vue'),
+				component: () => import(/* webpackChunkName: 'main-game' */ '../components/MainGame/GameMainFix.vue'),
 				meta: {
 					breadcrumb: [
 						{ text: 'Home', to: '/home' },

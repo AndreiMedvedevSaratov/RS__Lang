@@ -16,6 +16,7 @@
 				id="btn"
 				value="Start a conversation"
 				) Start a conversation
+			snack()
 			div(
 				ref="answer"
 				)
@@ -40,6 +41,7 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex';
+import snack from './modal/rulesSpeaking.vue';
 
 /**
  * API Vue
@@ -47,7 +49,9 @@ import { mapGetters, mapMutations, mapActions } from 'vuex';
  */
 export default {
 	name: 'Speaking',
-	components: {},
+	components: {
+		snack,
+	},
 	props: [],
 	data: () => ({
 		step: 0,
@@ -225,7 +229,7 @@ p {
 
 #btn {
 	display: block;
-	width: 200px;
+	width: 220px;
 	height: 60px;
 	top: 10px;
 	border-radius: 5px;
