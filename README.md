@@ -13,4 +13,18 @@ Also core-js, eslint, babel, sass, various plugins, loaders, etc.
 
 *Since the Vue community is very large, it is not difficult to find the necessary functionality that will be easily integrated. The ecosystem provides us with out-of-the-box routing and state management, which allows us to make a complex and reactive Single Page Application.*
 
-## Go to the developer branch!
+## Project setup
+```
+npm install
+```
+
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
+
+### Compiles and minifies for production
+```
+npm run build
+```
+

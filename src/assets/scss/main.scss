@@ -1,0 +1,19 @@
+@import 'reset.scss';
+.custom {
+    background-color: #e8e8e8;
+}
+$width-form-login-singup-more-960: 32%!important;
+$width-form-login-singup-less-960: 50%!important;
+$width-form-login-singup-less-600: 75%!important;
+
+.width-form-login-singup {
+	width: $width-form-login-singup-more-960;
+	@media only screen and (max-width: 960px) {
+		width: $width-form-login-singup-less-960;
+	}
+	@media only screen and (max-width: 600px) {
+		width: $width-form-login-singup-less-600;
+	}
+}
+
+
