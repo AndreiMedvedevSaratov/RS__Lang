@@ -1,16 +1,30 @@
 <template>
-	<div class="text-center ma-2">
-		<v-btn id="btn_rules" @click="snackbar = true">Open rules of the game</v-btn>
-		<v-snackbar v-model="snackbar" :timeout="timeout" color="blue darken-2">
-			{{ text }}
+  <div class="text-center ma-2">
+    <v-btn
+      id="btn_rules"
+      @click="snackbar = true"
+    >
+      Open rules of the game
+    </v-btn>
+    <v-snackbar
+      v-model="snackbar"
+      :timeout="timeout"
+      color="blue darken-2"
+    >
+      {{ text }}
 
-			<template v-slot:action="{ attrs }">
-				<v-btn id="btn_close"  text v-bind="attrs" @click="snackbar = false">
-					Х
-				</v-btn>
-			</template>
-		</v-snackbar>
-	</div>
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          id="btn_close"
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+        >
+          Х
+        </v-btn>
+      </template>
+    </v-snackbar>
+  </div>
 </template>
 
 <script>
