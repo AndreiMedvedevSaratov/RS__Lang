@@ -1,3 +1,19 @@
+## RS__Lang
+
+This project was created with Vue.
+
+It was team work. Several games for learning English for adults.
+
+Status of project: Done!
+
+Deploy: https://rslang-team42-andreimedvedevsaratov.netlify.app/
+
+For any additional information, feel free to contact with me by:
+Tel: +7-917-215-19-68
+e-mail: andreiok@gmail.com
+
+________________________________________________________________________________________________
+
 # RS-Lang from the Dream Team
 
 The following list of frameworks and libraries is used for this service:
