@@ -8,6 +8,8 @@ Status of project: Done!
 
 Deploy: https://rslang-team42-andreimedvedevsaratov.netlify.app/
 
+Technology: Vue, Vuex, Vuetify
+
 For any additional information, feel free to contact with me by:
 Tel: +7-917-215-19-68
 e-mail: andreiok@gmail.com
